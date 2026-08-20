@@ -1,5 +1,46 @@
 # Build and figure verification
 
+## Completed-archive correctness build (2026-08-20)
+
+The completed-archive integration was built from the WSL worktree with the
+repository's fixed source epoch.  All source-backed figures were regenerated
+using the declared figure requirements, followed by three consecutive
+`pdflatex` passes and a fresh figure/frozen-data audit.
+
+```text
+compiled output: dissertation.pdf
+pages: 135
+page size: US letter
+SHA-256: aed86d25f1e468ef9d6a2109af488c30d482ad37f9e6b0a8211c7bb236327ead
+```
+
+The final pass contains no unresolved references or citations, no warning
+patterns, and no overfull, underfull, or oversized-float diagnostics.  All
+fonts are embedded; the PDF is searchable and reports PDF 1.5.  The figure
+audit reports **PASS** for 28 manifest artifacts, 25 active external vector
+PDFs, two active TikZ figures, one generated unused figure, and four frozen
+CSV tables (two still explicitly marked for authoritative replacement).
+All 135 pages were rendered as whole-document contact sheets; the revised
+abstract, research-question map, survey health gate, BAO footprint, lower-band
+completion, conclusion, status matrix, and closing-program pages were also
+inspected individually at higher resolution.  No clipping, collision, missing
+glyph, malformed table, unintended blank page, or misplaced float was found.
+
+The dissertation number gate was run against immutable upstream inputs:
+
+```text
+bao-noise-tolerance: a7ee77eec63604ccf2560410887f5a86bae168d6
+pilot-proxy:        1d74e096855c4c9bef92c32a82723a3f50a2210b
+summary:            data/provenance/dissertation_summary_v3.json
+result:             67/67 checks passed; baseline 0
+```
+
+JSON parsing, frozen-data hash/row verification, Python bytecode compilation,
+CSV structure, `git diff --check`, and the comprehensive tracked-file manifest
+verification were also run on the final tree.  Generated LaTeX auxiliaries
+were removed after validation; the regenerated dissertation and changed
+footprint PDF are retained.
+
 This document records the checks performed for the full 500-mile Figure 3.2
 revision. The unchanged figures retain the source-backed verification recorded
 in the preceding bundle; the changed map, Chapter 3 text, and repository export

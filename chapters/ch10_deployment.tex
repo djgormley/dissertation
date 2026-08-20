@@ -43,6 +43,7 @@ the host framework; the semantic fields and failure outcomes may not.}
 Surface & Required contract & Failure outcome \\
 \midrule
 Input samples & Contiguous packed complex \texttt{int4}; declared $M,N$, channel, frame identity, and time; immutable until stream completion & Frame invalid; no launch on size or geometry mismatch \\
+Input health & Reason-coded constant/fill, code-histogram, variance, and saturation checks independent of the detection statistic & Frame invalid and quarantined for input-path diagnosis \\
 Calibration & Channel and epoch validity; weight/norm/twiddle hashes; anchor, masks, rank, Q16 multiplier & Bundle rejected before data taking \\
 CUDA stream & Input readiness event, stream-ordered output initialization, launch, completion event, and downstream wait & Frame invalid and stage health counter incremented \\
 Fine/coarse outputs & Declared spans for power terms, diagnostics, completion/mask word, and optional debug taps & No truncation; size mismatch is configuration failure \\
@@ -74,7 +75,8 @@ completion-word initialization described in Chapter~\ref{sec:impl}.
 
 A live system must distinguish a scientific non-detection from an execution
 failure.  The following conditions set \texttt{valid=false}: geometry mismatch,
-invalid or expired calibration, zero-reference/bulk degeneracy beyond the
+constant/fill or saturation health failure, invalid or expired calibration,
+zero-reference/bulk degeneracy beyond the
 specified detector rules, CUDA launch or asynchronous error, impossible
 completion count, exact-marginal tripwire failure, output checksum failure, or
 missing provenance.  The stage records the reason and the affected frame range.
@@ -93,9 +95,9 @@ content-addressed artifacts rather than editable files:
   GPU capability, free device memory, bundle epoch, all hashes, and the signed
   pilot-injection convention.  Reject mixed or expired artifacts.
   \item \textbf{Acceptance burst.} Process a deterministic quiet vector, a
-  signed-offset injected pilot, a zero-denominator case, and a nonzero-prefilled
-  mask-word case.  Require equality with the independent reference and the
-  staged kernel path.
+  signed-offset injected pilot, a constant packed-\texttt{0x88} input-health
+  failure, a zero-denominator case, and a nonzero-prefilled mask-word case.
+  Require equality with the independent reference and the staged kernel path.
   \item \textbf{Science mode.} Enable the stage only after the acceptance burst;
   record per-frame validity, mask, coarse/fine tripwire status, kernel duration,
   and calibration identifier.

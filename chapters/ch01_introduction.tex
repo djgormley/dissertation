@@ -87,22 +87,22 @@ Here is the fact that makes this a dissertation rather than a nuisance: \emph{in
 The vocabulary of the problem is worth pinning down, because every quantitative claim in this dissertation is stated in it.
 
 \begin{description}
-\item[Statistical error (the error bar).] The scatter a measurement would show if it were repeated many times. It comes from randomness --- here, thermal noise in the receivers --- and it shrinks with more data, as $1/\sqrt{t}$ for observing time $t$. When an experiment quotes $x \pm \sigma$, the $\sigma$ is this.
+\item[Statistical error (the error bar).] The scatter a measurement would show if it were repeated many times. It comes from randomness --- here, thermal noise in the receivers --- and it shrinks with more data, as $1/\sqrt{t}$ for observing time $t$. Throughout this work, $\sigma$ denotes the forecast standard deviation (or standard error) of the estimator. The shorthand $x\pm\sigma$ does not, by itself, assert a particular confidence-interval construction or coverage probability.
 \item[Systematic.] Anything in the apparatus or environment that pushes the measurement consistently in one direction, rather than randomly in both. A bathroom scale that reads two pounds heavy is a systematic; weighing yourself every morning for a year does not fix it, it just gives you a very precise wrong weight.
-\item[Bias.] The shift a systematic produces in the final answer: the distance between the average of many repeated measurements and the truth. Written $b$ throughout.
+\item[Bias.] The signed shift a systematic produces in the final answer. For an estimator $\widehat\theta$, the convention used throughout is $b\equiv\operatorname{E}[\widehat\theta]-\theta_{\rm true}$; tolerances constrain its magnitude, $|b|$.
 \item[Residual, $r$.] The unit this dissertation prices contamination in: interference power that survives all filtering into the final statistical analysis, expressed as a fraction of the thermal noise power in the same data (Chapter~\ref{sec:bao}). A residual of $r = 10^{-3}$ means the surviving contamination carries a thousandth of the noise power.
 \end{description}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\linewidth]{figs/fig_intro_two_errors.pdf}
-\caption{Two ways to be wrong (schematic). Each curve is the distribution of answers an experiment would give if repeated. More data narrows the distribution --- the statistical error falls --- but does nothing to the offset a systematic causes. The same bias that was hidden inside a wide early error bar becomes a confident, precise, wrong answer later: here $b = 0.6$ early error bars, invisible at first, is a $2.4\sigma$ discrepancy after sixteen times the data. The published tolerance criterion, $b \le \sigma$ \cite{amara2008}, is the statement that a measurement should never be allowed into that regime.}
+\caption{Two ways to be wrong (schematic). Each curve is the distribution of answers an experiment would give if repeated. More data narrows the distribution --- the statistical error falls --- but does nothing to the offset a systematic causes. A fixed bias that is small compared with an early statistical scale can become a large discrepancy later: here $|b| = 0.6\sigma$ at the early precision becomes $2.4\sigma$ after sixteen times the data. This work adopts $|b|\leq\sigma$ as a permissive systematic-budget screen following the form used by Amara \& R\'efr\'egier \cite{amara2008}; it is not a confidence-interval coverage guarantee.}
 \label{fig:intro:twoerrors}
 \end{figure}
 
 Figure~\ref{fig:intro:twoerrors} draws the distinction. Statistical error and bias are not two flavors of the same problem; they respond oppositely to the one resource a survey controls, which is time. Integration narrows the error bar and leaves the bias alone, so the \emph{ratio} of bias to error bar grows as data accumulate. An experiment with an unaddressed systematic does not converge to the truth slowly. It converges, confidently, to the wrong answer --- and every internal consistency check based on scatter will say things are going well.
 
-When is a bias small enough to live with? The convention this work adopts is the one published for precision cosmology by Amara \& R\'efr\'egier \cite{amara2008}: a systematic is tolerable while the bias it induces does not exceed the statistical error, $|b| \le \zeta\,\sigma$ with $\zeta = 1$. The logic is that an experiment's headline number is $x \pm \sigma$; if the truth lies within the quoted interval, the report is honest even in the presence of the systematic. Past that point the experiment is claiming precision it does not have. Nothing about $\zeta = 1$ is magic --- a collaboration wanting margin can set $\zeta = 0.3$ and every tolerance in this work scales linearly --- but $\zeta = 1$ is the published, citable line between an honest error bar and a false one, and Chapter~\ref{sec:bao} adopts it as the definition of ``tolerable.''
+When is a bias small enough to live with? This work adopts the systematic-budget form used by Amara \& R\'efr\'egier \cite{amara2008}, $|b| \le \zeta\,\sigma$, and takes $\zeta=1$ as a deliberately permissive screening convention: the magnitude of the modeled systematic shift may be no larger than one forecast statistical standard deviation. This choice is neither a theorem about confidence-interval coverage nor a universal community threshold. Even under a Gaussian model, a nominal one-standard-deviation interval has a stated coverage only after its interval construction and assumptions are specified, and a fixed bias changes that coverage. A collaboration wanting margin can instead set, for example, $\zeta=0.3$; the tolerances derived here scale linearly with that policy choice. Chapter~\ref{sec:bao} therefore uses $\zeta=1$ to define its screening boundary and reports the convention explicitly wherever that boundary controls a verdict.
 
 \section{Why Time Does Not Fix This One}
 \label{sec:intro:coherent}
@@ -127,9 +127,9 @@ One more twist separates this figure from the real analysis: the time scaling de
 \section{How Much Is Too Much: From a Criterion to a Number}
 \label{sec:intro:tolerance}
 
-The criterion $|b| \le \sigma$ is a principle, not a number. Turning it into a number an engineer can design against takes three steps, and the machinery for all three is a \textbf{Fisher forecast}. Fisher information formalizes a simple question: \emph{how sharply do the data distinguish nearby universes?} Imagine generating the map CHIME will measure in two cosmologies that differ only slightly in one parameter --- the bump shifted by a hair. If the two predicted maps differ by much more than the noise, the data carry a lot of information about that parameter; if the difference drowns in noise, they carry little. Fisher information is that ratio, made precise, and its reciprocal square root is the best statistical error any analysis of those data can achieve. A Fisher forecast assembles this for every parameter at once, given an instrument, a sky, and an observing time --- before any data are taken. The forecast used throughout this work is built on the RadioFisher framework of Bull et al.\ \cite{bull2015}, configured to CHIME following its Overview forecast conventions \cite{amiri2022chime}, and it predicts the statistical error $\sigma(\theta)$ on each parameter $\theta \in \{\alpha_\perp, \alpha_\parallel, f\sigma_8\}$ as a function of integration time.
+The adopted budget $|b| \le \zeta\sigma$ is stated in parameter units, not yet as a residual level an engineer can design against. Turning it into that number takes three steps, and the machinery for all three is a \textbf{Fisher forecast}. Fisher information formalizes a simple question: \emph{how sharply do the data distinguish nearby universes?} Imagine generating the map CHIME will measure in two cosmologies that differ only slightly in one parameter --- the bump shifted by a hair. If the two predicted maps differ by much more than the noise, the data carry a lot of information about that parameter; if the difference drowns in noise, they carry little. Fisher information is that ratio, made precise, and its reciprocal square root is the best statistical error any analysis of those data can achieve. A Fisher forecast assembles this for every parameter at once, given an instrument, a sky, and an observing time --- before any data are taken. The forecast used throughout this work is built on the RadioFisher framework of Bull et al.\ \cite{bull2015}, configured to CHIME following its Overview forecast conventions \cite{amiri2022chime}, and it predicts the statistical error $\sigma(\theta)$ on each parameter $\theta \in \{\alpha_\perp, \alpha_\parallel, f\sigma_8\}$ as a function of integration time.
 
-The three steps. First, compute $\sigma(\theta;T_\star)$ for the clean survey at a declared target integration time $T_\star$ --- that is the error bar the experiment is entitled to. Second, inject a small coherent residual with amplitude ratio $r_{\rm sys}$ and compute the first-order shift $\Delta\theta(r_{\rm sys};T_\star)$ it drags into each parameter. Third, solve $|\Delta\theta| = \zeta\,\sigma$ for the allowed residual. The solution,
+The three steps. First, compute $\sigma(\theta;T_\star)$ for the clean survey at a declared target integration time $T_\star$ --- that is the forecast statistical scale used by the budget. Second, inject a small coherent residual with amplitude ratio $r_{\rm sys}$ and compute the first-order shift $\Delta\theta(r_{\rm sys};T_\star)$ it drags into each parameter. Third, solve $|\Delta\theta| = \zeta\,\sigma$ for the allowed residual. The solution,
 \[
 r_{{\rm sys},\,\rm tol}(\theta;T_\star)
 \;=\;
@@ -137,7 +137,7 @@ r_{{\rm sys},\,\rm tol}(\theta;T_\star)
 \frac{\sigma(\theta;T_\star)}
      {\left|\partial\Delta\theta/\partial r_{\rm sys}\right|_{T_\star}},
 \]
-is the \textbf{tolerance}: the largest residual admitted by that estimator, residual template, and target time before the quoted error bar on $\theta$ becomes misleading. In the current noise-normalized screening family the ratio is nearly flat with integration time, but Chapter~\ref{sec:bao} keeps the target time explicit and requires a separate fixed-physical-amplitude test. For the redshifts occupied by television, the screening tolerances are a few times $10^{-2}$ for the acoustic dilations and $1.5\times10^{-3}$ for $f\sigma_8$: the growth rate is ten to twenty-five times more delicate than the ruler itself, for the position-versus-amplitude reason drawn in Figure~\ref{fig:intro:dilation}.
+is the \textbf{tolerance}: the largest residual admitted by that estimator, residual template, target time, and adopted value of $\zeta$ before the stated systematic budget is exceeded. It is a model-conditional budget crossing, not a recalibrated sampling error or confidence interval. In the current noise-normalized screening family the ratio is nearly flat with integration time, but Chapter~\ref{sec:bao} keeps the target time explicit and requires a separate fixed-physical-amplitude test. For the redshifts occupied by television, the screening tolerances are a few times $10^{-2}$ for the acoustic dilations and $1.5\times10^{-3}$ for $f\sigma_8$: the growth rate is ten to twenty-five times more delicate than the ruler itself, for the position-versus-amplitude reason drawn in Figure~\ref{fig:intro:dilation}.
 
 It is worth being explicit about the three distinct jobs this forecast does in this dissertation, because together they are the reason the cosmological machinery belongs in an instrumentation thesis at all.
 
@@ -153,13 +153,13 @@ It is worth being explicit about the three distinct jobs this forecast does in t
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\linewidth]{figs/fig_intro_atsc.pdf}
-\caption[One ATSC allocation and its pilot proxy]{What one television allocation looks like to the telescope (schematic, drawn to the measured proportions). The 6~MHz shelf is the broadcast's randomized data payload; in narrow time--frequency cells it can approach the null assumed by power- and variability-based flaggers. The pilot carries about 7\% of the station's power at a nominal standard-defined offset \cite{atsc-a53}: weak in total, but 21.6~dB \emph{above} the shelf in spectral density under the transmitter-ratio model used here. CHIME's 390.625~kHz channel raster is drawn behind; the detector monitors the bin containing the pilot as a proxy for the 15.36 bins spanned by the allocation. Chapters~\ref{sec:dtv} and \ref{sec:param} derive the geometry and state the transfer assumptions.}
+\caption[One ATSC allocation and its pilot proxy]{What one television allocation looks like to the telescope (schematic, drawn to the measured proportions). The 6~MHz shelf is the broadcast's randomized data payload; in narrow time--frequency cells it can approach the null assumed by power- and variability-based flaggers. The pilot carries about 7\% of the station's power at a nominal standard-defined offset \cite{atsc-a53}: weak in total, but 21.6~dB above the shelf power integrated over the declared 3.052-kHz coarse analysis cell under the transmitter-ratio and flat-allocation convention used here. This is a finite-bandwidth power comparison, not a resolution-independent line PSD. CHIME's 390.625~kHz channel raster is drawn behind; the detector monitors the bin containing the pilot as a proxy for the 15.36 bins spanned by the allocation. Chapters~\ref{sec:dtv} and \ref{sec:param} derive the geometry and state the transfer assumptions.}
 \label{fig:intro:atsc}
 \end{figure}
 
 CHIME already runs interference flaggers in production, and they work by the natural principle that contamination should look \emph{different} --- an outlier against its neighbors in time, or statistics inconsistent with the adopted noise null (the median-deviation and spectral-kurtosis families; \cite{amiri2023detection,nita2010sk}). Against bursty, above-noise interference that principle is effective. A continuous sub-noise 8-VSB transmission is a harder case: the standard randomizes the payload to flatten its spectrum, and after channelization its narrow-cell statistics can lie close to the same null used by common power and variability tests \cite{atsc-a53}. It need not be mathematically Gaussian, nor is every flagger blind to it; the narrower claim tested here is that the incumbent archive flags are most responsive to transitions while long transmitter-on intervals can remain. The pilot supplies a deterministic feature against which that failure mode can be measured directly.
 
-But the standard, having hidden the payload, could not hide everything. A receiver needs something deterministic to lock onto, so ATSC adds a \textbf{pilot}: a bare carrier at a frequency fixed by the standard to within transmitter tolerance, carrying about 7\% of the station's power \cite{atsc-a53}. Figure~\ref{fig:intro:atsc} shows the anatomy. Seven percent sounds like a poor handle until you notice \emph{where} that power sits: all of it at one known frequency, while the other 93\% is smeared across 6~MHz. In the detector's own analysis bandwidth --- the $3$~kHz bin that detection sensitivity actually responds to --- the pilot stands 21.6~dB \emph{above} the shelf that carries it; per hertz of spectrum the contrast is larger still, about 56~dB (Chapter~\ref{sec:dtv}). The needle is brighter than the haystack, 146-fold, provided you know exactly where to look. And we do know: the broadcast standard is the calibration document.
+But the standard, having hidden the payload, could not hide everything. A receiver needs something deterministic to lock onto, so ATSC adds a \textbf{pilot}: a bare carrier at a frequency fixed by the standard to within transmitter tolerance, carrying about 7\% of the station's power \cite{atsc-a53}. Figure~\ref{fig:intro:atsc} shows the anatomy. Seven percent sounds like a poor handle until you notice \emph{where} that power sits: all of it at one known frequency, while the other 93\% is smeared across 6~MHz. In the bootstrap coarse statistic's declared 3.052-kHz analysis cell, the transmitter-ratio and flat-allocation convention gives 21.6~dB more pilot power than shelf power in the same cell (Chapter~\ref{sec:dtv}). The comparison must carry that bandwidth: assigning a coherent line a ``per-hertz'' PSD without specifying spectral resolution and window is not meaningful. The needle is brighter than the local haystack, about 146-fold under this screening model, provided the detector looks in the correct frequency neighborhood.
 
 The detector this dissertation builds is, at its core, one line of mathematics: correlate the data against a copy of what the pilot should be, and compare the power at the pilot's frequency to the power at two reference frequencies a few kilohertz away. That correlation is a matched filter --- a single-term discrete Fourier transform, evaluated off the telescope's frequency grid so it lands exactly on the pilot, implemented as a dot product with precomputed integer weights (Chapter~\ref{sec:param}). Per 42~ms frame, per monitored channel, it yields one number and one decision: transmitter on, or off. Everything else in Chapters~\ref{sec:param}--\ref{sec:impl} --- the weight synthesis, the reference placement, the exact integer arithmetic that makes every implemented decision bit-reproducible --- is engineering in service of that one dot product.
 
@@ -171,7 +171,7 @@ The economics of the method come from a geometric accident shown in the same fig
 The physics of the preceding subsections is a requirements document in disguise. Collecting the demands in one place shows why the detector of Chapters~\ref{sec:param}--\ref{sec:impl} has the shape it has, and gives the reader a checklist to carry into those sections.
 
 \begin{description}
-\item[R1 --- See below the noise.] On all but the loudest channel the contamination sits below thermal noise per frame --- as much as 44~dB below --- so a detector that inspects raw power is blind by construction. The pilot's 21.6~dB spectral concentration (Chapter~\ref{sec:dtv}) plus coherent integration across each frame (Chapter~\ref{sec:param}) must together close that gap.
+\item[R1 --- See below the noise.] On all but the loudest channel the contamination sits below thermal noise per frame --- as much as 44~dB below --- so a detector that inspects raw power is blind by construction. The pilot's 21.6~dB finite-cell contrast in the declared 3.052-kHz coarse analysis bandwidth (Chapter~\ref{sec:dtv}) plus coherent integration across each frame (Chapter~\ref{sec:param}) must together close that gap.
 \item[R2 --- Decide per frame.] Transmitter occupancy changes on minutes to years, and every misclassified frame either leaks contamination or discards good sky. The decision cadence is one verdict per 42~ms frame per channel (Chapter~\ref{sec:pipeline}), so the mask can remove transmitter-on \emph{time} rather than defaulting to whole-channel excision whenever clean frames remain.
 \item[R3 --- Fit the compute budget.] The decision must run on every frame of every contested channel, indefinitely, inside a correlator that is already the busiest part of the instrument. The design therefore reduces the online work to one fixed-point dot-product pipeline per frame (Chapter~\ref{sec:param}) and treats measured runtime, memory traffic, and synchronization headroom as deployment gates rather than assuming the cost is negligible.
 \item[R4 --- Reproduce to the bit.] Eight years of archive products are calibrated against this detector's outputs, and the intended live stage uses the same arithmetic contract. Every emitted runtime decision is therefore required to be bit-identical to a reference implementation (Chapter~\ref{sec:impl}): not close, identical, so that any decision can be re-derived and audited years later.
@@ -193,10 +193,61 @@ The broadcast standard also contains deterministic data-segment and data-field s
 
 The boundary is scientifically useful. Sensitivity-limited channels motivate a better detector or a better reference model. Occupancy-pinned channels motivate a different paradigm. The two should not be given the same negative label, and the status matrix in Chapter~\ref{sec:conclusions} keeps them separate.
 
+\section{Research Questions and Evidence Map}
+\label{sec:intro:questions}
+
+The dissertation is organized around five questions.  Stating them explicitly
+also prevents an engineering verification result from being mistaken for a
+science calibration, or a conditional forecast from being mistaken for a
+measured cosmological outcome.
+
+\begin{enumerate}
+\item[\textbf{RQ1.}] \emph{What sensitivity does the current detector geometry
+attain under an ideal declared signal-and-noise model, and how much sensitivity
+is lost at each numerical representation boundary from floating-point samples
+to the implemented fixed-point decision?}  Chapters~\ref{sec:pipeline} and
+\ref{sec:impl} define the statistic and its exact implementation.  The retained
+legacy injection establishes the experimental method, but its older geometry
+does not answer this question numerically; the paired current-geometry study is
+therefore a required closing result rather than a number inferred here.
+
+\item[\textbf{RQ2.}] \emph{What pilot populations, frequency structure,
+occupancy histories, and data-quality failures occur across all 23 DTV
+allocations in the triggered archive?}  Chapters~\ref{sec:survey},
+\ref{sec:calibration}, and~\ref{sec:bao} characterize this at the current
+evidence level with an explicit archive inventory, available channel--epoch
+calibration objects, and selection-aware summaries.  The final lower-band
+per-epoch anchor export and the health-corrected products remain required, so
+the present characterization does not imply that every calibration object is
+already release-complete.
+The estimand is the recorded trigger archive unless a separate cadence product
+supports a statement about continuous observing time.
+
+\item[\textbf{RQ3.}] \emph{How does a threshold trade retained exposure against
+residual pilot-proxy contamination, and which channel--epoch operating points
+survive out-of-sample validation?}  Chapters~\ref{sec:calibration} and
+\ref{sec:bao} construct the trade and identify screening candidates.  A blocked
+holdout remains the gate between an in-sample working threshold and an
+operational recommendation.
+
+\item[\textbf{RQ4.}] \emph{Under declared transfer and forecast assumptions,
+what would each mask policy imply for the DTV-band cosmological measurement?}
+Chapter~\ref{sec:bao} propagates the measured scalar proxy through the residual
+and Fisher chains.  Its conclusions remain conditional until the
+pilot-to-allocation, complex-visibility, residual-template, and combined-bin
+estimator transfers are measured.
+
+\item[\textbf{RQ5.}] \emph{Can the detector reproduce its decisions exactly and
+meet the interface required for real-time telescope use?}  Chapter~\ref{sec:impl}
+answers exact arithmetic and exercised offline implementation behavior;
+Chapter~\ref{sec:deployment} specifies the live framing, latency, failure, and
+monitoring acceptance tests.  Passing the former does not assert that the
+latter has already been deployed.
+\end{enumerate}
+
 \section{What This Dissertation Does}
 \label{sec:intro:roadmap}
 
 The argument of the work, compressed to a paragraph: CHIME's BAO measurement carries a computable tolerance for surviving contamination, and broadcast television --- sub-noise per frame and potentially coherent across long integration --- can exceed it while evading simple variability-based defenses. The astrophysics leads and the engineering follows: the forecast asks first whether a sufficiently clean mask could make these redshifts useful. The pilot then provides a continuously present, spectrally concentrated target whose projection is a matched filter under the declared model and is cheap enough to evaluate on every processed frame. This dissertation builds that detector to a bit-reproducible engineering contract, applies it to 7.6 years of triggered archival captures, and prices the resulting policies in the currency of the science. The final step is explicitly conditional: a channel verdict is only as strong as the pilot-to-shelf, visibility-domain, and forecast-estimator transfers that connect a detector statistic to cosmology.
 
-The chapters follow that arc. Chapter~\ref{sec:system} sets the instrument and the detection problem. Chapter~\ref{sec:dtv} extracts the pilot from the broadcast standard and establishes every property the detector will rely on. Chapter~\ref{sec:param} synthesizes the matched filter's weights under the telescope's integer arithmetic constraints. Chapter~\ref{sec:pipeline} builds the processing pipeline and its decision theory, and Chapter~\ref{sec:impl} verifies the implementation to the bit. Chapter~\ref{sec:bao} is the reckoning: the residual chain from a masked frame to a cosmological bias, the tolerance derivation sketched above in full, the four-way comparison against keeping everything, excising everything, and the incumbent flaggers, the ten-channel status map, and the August 2026 completion of the thirteen lower-band allocations. Chapter~\ref{sec:deployment} then states the live-stage interface as an engineering contract rather than treating archive execution as telescope deployment, and Chapter~\ref{sec:conclusions} separates measured results, model-conditional forecasts, and the closing tests required before a final 23-channel verdict.
-
+The chapters follow that arc. Chapter~\ref{sec:system} sets the instrument and the detection problem. Chapter~\ref{sec:dtv} extracts the pilot from the broadcast standard and establishes every property the detector will rely on. Chapter~\ref{sec:param} synthesizes the matched filter's weights under the telescope's integer arithmetic constraints. Chapter~\ref{sec:pipeline} builds the processing pipeline and its decision theory, and Chapter~\ref{sec:impl} verifies the implementation to the bit. Chapter~\ref{sec:survey} defines the archive inventory and product contract, and Chapter~\ref{sec:calibration} defines the channel--epoch calibration objects. Chapter~\ref{sec:bao} is the reckoning: the residual chain from a masked frame to a cosmological bias, the tolerance derivation sketched above in full, the four-way comparison against keeping everything, excising everything, and the incumbent flaggers, and the completed all-23-allocation screening map. Chapter~\ref{sec:deployment} then states the live-stage interface as an engineering contract rather than treating archive execution as telescope deployment, and Chapter~\ref{sec:conclusions} separates measured results, model-conditional forecasts, and the closing tests required before a final operating recommendation.
