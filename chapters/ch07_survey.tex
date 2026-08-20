@@ -56,7 +56,7 @@ DTV occupancy this survey measures.  Archive completeness is therefore
 correlated with the quantity under study; the thin channel-30 and channel-24
 inventories are a selection effect, not a property of the transmitters, and a
 channel excluded from collection can never report a subsequent transmitter
-sign-off from this archive (three sign-offs were recorded on collected channels
+sign-off from this archive (five sign-offs or station departures were recorded on collected channels
 during the survey span, so the possibility is not hypothetical).  Let $I(t,c)$
 be the indicator that telescope time $t$ on channel $c$ enters the survey.  The occupancy quantity
 measured directly by the survey is
@@ -73,8 +73,8 @@ comparison is completed.
 
 \begin{table}[t]
 \centering
-\caption{Survey inventory fields and their status in the dissertation-source
-bundle.  ``Not supplied'' is an evidence state, not a numerical zero.  The final
+\caption{Survey inventory fields and their status at the current snapshot.
+``Not supplied'' is an evidence state, not a numerical zero.  The final
 analysis release should generate this table directly from the immutable
 processing ledger.}
 \label{tab:survey:inventory}
@@ -168,8 +168,8 @@ result without its denominator.  The final release record must include
   \item the source, binary, toolkit, weight, transform, schema, and cohort hashes.
 \end{itemize}
 
-Those values cannot be reconstructed from the LaTeX bundle and are therefore not
-invented here.  Appendix~\ref{app:evidence} records the comparison as measured
+Those values live in the immutable processing ledger and are quoted only where
+that ledger supplies them.  Appendix~\ref{app:evidence} records the comparison as measured
 but incompletely reported until the immutable ledger is attached.
 
 \section{Selection-Aware Calibration and Holdout Design}

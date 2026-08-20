@@ -1,16 +1,20 @@
 # Figure audit report
 
-**Overall status: PASS**
+**Overall status: FAIL**
 
 - Manifest artifacts: 28
 - Active external PDFs: 25
 - Active named TikZ figures: 2
 - Generated but unused source-backed PDFs: 1
-- Frozen data tables: 4
-- Frozen tables awaiting authoritative replacement: 2
+- Frozen data tables: 0
+- Frozen tables awaiting authoritative replacement: 0
 - Production font contract: embedded Latin Modern; no Type 3 or DejaVu substitution
 - Active external format contract: vector PDF only
 - Inclusion-size contract: 0.98 of the dissertation text width
+
+## Failures
+
+- frozen data audit failed: SHA-256 mismatch for census_full_500mi.csv: expected c6174228c950078b9d1df7ae4eff0ff6a4eb84d05fee892ca8262b5cca8f67c2, got 62a4e095bad1c64e08a53d02d906484473c713a91fb5731790a210400f706adf
 
 ## Artifact inventory
 
@@ -39,7 +43,7 @@
 | `figs/fig_bao_footprint.pdf` | yes | `figure_src/forecast_figures.py::fig_bao_footprint` | analytic schematic | LMMathItalic9-Regular, LMMathSymbols8-Regular, LMRoman10-Regular, LMRoman7-Regular, LMRoman8-Regular, LMRoman9-Bold, LMRoman9-Regular | `574fce7777505f92fc7ed6d9535560b817282476192ca8d34512b76ba3d6706c` | PASS |
 | `figs/fig_bao_time_vs_masking.pdf` | yes | `WVURAIL/bao-noise-tolerance:scripts/dissertation/figures.py::fig_bao_time_vs_masking` | vendored PDF rendered by WVURAIL/bao-noise-tolerance@d56d325 | LMMathItalic5-Regular, LMMathItalic7-Regular, LMMathSymbols6-Regular, LMMathSymbols7-Regular, LMRoman10-Regular, LMRoman6-Regular, LMRoman7-Regular, LMRoman8-Regular, LMRoman9-Regular | `3cbd16efa62148906915ffa888fb295ad9908544dcc9138725ebe72b31c6f076` | PASS |
 | `figs/fig_residual_chain_audit.pdf` | yes | `figure_src/framework_figures.py::fig_residual_chain_audit` | analytic schematic | LMMathItalic7-Regular, LMRoman10-Bold, LMRoman5-Regular, LMRoman7-Regular | `8fcc240ab72172d43d2d66875fa93d19b7509c8746fa5a3fc056e1e2a3a456c8` | PASS |
-| `figs/fig_bao_the_case.pdf` | yes | `WVURAIL/bao-noise-tolerance:scripts/dissertation/figures.py::fig_bao_the_case` | vendored PDF rendered by WVURAIL/bao-noise-tolerance@d56d325 | LMMathItalic10-Regular, LMMathItalic7-Regular, LMMathSymbols10-Regular, LMMathSymbols5-Regular, LMMathSymbols6-Regular, LMMathSymbols7-Regular, LMRoman10-Regular, LMRoman5-Regular, LMRoman6-Regular, LMRoman7-Regular, LMRoman8-Regular, LMRoman9-Regular | `9abc6dc91fd6337c004bddddd96b060cd6027f251d847e27b29402ed04ab84da` | PASS |
+| `figs/fig_bao_the_case.pdf` | yes | `WVURAIL/bao-noise-tolerance:scripts/dissertation/figures.py::fig_bao_the_case` | vendored PDF rendered by WVURAIL/bao-noise-tolerance@d56d325 | LMMathItalic10-Regular, LMMathItalic7-Regular, LMMathSymbols10-Regular, LMMathSymbols5-Regular, LMMathSymbols6-Regular, LMMathSymbols7-Regular, LMRoman10-Regular, LMRoman5-Regular, LMRoman6-Regular, LMRoman7-Regular, LMRoman8-Regular, LMRoman9-Regular | `21edbf734c887ec2ecb7dfa972b9d33f7591e8f78f9dda2ef4b691078b837ea0` | PASS |
 | `figs/fig_bao_convergence.pdf` | yes | `WVURAIL/bao-noise-tolerance:scripts/dissertation/figures.py::fig_bao_convergence` | vendored PDF rendered by WVURAIL/bao-noise-tolerance@d56d325; its table remains a legacy-artwork bridge pending direct regeneration | LMMathItalic7-Regular, LMMathItalic9-Regular, LMMathSymbols6-Regular, LMMathSymbols7-Regular, LMMathSymbols9-Regular, LMRoman10-Regular, LMRoman6-Regular, LMRoman7-Regular, LMRoman8-Regular, LMRoman9-Bold, LMRoman9-Regular | `4950b7086de2ebf781382609261136d0307d8737fece219144974ca566b19725` | PASS |
 | `figs/fig_bao_two_walls.pdf` | yes | `WVURAIL/bao-noise-tolerance:scripts/dissertation/figures.py::fig_bao_two_walls` | vendored PDF rendered by WVURAIL/bao-noise-tolerance@d56d325; its table remains a legacy-artwork bridge pending direct regeneration | LMMathItalic5-Regular, LMMathItalic7-Regular, LMMathItalic8-Regular, LMMathItalic9-Regular, LMMathSymbols6-Regular, LMRoman10-Regular, LMRoman5-Regular, LMRoman6-Regular, LMRoman7-Regular, LMRoman8-Regular, LMRoman9-Regular | `58e85b7e668342e5bd3484fb99b27532ad2b0a9d7ba785ce1178b0c9626a96ca` | PASS |
 | `figs/fig_deployment_lifecycle.pdf` | yes | `figure_src/framework_figures.py::fig_deployment_lifecycle` | analytic schematic | LMRoman10-Bold, LMRoman6-Regular, LMRoman7-Regular | `f96f95407a9f469732fedb79012ca4c3011de5f79d331a071190238cacdf5cd9` | PASS |

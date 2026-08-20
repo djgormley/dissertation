@@ -50,5 +50,5 @@ jobs:
         run: |
           python bao/scripts/check_dissertation_numbers.py \
             --tex dissertation.tex chapters \
-            --summary-json pilot-proxy/data/provenance/dissertation_summary_v2.json \
+            --summary-json pilot-proxy/data/provenance/dissertation_summary_v3.json \
             --also-scan figure_src/data

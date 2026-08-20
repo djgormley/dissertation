@@ -52,8 +52,9 @@ operating point can describe no physical era.  A station departure can move a
 channel from the occupancy wall into a usable region, while a switch-on can move
 another channel in the opposite direction.  Anchor, bulk mask, threshold, and
 cost are therefore calibrated and versioned by epoch.  The numbers shown are the
-prototype values reported by the present draft; missing Q16 thresholds are left
-missing rather than inferred from the figure.  The frozen export additionally
+prototype epoch-split values; the Q16 thresholds come from the
+epoch-restricted fine operating-point rerun (Table~\ref{tab:calibration:epochs}).
+The frozen export additionally
 carries the epoch pairs of the dated sign-off channels 19, 20, 26, and 27
 (Section~\ref{sec:bao:lowerband}); the figure keeps the original two worked
 examples.}
@@ -140,9 +141,13 @@ from being chosen on a statistically flat surface.
 \begin{table}[t]
 \centering
 \caption{Prototype epoch split for channels whose station environment changes
-the operating regime.  Values are those already present in the draft analysis.
-The exact selected $\eta^*$ and Q16 bundle values were not included in the source
-archive supplied for this revision and are therefore marked pending.}
+the operating regime.  The $(\eta^*, \mathrm{Q16})$ pair is per channel, from
+the epoch-restricted rerun of the fine operating-point selection
+(\texttt{fine\_operating\_point.py}; the released
+\texttt{fine\_operating\_points.csv} is authoritative): one pair per channel,
+with feasibility required on the full archive and in each calendar half, so
+the same pair appears against both eras and the per-era residual is what
+certifies or refuses it.}
 \label{tab:calibration:epochs}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -150,13 +155,21 @@ archive supplied for this revision and are therefore marked pending.}
 \toprule
 Channel & Epoch & \shortstack{Coarse\\masked} & \shortstack{Fine\\masked $f$} & \shortstack{Fine\\residual $r$} & \shortstack{$\eta^*$ /\\Q16} \\
 \midrule
-32 & pre-2021 station era & 99.8\% & 7 frames retained & not certified & \pending \\
-32 & post-2021 departure & 59.0\% & 43.3\% & 0.0155 & \pending \\
-35 & pre-2021 quiet era & 46.1\% & 18.1\% & dilation tier & \pending \\
-35 & post-2021 switch-on & 94.2\% & 98.8\% & 0.237 & \pending \\
+32 & pre-2021 station era & 99.8\% & 7 frames retained & not certified & $1.15$ / $75366$ \\
+32 & post-2021 departure & 59.0\% & 43.3\% & 0.0155 & $1.15$ / $75366$ \\
+35 & pre-2021 quiet era & 46.1\% & 18.1\% & dilation tier & $7.61$ / $498656$ \\
+35 & post-2021 switch-on & 94.2\% & 98.8\% & 0.237 & $7.61$ / $498656$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+The rerun also reports the calendar-late residual that certifies or refuses
+each pair: $r_{\rm late} = 0.008$ on the era-stable channel 31 (pair
+$1.50$/$98304$ --- selected, feasible, and still the vacuous occupancy-wall
+point of Table~\ref{tab:bao:eta}); $0.016$ on channel 32 (more precisely
+$0.0155$ against its $0.0156$ tolerance --- feasible on the late half by a
+hair, the knife edge the coarse margin already showed); and $0.237$ on
+channel 35, the switch-on era's refusal of a pair its quiet era supports.
 
 Table~\ref{tab:calibration:epochs} makes the consequence concrete.  Channel 32's
 current epoch is more favorable than its archive average, while channel 35's is
