@@ -1,20 +1,16 @@
 # Figure audit report
 
-**Overall status: FAIL**
+**Overall status: PASS**
 
 - Manifest artifacts: 28
 - Active external PDFs: 25
 - Active named TikZ figures: 2
 - Generated but unused source-backed PDFs: 1
-- Frozen data tables: 0
-- Frozen tables awaiting authoritative replacement: 0
+- Frozen data tables: 4
+- Frozen tables awaiting authoritative replacement: 2
 - Production font contract: embedded Latin Modern; no Type 3 or DejaVu substitution
 - Active external format contract: vector PDF only
 - Inclusion-size contract: 0.98 of the dissertation text width
-
-## Failures
-
-- frozen data audit failed: SHA-256 mismatch for intro_wiggle_correlation.csv: expected 4fbaf702750dace4b3994259d4eae98d92f0fe00a9522988f2e649c39ef6bfd3, got b4d556cdd27e30e85082dd218750b70a739a739038bc4156617d1c9878e63e0e
 
 ## Artifact inventory
 
