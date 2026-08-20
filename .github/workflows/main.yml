@@ -1,0 +1,54 @@
+# Dissertation number gate as CI.
+#
+# Drop this file at .github/workflows/number-gate.yml in the dissertation
+# repository. On every push/PR it checks out bao-noise-tolerance (for the
+# gate script and out/*.csv) and the pilot-proxy provenance snapshot, then
+# runs the gate against dissertation.tex + chapters/, scanning the frozen
+# figure data for figure-borne numbers. The checker is stdlib-only, so no
+# pip install step is needed.
+#
+# If WVURAIL/bao-noise-tolerance or WVURAIL/pilot-proxy are private, add
+#   token: ${{ secrets.GH_PAT }}
+# to their checkout steps (a fine-grained PAT with read access).
+#
+# Pair this with Overleaf's GitHub Sync (Overleaf: Menu -> Sync -> GitHub)
+# so edits made on Overleaf land here and get gated automatically.
+
+name: dissertation-number-gate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out dissertation
+        uses: actions/checkout@v4
+
+      - name: Check out bao-noise-tolerance (gate + out/*.csv)
+        uses: actions/checkout@v4
+        with:
+          repository: WVURAIL/bao-noise-tolerance
+          path: bao
+
+      - name: Check out pilot-proxy provenance snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: WVURAIL/pilot-proxy
+          path: pilot-proxy
+          sparse-checkout: |
+            data/provenance
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run the number gate
+        run: |
+          python bao/scripts/check_dissertation_numbers.py \
+            --tex dissertation.tex chapters \
+            --summary-json pilot-proxy/data/provenance/dissertation_summary_v2.json \
+            --also-scan figure_src/data
