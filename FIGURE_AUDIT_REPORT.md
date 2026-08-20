@@ -14,7 +14,7 @@
 
 ## Failures
 
-- frozen data audit failed: SHA-256 mismatch for census_full_500mi.csv: expected c6174228c950078b9d1df7ae4eff0ff6a4eb84d05fee892ca8262b5cca8f67c2, got 62a4e095bad1c64e08a53d02d906484473c713a91fb5731790a210400f706adf
+- frozen data audit failed: SHA-256 mismatch for intro_wiggle_correlation.csv: expected 4fbaf702750dace4b3994259d4eae98d92f0fe00a9522988f2e649c39ef6bfd3, got b4d556cdd27e30e85082dd218750b70a739a739038bc4156617d1c9878e63e0e
 
 ## Artifact inventory
 
