@@ -1,0 +1,242 @@
+\chapter{Synthetic Signal Model and Detection Sensitivity}
+
+\section{Purpose and role in the dissertation}
+
+The previous chapters defined the ATSC pilot detector, the frequency-resolution design, the accumulation-length convention, and the analytic null model used to assign constant-false-alarm-rate thresholds.  This chapter develops the next layer of the evidence stack: the synthetic signal model and the sensitivity analysis.  The central question is not simply whether the detector can find an obvious DTV pilot.  The central question is how weak a DTV contaminant can be, under a precisely specified signal convention, before the pilot-tone statistic no longer gives a reliable detection at a selected false-alarm threshold.
+
+The article-scale version of this work uses the same detector family and reports detection probability as a function of DTV data-shelf SNR and target false-alarm probability.  It also notes that the finite injection grid directly supports only the lower high-probability curve, while more extreme target detection probabilities are model-supported because the current finite trial count has too few misses to estimate such probabilities directly \cite{gormley2026draft}.  This dissertation chapter expands that idea into a full sensitivity-calibration program.  The output of the chapter is not only a figure; it is a reproducible collection of signal-model definitions, injection grids, detection-probability surfaces, required-SNR curves, finite-trial diagnostics, and stress-test artifacts.
+
+Figure~\ref{fig:ch04_roadmap} summarizes the evidence path.  The synthetic model specifies the injected receiver noise, DTV data shelf, ATSC pilot, pilot-to-shelf normalization, and frequency-offset response.  The detector then evaluates the same statistic used throughout the dissertation,
+\begin{equation}
+  \Tstat=\frac{2P_T}{P_{R-}+P_{R+}},
+  \label{eq:ch04_statistic}
+\end{equation}
+where $P_T$ is the target-row accumulated power and $P_{R-}$ and $P_{R+}$ are the lower and upper reference-row powers.  Repeating the experiment over a grid of injected SNR and target false-alarm probability estimates
+\begin{equation}
+  \widehat{\pd}(\snr,\pfa)=\frac{N_{\rm det}(\snr,\pfa)}{N_{\rm trial}(\snr,\pfa)}.
+\end{equation}
+The result can be visualized as a heatmap, inverted into required-SNR curves, sliced into ROC-style curves, or expanded into stress tests over frequency offset, guard spacing, quantization, and background mismatch.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{fig04_01_sensitivity_roadmap.png}
+  \caption{Evidence path for synthetic sensitivity calibration.  Sensitivity is a chain of assumptions and products: signal model, SNR convention, pilot normalization, injection grid, alternative-hypothesis statistic, detection probability, scaling diagnostics, and archived artifacts.}
+  \label{fig:ch04_roadmap}
+\end{figure}
+
+\section{Synthetic ATSC signal model}
+
+\subsection{Component-level model}
+
+For a single expected pilot location, let $x_{m,k}$ denote the complex fine-bin value used by the detector for accumulation index $m$ and fine-bin coordinate $k$.  The injected signal model is
+\begin{equation}
+  x_{m,k}=n_{m,k}+d_{m,k}+a_{m,k},
+  \label{eq:ch04_signal_model}
+\end{equation}
+where $n_{m,k}$ is the receiver-noise/background contribution, $d_{m,k}$ is the DTV data-shelf contribution, and $a_{m,k}$ is the ATSC pilot contribution.  The model is deliberately simple at this stage.  It is not intended to reproduce every aspect of an ATSC waveform.  It is intended to isolate the part of the waveform used by the detector: a narrow pilot line near the lower edge of a 6 MHz DTV channel, embedded in a broader data-shelf-like component.
+
+Figure~\ref{fig:ch04_signal_decomposition} gives a component-level schematic.  The pilot is placed at the ATSC channel-relative offset used by the detector, $f_{\rm pilot}=0.309441$ MHz.  The data shelf spans most of the 6 MHz channel.  The target and reference rows are much narrower local features relative to the full DTV channel.  This separation of scales is important: the detector is not a broad channel-energy detector.  It uses a feature-specific pilot row and guard-separated references.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{fig04_02_signal_decomposition.png}
+  \caption{Synthetic ATSC channel components used by the sensitivity analysis.  The model separates the receiver-noise floor, the DTV data shelf, and the ATSC pilot.  The ATSC pilot offset is tied to the RF/transmission convention for ATSC 1.0 \cite{atsc_a53_2011}.}
+  \label{fig:ch04_signal_decomposition}
+\end{figure}
+
+The signal-model variables used in this chapter are listed in Table~\ref{tab:signal-model-quantities}.  The key convention is that the x-axis of the sensitivity plot is the DTV data-shelf SNR per fine bin, not the pilot-bin SNR.  A required data-shelf SNR therefore means ``how strong must the broad DTV shelf be, under the selected pilot-to-shelf convention, for the pilot feature to exceed threshold with the target probability?''
+
+\input{tables/tab04_01_signal_model.tex}
+
+\subsection{Shelf SNR and pilot normalization}
+
+The reported DTV data-shelf SNR is
+\begin{equation}
+  \gamma_{\shelf,\rm bin}=\frac{P_{\shelf}}{P_N},
+  \qquad
+  \snr_{\shelf,\rm bin}=10\log_{10}\gamma_{\shelf,\rm bin},
+  \label{eq:ch04_shelf_snr}
+\end{equation}
+where $P_N$ is the noise power per fine bin and $P_{\shelf}$ is the injected DTV shelf power per fine bin.  The pilot contribution is then set by a separate pilot-to-data convention.  In the current analysis, the bookkeeping convention is a pilot level of approximately $-11.7$ dB relative to integrated DTV data power.  With a 16-bin shelf-support convention, this maps to approximately $+0.3412$ dB relative to one shelf fine bin:
+\begin{equation}
+  10\log_{10}\left(\frac{P_{\pilot}}{P_{\shelf}}\right)
+  = -11.7 + 10\log_{10}(16)
+  \approx +0.3412~{\rm dB}.
+  \label{eq:ch04_pilot_to_shelf}
+\end{equation}
+
+Figure~\ref{fig:ch04_pilot_to_shelf} shows this bookkeeping visually.  The figure is included because this convention is easy to confuse.  A DTV shelf SNR of $-21.7$ dB/bin does not imply a pilot row at exactly $-21.7$ dB relative to noise.  The pilot row also depends on the pilot-to-shelf conversion and on any loss from frequency offset or the fine-channel response.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{fig04_03_pilot_to_shelf_normalization.png}
+  \caption{Pilot-to-shelf normalization used by the current injection convention.  The reported shelf SNR is a per-fine-bin quantity.  The pilot power is tied to an integrated-data convention and then translated back to a per-shelf-bin reference.}
+  \label{fig:ch04_pilot_to_shelf}
+\end{figure}
+
+\input{tables/tab04_02_pilot_normalization.tex}
+
+\subsection{Effective pilot-row SNR}
+
+The pilot-row contribution is modified by the fine-bin response when the received pilot is offset from the target-row center.  A simple rectangular-bin approximation gives
+\begin{equation}
+  P_{\pilot,\rm eff}(\delta f)
+  = P_{\pilot}\,R_K(\delta f),
+  \qquad
+  R_K(\delta f)\approx \operatorname{sinc}^2\left(\frac{\delta f}{\Delta f_K}\right).
+  \label{eq:ch04_offset_response}
+\end{equation}
+For the current $K=128$ operating point, $\Delta f_K=3051.76$ Hz.  Thus a $2$ kHz pilot offset is not negligible.  The dissertation should eventually replace the rectangular-bin approximation with the measured fine-channel/PFB response of the relevant data product.  The approximation is still useful here because it exposes the signal-model dependency.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{fig04_04_snr_units_conversion.png}
+  \caption{Mapping from reported DTV data-shelf SNR to effective pilot-row SNR proxy.  The centered-pilot curve applies only when the pilot is aligned with the target row.  Frequency offsets shift the effective pilot row downward through the fine-bin response.}
+  \label{fig:ch04_snr_units}
+\end{figure}
+
+\section{Alternative-hypothesis statistic}
+
+The null chapter modeled $T$ using a central F distribution.  Under an injected pilot, the target-row power receives an additional signal contribution.  If the background remains Gaussian and the injected pilot contribution is deterministic after projection, the numerator can be viewed as a noncentral chi-square variate and the statistic as a noncentral F variate \cite{kay_detection,van_trees_detection}.  This picture is useful for intuition but is not sufficient for final dissertation claims, because the detector also has finite-bit quantization, reference leakage, offset loss, possible shelf curvature, and real-data field structure.
+
+Figure~\ref{fig:ch04_noncentral_f} summarizes the alternative-hypothesis construction.  The reference rows estimate the local background.  The target row contains the same background plus the pilot contribution.  The corresponding noncentrality parameter is controlled by the effective pilot-row SNR and accumulation length.  Injection studies are then used to evaluate the detector without having to reduce all deviations from the ideal model to a single noncentrality parameter.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{fig04_06_noncentral_f_model.png}
+  \caption{Alternative-hypothesis view of the detector statistic.  Under $H_1$, the target-row numerator receives an additional pilot contribution, while the lower and upper reference rows continue to estimate the local background.  The noncentral-F interpretation gives intuition; direct injections are used for final sensitivity products.}
+  \label{fig:ch04_noncentral_f}
+\end{figure}
+
+\section{Injection grid and operating convention}
+
+The current injection grid varies DTV data-shelf SNR and target false-alarm probability while holding the detector geometry fixed.  The operating convention is summarized in Table~\ref{tab:injection-grid}.  The representative detector configuration is the same one used throughout the article-scale study: $K=128$, $M=1{,}048{,}576$, four guard bins, and the threshold $\eta=1.0037122049331666$ at $\pfa=10^{-3}$.  The grid has 12,000 trials per sampled point in the current product.  For the dissertation, larger trial counts should be used in any region where direct validation of very high detection probability is required.
+
+\input{tables/tab04_03_injection_grid.tex}
+
+Figure~\ref{fig:ch04_injection_grid} shows the detection-probability surface.  The surface is steep because the accumulation length is large and the injected pilot is persistent.  Once the injected signal crosses the threshold transition region, the detector rapidly moves from low detection probability to near-certain detection.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.84\textwidth]{fig04_05_injection_grid.png}
+  \caption{Injection-grid detection probability $P_D({\rm SNR},\pfa)$.  The heatmap records the estimated detection probability at each sampled DTV data-shelf SNR and false-alarm threshold.  The dashed marker indicates the representative article operating point.}
+  \label{fig:ch04_injection_grid}
+\end{figure}
+
+\section{Detection-probability slices}
+
+A heatmap is useful for orientation, but one-dimensional slices are easier to interpret.  Figure~\ref{fig:ch04_pd_slices} shows $P_D$ as a function of DTV data-shelf SNR for several target false-alarm probabilities.  Tightening the threshold shifts the transition to higher SNR; relaxing the threshold shifts it to lower SNR.  The steep transition region is the part of the curve that most matters for operating-point selection, because it determines how sensitive the mask is to small calibration errors in the injected signal convention.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.84\textwidth]{fig04_08_pd_vs_snr_slices.png}
+  \caption{Detection-probability slices through the injection grid.  Each curve fixes the target false-alarm probability and varies the injected DTV data-shelf SNR.}
+  \label{fig:ch04_pd_slices}
+\end{figure}
+
+\section{ROC-style view}
+
+The same grid can be viewed as a set of ROC-style curves, shown in Figure~\ref{fig:ch04_roc}.  Here, the false-alarm axis is the analytic target false-alarm probability used to set the threshold, not a measured real-field false-alarm rate.  This distinction matters.  A real field may have structured backgrounds, shelf curvature, or local reference mismatch that inflate threshold exceedances relative to the ideal analytic null.  The ROC curves in this chapter therefore answer a controlled synthetic question: for a fixed injected DTV shelf strength, how does the detector respond as the analytic threshold is relaxed?
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.84\textwidth]{fig04_09_roc_like_curves.png}
+  \caption{ROC-style operating curves extracted from the injection grid.  These curves will become important in the detector-comparison chapter, where the ATSC pilot detector should be compared against energy and spectral-kurtosis baselines on a common false-alarm axis.}
+  \label{fig:ch04_roc}
+\end{figure}
+
+\section{Required-SNR curves}
+
+For a target detection probability $P_D^\star$, the required-SNR curve is the inverse of the detection-probability surface:
+\begin{equation}
+  {\rm SNR}_{\rm req}(P_D^\star,\pfa)=\inf\left\{ {\rm SNR}: P_D({\rm SNR},\pfa)\ge P_D^\star\right\}.
+\end{equation}
+Figure~\ref{fig:ch04_required_snr} shows the required-SNR curves.  The representative article-scale point is near $-21.7$ dB/bin for $P_D=0.9986501$ and $\pfa=10^{-3}$.  Curves closer to unity are informative but should be labeled as model-supported unless the injection grid contains enough misses to estimate them directly.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.84\textwidth]{fig04_10_required_snr_curves.png}
+  \caption{Required DTV data-shelf SNR for selected target detection probabilities.  The $P_D=0.9986501$ curve is the finite-trial-supported operating curve in the current product.  Higher-$P_D$ curves require larger trial counts for direct empirical validation.}
+  \label{fig:ch04_required_snr}
+\end{figure}
+
+\input{tables/tab04_04_required_snr_operating_point.tex}
+
+\section{Finite-trial support}
+
+The current grid uses 12,000 trials per point.  That trial count is sufficient for estimating detection probabilities around $P_D\approx0.99865$ with nonzero miss counts, but it is not sufficient for direct empirical validation of detection probabilities extremely close to unity.  If the target probability is $P_D$, the expected number of misses is
+\begin{equation}
+  E[N_{\rm miss}]=N_{\rm trial}(1-P_D).
+\end{equation}
+For $N_{\rm trial}=12{,}000$, $P_D=0.9986501$ corresponds to roughly 16 expected misses, while $P_D=0.9999683$ corresponds to fewer than one expected miss.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.84\textwidth]{fig04_11_finite_trial_support.png}
+  \caption{Finite-trial support for high detection-probability targets.  A finite injection grid saturates when the expected number of misses drops below order unity.  Smooth curves in that regime should be treated as model-supported.}
+  \label{fig:ch04_finite_trial}
+\end{figure}
+
+\input{tables/tab04_05_finite_trial_support.tex}
+
+\section{Sensitivity scaling with accumulation length}
+
+The accumulation length $M$ sharpens the null distribution and increases sensitivity to persistent pilots.  For a stationary persistent signal and a noise-like background, a rough power-SNR scaling is proportional to $M^{-1/2}$.  This approximation should not replace explicit injections, because real data can be limited by nonstationarity, gain drift, reference mismatch, and latency constraints.  It is useful as a design diagnostic.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.84\textwidth]{fig04_12_sensitivity_scaling_M.png}
+  \caption{Approximate required-SNR scaling with accumulation length.  The current operating point uses $M=1{,}048{,}576$, derived from the ring-buffer/subblock/antenna/polarization accounting described in Chapter 2.}
+  \label{fig:ch04_m_scaling}
+\end{figure}
+
+\section{Frequency-offset penalty}
+
+The detector is designed for a pilot-frequency-offset envelope of order 2 kHz.  Frequency offset can arise from aircraft-scatter-induced Doppler-like shifts, grid mismatch, or other propagation effects.  Figure~\ref{fig:ch04_offset_penalty} shows the additional SNR penalty implied by the rectangular fine-bin response.  This figure motivates a later dissertation analysis of measured pilot-offset distributions and possible offset-aware target designs.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.84\textwidth]{fig04_13_offset_snr_penalty.png}
+  \caption{Frequency-offset penalty under a rectangular fine-bin response.  The dotted line marks the half-bin scale for $K=128$, and the dashed line marks the 2 kHz design envelope.}
+  \label{fig:ch04_offset_penalty}
+\end{figure}
+
+\section{Fine-bin factor and design tradeoff}
+
+The fine-bin factor $K$ affects resolution, offset tolerance, reference spacing, and computational cost.  Larger $K$ values improve spectral localization but narrow the frequency-offset tolerance and increase dot-product cost.  Smaller $K$ values are more tolerant to offset but provide coarser localization.  Figure~\ref{fig:ch04_k_trade} summarizes this design tradeoff across radix-2 values.  The current $K=128$ operating point is selected from the 2 kHz offset envelope and a target resolution of order 4 kHz.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.84\textwidth]{fig04_09_K_trade.png}
+  \caption{Fine-bin factor design tradeoff.  The current operating point $K=128$ balances offset tolerance, spectral localization, and dot-product cost.}
+  \label{fig:ch04_k_trade}
+\end{figure}
+
+\input{tables/tab04_06_scaling_laws.tex}
+
+\section{Stress axes for dissertation sensitivity studies}
+
+The nominal signal model is only the starting point.  Dissertation-scale sensitivity should explicitly test mismatch axes: pilot offset, pilot-to-shelf ratio, shelf slope or curvature, reference contamination, non-Gaussian background, and fixed-point quantization.  Some of these effects shift required SNR horizontally.  Others change the effective false-alarm behavior by breaking the target/reference exchangeability assumed by the analytic null.
+
+The most important near-term stress tests are: (1) the guard-bin sweep discussed in the later guard-design chapter, (2) pilot-frequency-offset sweeps tied to aircraft-scatter events, and (3) a comparison of ideal null, shifted-grid field background, and known-empty field backgrounds.  These tests will determine whether the synthetic sensitivity curves are predictive of long-duration telescope behavior or only internally calibrated to the injection model.
+
+\section{Sensitivity artifacts}
+
+The dissertation should treat sensitivity outputs as archived data products.  Figure~\ref{fig:ch04_artifact_workflow} shows the desired artifact chain, and Table~\ref{tab:sensitivity-artifacts} lists the recommended products.  The key principle is that every plotted curve should be reproducible from an underlying data product that records the SNR convention, threshold convention, trial count, random seed or deterministic seed policy, and support status.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{fig04_14_artifact_workflow.png}
+  \caption{Sensitivity-analysis artifact chain.  Figures are the final visualization layer, not the primary evidence record.  Trial arrays, summary tables, and JSON manifests should be archived so that the sensitivity curves can be checked and reused in later chapters.}
+  \label{fig:ch04_artifact_workflow}
+\end{figure}
+
+\input{tables/tab04_07_artifacts.tex}
+
+\section{Connection to later chapters}
+
+The outputs of this chapter become inputs to several later parts of the dissertation.  The guard-design chapter will reuse the injection framework to compare guard values and reference-region definitions.  The real-data validation chapter will ask whether the synthetic sensitivity predicts observed pilot occupancy across many recorded windows.  The detector-comparison chapter will use the same SNR and false-alarm axes to compare against energy detection and spectral kurtosis.  The BAO-threshold chapter will combine sensitivity, residual contamination, and mask burden to select a science-driven operating threshold.  The deployment chapter will connect sensitivity to real-time latency, accumulation length, and GPU throughput.
+
+\section{Summary}
+
+This chapter defines the synthetic sensitivity program for the ATSC pilot detector.  The signal model separates receiver noise, a DTV data shelf, and the ATSC pilot.  The reported SNR is the DTV data-shelf power per fine bin, while the pilot contribution is set by an explicit pilot-to-shelf convention and modified by frequency-response loss.  Sensitivity is summarized through detection-probability surfaces, required-SNR curves, ROC-style slices, finite-trial support diagnostics, accumulation-length scaling, frequency-offset penalty, and fine-bin tradeoff.  The central methodological requirement is artifact discipline: every curve should be backed by machine-readable outputs specifying signal convention, detector configuration, threshold, trial count, and empirical support.  This discipline makes the later dissertation analyses quantitatively traceable to the detector-side sensitivity model.

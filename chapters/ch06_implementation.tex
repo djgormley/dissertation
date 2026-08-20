@@ -1,0 +1,186 @@
+
+\chapter{Exact-Arithmetic Implementation \& Verification}
+\label{sec:impl}
+
+\section{The Exactness Contract}
+\label{sec:impl:contract}
+The implementation is governed by a single engineering contract: \emph{the production-candidate GPU datapath and an independent reference implementation must produce bit-identical outputs for identical inputs} --- not statistically consistent outputs, not outputs agreeing to a tolerance, but the same integers. This standard is unusual for scientific signal processing and is justified here in detail, since the remainder of this section depends on it.
+
+Floating-point pipelines cannot meet it across implementations. Library FFTs on different platforms use different factorizations and operation orders; compilers contract multiply--add sequences into fused instructions at their discretion; parallel reductions reassociate sums nondeterministically. Two correct floating-point implementations of the same mathematics therefore differ in their final bits, and any comparison between them must adopt a tolerance. Tolerances carry three compounding costs in an unattended system: every verification gate becomes a statistical judgment; small systematic defects (an off-by-one window, a swapped conjugate, a biased rounding) can persist undetected within the tolerance; and when two eras of the system disagree, benign arithmetic drift cannot be distinguished from genuine regression. Exact integer arithmetic removes all three costs: equality is decidable per frame, and any defect that changes an \emph{exercised} output becomes exactly detectable at the first comparison it reaches.  This is an implementation guarantee, not a claim of complete test coverage or scientific correctness: an unexercised control path can still contain a defect, and bit equality cannot validate the signal, calibration, or cosmological transfer models.  Reproductions across supported hosts, compiler versions, and hardware generations are expected to be exact once the same frozen specification and artifact manifest are used, so a mismatched bit is unambiguous evidence of disagreement even though a match is only evidence for the cases exercised.
+
+The scope of the contract is as follows. Every quantity of Chapter~\ref{sec:pipeline} --- the projections $\mathbf{Z}$, the spectra $\widetilde{B}_m$, the power sums $S_r[f]$ and $P_r$, and the mask decision itself --- is computed in integer arithmetic with accumulator widths proven sufficient in Section~\ref{sec:param:tradeoffs}, so no intermediate value rounds, saturates, or overflows. The single point at which the computation departs from real-valued mathematics is the fixed-point FFT's butterfly rounding, and that departure is itself part of the frozen specification (Section~\ref{sec:impl:fxfft}): deterministic, portable, measured, and identical in every implementation. Floating point appears only in derived diagnostics (the recorded $F$-statistics as \texttt{float32} quotients of exact integers), never upstream of a decision.
+
+\section{The Packed Fixed-Point Datapath}
+\label{sec:impl:datapath}
+The detector consumes the receiver's native format directly: packed $4{+}4$-bit complex samples, one byte per sample, real component in the high nibble (Section~\ref{sec:system:instrument}). Unpacking is two's-complement sign extension of each nibble; weights are stored in the same packed format on the same $[-7, 7]$ grid the receiver's 15-level quantizer emits. The coordinate convention noted in Section~\ref{sec:param:target} is fixed here once for the whole system: the receiver's spectrally inverted channel ordering is absorbed by synthesizing weight tones with the conjugate (negative-exponent) rotation and time-reversing each detector window before projection; both choices are recorded as explicit fields of the runtime calibration bundle's detector contract, so the convention is auditable configuration data.
+
+The projection stage --- the dominant cost identified in Section~\ref{sec:pipeline:segmentation} --- runs on packed 8-bit dot-product instructions (DP4A), which accumulate four $8{\times}8$-bit products per instruction into a 32-bit register. The mapping from complex arithmetic onto these lanes requires care. Two consecutive packed samples unpack in registers into two lane words,
+\[
+a_{\mathrm{re}} = (x_{0,\mathrm{re}},\; x_{0,\mathrm{im}},\; x_{1,\mathrm{re}},\; x_{1,\mathrm{im}}), \qquad
+a_{\mathrm{im}} = (x_{0,\mathrm{im}},\; -x_{0,\mathrm{re}},\; x_{1,\mathrm{im}},\; -x_{1,\mathrm{re}}),
+\]
+while the corresponding two weight taps are pre-packed once per weight upload into a single shared lane $w = (w_{0,\mathrm{re}},\; w_{0,\mathrm{im}},\; w_{1,\mathrm{re}},\; w_{1,\mathrm{im}})$. One DP4A of $a_{\mathrm{re}}$ against $w$ then accumulates $x_{\mathrm{re}}w_{\mathrm{re}} + x_{\mathrm{im}}w_{\mathrm{im}}$ for both taps --- the real part of $x\,\overline{w}$ --- and one DP4A of $a_{\mathrm{im}}$ against $w$ accumulates $x_{\mathrm{im}}w_{\mathrm{re}} - x_{\mathrm{re}}w_{\mathrm{im}}$, the imaginary part. The full $K = 128$-tap complex projection for one window and one profile is thus $64$ tap-pairs $\times$ 2 instructions, mapping exactly onto a 64-thread block with no idle lanes (the warp-exact geometry promised in Section~\ref{sec:param:tradeoffs}); the $3 \times 64$ pre-packed weight lanes occupy 768 bytes, preloaded into shared memory per block. A scalar unpack-multiply-accumulate path implementing the identical arithmetic is retained behind a compile flag as the direct-validation reference for the packed path.
+
+Completed dot-product components are bounded by $14336 < 2^{14}$ (Section~\ref{sec:param:tradeoffs}) and held in 32-bit integers; squared magnitudes fit 32 bits; power accumulations use unsigned 64-bit throughout. The recorded coarse flag is likewise exact: the norm-corrected threshold comparison of Section~\ref{sec:pipeline:noncoherent} is evaluated as an integer cross-multiplication, $P_0 \cdot (\|\mathbf{w}_1\|^2 + \|\mathbf{w}_2\|^2) > \|\mathbf{w}_0\|^2 \cdot (P_1 + P_2)$, with the exact integer weight norms carried in the runtime calibration bundle --- the rational form of $\mu_0$, applied without ever forming a quotient, and forced to the non-rejection outcome when the reference power is degenerate.
+
+\section{The Frozen Fixed-Point Transform: the \texttt{fxfft} Family}
+\label{sec:impl:fxfft}
+The coherent integration of Section~\ref{sec:pipeline:coherent} requires an FFT that is bit-identical between the production-candidate kernel and the reference --- which, per Section~\ref{sec:impl:contract}, no floating-point library can provide. The transform is therefore implemented within the project and frozen as specification \texttt{fxfft256}~v1:
+
+\begin{itemize}
+    \item \emph{Structure:} a 256-point forward DFT in the negative-exponent convention of Section~\ref{sec:pipeline:coherent}, radix-2 decimation-in-time, bit-reversed load of the 128 zero-padded window sums, natural-order output, in a fixed butterfly order.
+    \item \emph{Twiddles:} $W_n[k] \approx e^{-2\pi i k/n}$ in Q15 fixed point, $C[k] = \mathrm{nearest}(32768 \cos(2\pi k/n))$, $S[k] = \mathrm{nearest}(-32768 \sin(2\pi k/n))$ for $k < n/2$, frozen as \emph{source literals} --- no runtime trigonometry, and the table is checkable by hash. No entry sits at a rounding tie, so ``nearest'' is unambiguous; the extremal values $\pm 32768$ are held in 32-bit storage and are exact under the rounding rule.
+    \item \emph{Butterfly:} $t = \mathrm{round15}(W[k] \cdot b)$, then $(a, b) \to (a + t,\, a - t)$ in 32-bit integers, with the complex product formed exactly in 64 bits before rounding.
+    \item \emph{Rounding:} $\mathrm{round15}(v) = \lfloor (v + 2^{14}) / 2^{15} \rfloor$ per component.  This rule breaks exact half-step ties toward $+\infty$; it is neither round-to-even nor symmetric round-away-from-zero.  The verified build records the CUDA compiler version and explicit \texttt{--std=} language mode supported by that toolchain \cite{nvidiacpp}.  In C++20, right shift of a negative signed integer is specified as arithmetic division rounded toward negative infinity \cite{cppshift}; the host/device conformance gate additionally asserts \texttt{(-1 >> 1) == -1} and exercises negative half-step boundary vectors.  Older language modes are not accepted solely on the strength of an implementation convention.
+    \item \emph{Scaling:} none. Correctness rests on a no-overflow lemma: one butterfly maps the working infinity norm $M$ to at most $(1 + \sqrt{2} + 2^{-15})M + 1$, so eight stages from the input contract $|{\cdot}| \le 2^{20}$ remain below $2^{30.7} < 2^{31} - 1$. Evaluated row sums obey $|{\cdot}| \le 14336 < 2^{14}$, leaving six bits of spare contract headroom; the reference implementation enforces the contract and raises on any excursion rather than wrapping.
+\end{itemize}
+
+\textit{One master table, every supported length.} The transform length is not a
+free parameter of the method but a consequence of the frame and window lengths,
+$L_F = 2N/K$; across the receivers and frame sizes contemplated here it takes
+values from $256$ to $2048$. Rather than freeze an independent table per length,
+the specification freezes a single master of $M/2$ entries and derives each
+member from it. The construction is an exact identity, not a re-derivation: a
+radix-2 decimation-in-time of length $n$ requires $W_n[k]$ only for $k < n/2$,
+and $W_n[k] = W_M[kM/n]$ whenever $n$ divides $M$; because the Q15 rounding is
+applied to the same real value either way, the length-$n$ entries are
+\emph{bit-identical} decimations of the master. Adding a supported length
+therefore introduces no new rounding decisions, and the absence of rounding ties
+--- verified once on the master, whose closest approach to a tie is
+$5.8 \times 10^{-4}$, some eight orders of magnitude above the double-precision
+epsilon at that scale --- is inherited by every member. The stride folds into the
+existing index arithmetic: stage $s$ reads $\mathrm{master}[\,t \ll (\log_2 M - s)\,]$,
+which at $L_F = 256$ selects exactly the entries the original $128$-entry table
+held. The master is generated offline and emitted as source literals for the
+device, since runtime trigonometry would reintroduce precisely the
+cross-platform floating-point non-determinism the frozen specification exists to
+eliminate; a hash pins the table, and a build gate compares the emitted header
+against the generator.
+
+The no-overflow lemma is likewise per-length rather than inherited. Applying the
+per-stage bound $\log_2 L_F$ times and requiring the result below $2^{31}$ gives
+the admissible input norm, which \emph{tightens} as the transform grows:
+$2^{20}$ at $L_F = 256$, then $2^{18}$, $2^{17}$ and $2^{16}$ at $512$, $1024$
+and $2048$. The eight-stage contract is not reusable at nine stages. All four
+admit the implemented row-sum bound of $2^{14}$, and each is asserted at compile
+time against the accumulator width actually configured.
+
+Downstream of the transform, exactness resumes unconditionally: spectral magnitudes squared and their sums over $M = 2048$ feeds are computed in unsigned 64-bit integers, with evaluated magnitudes small enough that the frame-level sums sit far below overflow. The specification is realized three times --- a numpy integer reference, a portable C port, and the CUDA device implementation --- and all three are required to reproduce a golden-vector corpus of 56 input/output pairs spanning synthetic families, survey-measured pilot offsets, and genuine \texttt{int4}-dot row-sum arithmetic, byte-for-byte. The corpus, the twiddle table hash, and the rounding rule together define the transform: any arithmetic change constitutes a new specification version.
+
+The cost of the fixed-point rounding is measured directly. Against the analyzer's \texttt{complex128} pipeline, the frozen transform's spectrum differs by at most $6.3 \times 10^{-4}$ of the spectrum peak across all golden families, and the end-to-end fine statistic moves by at most $5.9 \times 10^{-4}$ relative ($-0.00026$~dB at a measured detection peak) --- five orders of magnitude below the coherent-integration effect the transform exists to capture. A deterministic-float alternative (fixed operation order, fused multiply--add disabled) was considered and rejected: although it can be made deterministic on a single platform, its determinism depends on compiler flags rather than on the specification itself, and it departs from the integer arithmetic on which every other verification gate in this section relies.
+
+\section{Exact Rational Decision Arithmetic}
+\label{sec:impl:decision}
+The decision rule of Section~\ref{sec:pipeline:decision} is a chain of comparisons among ratios of 64-bit integers. The implementation never forms the ratios. Each per-bin statistic is carried as an integer pair $(n_f, d_f) = (2 S_0[f],\, S_1[f] + S_2[f])$, and every comparison is evaluated by cross-multiplication in fixed-width arithmetic: $n_i / d_i < n_j / d_j$ becomes $n_i d_j < n_j d_i$, computed exactly as 128-bit products (high and low 64-bit halves) --- well within bounds, since the Parseval identity caps evaluated power sums near $2^{55}$. The rank selection uses these comparisons in a counting form: bin $i$ holds rank $\rho$ iff the number of bulk bins strictly below it does not exceed $\rho$ while the count including ties does. This formulation is order-free by construction --- the selected \emph{value} is unique even under exact ties, and because tied bins are equal as rationals, any representative yields the same downstream decision, so the result is independent of thread scheduling by construction rather than by locking. The final threshold comparison, $n_f \cdot 2^{16} \cdot d_\rho > \eta_{q16} \cdot n_\rho \cdot d_f$ with the multiplier in Q16 fixed point, is a comparison of triple products; it is evaluated in explicit 192-bit arithmetic (each side as three 64-bit limbs), exact for arbitrary 64-bit operands, independent of the operand bounds. The degenerate rules of Section~\ref{sec:pipeline:decision} are implemented as stated: zero-denominator bins are excluded from the bulk and can never fire in the designated set, and a bulk not deeper than $\rho$ forces the non-rejection outcome.
+
+The reference for this arithmetic is an arbitrary-precision implementation (Python integers), itself gated against a rational-number oracle.  The 192-bit comparison is written as explicit schoolbook limb products and carry propagation: each $64\times64$ product contributes a low and high limb, carries are added with overflow detection, and the terminal carry is required to be zero because each side is the exact product of three 64-bit operands represented in three 64-bit limbs.  Boundary vectors cover $0$, $1$, $2^{64}-1$, repeated maximal limbs, exact ties, and operands chosen to generate carries at every stage.  A fuzz gate then drives $2 \times 10^6$ pseudo-random operand sets through both the fixed-width code and the arbitrary-precision reference.  The randomized agreement is strong empirical evidence, but the completeness claim rests on the explicit limb construction and terminal-carry invariant rather than on fuzzing alone.
+
+\section{The Fused Kernel}
+\label{sec:impl:fused}
+The production-candidate form computes the entire pipeline --- packed samples in, one mask bit out --- in a single kernel launch. The motivation is the deployment footprint of Section~\ref{sec:system:detector}: a staged implementation must materialize the $3 \times 262144$ complex row sums to device memory ($\approx 6$~MB per frame) and re-read them for the transform, while the fused form keeps each stream's row sums entirely in on-chip shared memory, touching global memory only for the $3 \times 256$ exact power sums and the final mask word.
+
+The kernel assigns one 64-thread block per stream (2048 blocks per frame) and proceeds in four phases. \emph{Phase 1:} the block walks the window axis with a thread stride, each thread taking whole windows and computing their projections for all three profiles via the DP4A path of Section~\ref{sec:impl:datapath} --- no cross-thread reduction, and no requirement that the window count divide the block size --- writing the $3 \times L$ complex row sums to shared memory and accumulating per-thread contributions to the coarse marginals in registers. \emph{Phase 2:} the block reduces and atomically adds its coarse marginals to the frame totals --- making the exact-integer counterpart of the Parseval identity (Eq.~\eqref{eq:parseval}) an \emph{internal} property of the launch --- and, when a debug tap is bound, exports the row sums; in production the tap is null and row sums never exist off-chip. \emph{Phase 3:} the block executes the frozen transform cooperatively for each profile: bit-reversed load into a shared 256-point buffer, then eight butterfly stages of 128 butterflies spread across the 64 threads, barrier-synchronized between stages. Within a stage, butterflies write disjoint index pairs, so the produced bits are identical for any thread schedule --- the specification's fixed butterfly order is preserved not by serialization but by the disjointness of the writes. Squared magnitudes are then accumulated atomically into the global fine power sums, exact because integer addition is associative and commutative --- the accumulation \emph{order} is nondeterministic, the \emph{result} is not. \emph{Phase 4:} a per-frame completion counter folded into the mask word is incremented by each finishing block behind a memory fence; the last-arriving block observes the full count, re-reads the finalized power sums, and executes the decision arithmetic of Section~\ref{sec:impl:decision} cooperatively --- bulk census, rank selection, designated-set comparison --- overwriting the counter with the mask bit.  The public launch wrapper owns a stream-ordered zero of the mask word immediately before the launch, and the raw kernel entry point is internal.  A caller that bypasses this contract can begin from a false completion count, select the wrong finalizer, or prevent any block from observing the expected count; the outcome is therefore invalid rather than a stale-but-usable mask.  The acceptance suite deliberately pre-fills the word with a nonzero pattern and verifies that the wrapper restores correct behavior. The per-channel calibration inputs (anchor, window width, bulk mask, rank, multiplier) enter as kernel arguments from the runtime calibration bundle: the library compiles in no channel policy, so calibration campaigns modify data rather than code.
+
+The wrapper also enforces the remaining launch preconditions: output power arrays are zeroed or freshly allocated in the same stream; calibration dimensions match the compiled geometry; all buffer spans are large enough for the declared frame; and a CUDA error or failed post-launch tripwire marks the frame invalid rather than silently retaining or rejecting it.  These are part of the API contract because the exact kernel cannot repair an incorrectly initialized host-side state.
+
+Figure~\ref{fig:fused} sketches the launch structure and its global-memory contract.
+
+\begin{figure}[t]
+\centering
+\input{figure_src/tikz/fused_kernel.tikz}
+\caption{Launch structure of the fused kernel (Section~\ref{sec:impl:fused}). Each block computes one stream's row sums entirely in shared memory, contributes exact atomic sums to the global fine powers (and, when bound, the debug taps), and increments a per-frame completion counter folded into the mask word; the last-arriving block re-reads the finalized sums and executes the exact decision arithmetic, overwriting the counter with the mask bit. Blue boxes are the only global-memory traffic.}
+\label{fig:fused}
+\end{figure}
+
+The staged entry points (row sums, fine powers, marginals as separate launches) remain in the library as the validated intermediates; the fused kernel's acceptance criterion is bit-equality with their composition, and the debug taps let any deployment reproduce the staged outputs on demand.
+
+\section{Verification Methodology \& Measured Performance}
+\label{sec:impl:verify}
+Verification is layered so that each property is established by the cheapest gate that can decide it, and every layer's criterion is exact equality.
+
+\begin{enumerate}
+    \item \emph{Frozen-specification gates.} The 56 golden vectors pin the transform across all three implementations; the twiddle table is hash-checked; a generator cross-check reproduces the table from first principles in the test suite.
+    \item \emph{Reference-chain gates.} The decision reference is gated against a rational-number oracle across randomized, tied, degenerate, wrapped, and near-overflow cases; the wide-limb comparisons are fuzz-gated against arbitrary precision over $2 \times 10^6$ trials.
+    \item \emph{Concurrency emulation.} Before any GPU execution, the device source is compiled unmodified into a threaded CPU harness: one POSIX thread per GPU thread, a barrier for each \texttt{\_\_syncthreads}, mutexed atomics, the scalar dot path substituted for DP4A. This executes the kernel's true concurrent structure --- including the cooperative transform and the last-block epilogue --- under real thread interleaving, and its outputs are required to match the reference chain bit-for-bit across noise, injected-pilot, wrap-anchor, degenerate-bulk, and tap-unbound scenarios, stably across repeated concurrent runs.
+    \item \emph{On-hardware gates.} On the benchmark GPU, the fused kernel must reproduce the composed staged path and the reference bit-for-bit; an injected pilot must fire the mask; the production (tap-unbound) form must equal the debug form; and twenty repeated launches must produce identical bits --- the one property the CPU emulation cannot probe, since it exercises the completion-counter epilogue under genuine grid scheduling.
+    \item \emph{Production tripwire.} The exact marginal identity is the acceptance tripwire for a live integration: the coarse power sums are computed twice, through independent code paths, and compared as integers every frame. Any fault in memory layout, accumulation, scheduling, or a future regression breaks an exact equality on the frame where it occurs.
+    \item \emph{Cross-era reproduction.} Two processing cohorts, built independently with different library binaries and CUDA toolkits, processed overlapping archived events; joined on event identity, the compared statistics agreed with zero mismatches.  For the final reproducibility record, ``zero'' is reported together with the joined event and frame counts, join completeness, invalid and missing records, exact fields compared, and immutable cohort manifests.  Those counts are not recoverable from the dissertation-source bundle alone, so the present text does not turn the mismatch count into an undocumented denominator.  Under a tolerance regime the comparison would require a distributional judgment; under the exactness contract each joined field reduces to equality.
+    \item \emph{The build is not the artifact.} One further finding completes the procedure: compiled binaries are \emph{not} byte-deterministic --- clean rebuilds of identical sources differ in embedded compiler artifacts. The verified binary itself, content-addressed by cryptographic hash and recorded in the processing ledger, therefore serves as the reference artifact; a rebuild is a new artifact that must re-pass the verification gates before use.
+\end{enumerate}
+
+Measured performance on the benchmark-class GPU (A100) is summarized as follows. Against the $41.94$~ms frame cadence, the staged three-launch composition costs $2.14$~ms; the fused kernel completes the samples-to-powers datapath in $0.77$~ms (a $55\times$ real-time margin), with the debug tap adding only $\approx 5~\mu$s when bound; and the full production-candidate form including the decision epilogue costs $0.90$~ms --- a $47\times$ margin, with the entire decision stage contributing $+0.13$~ms because only one block per frame executes it. The complete evaluated detector therefore occupies approximately $2\%$ of its real-time budget.
+
+\section{Controlled Injection and Measured Legacy Implementation Loss}
+\label{sec:impl:legacyinjection}
+
+Exact equality establishes what the implementation computed; it does not establish
+how much sensitivity the representation costs.  An earlier detector generation
+therefore performed a paired offline injection experiment that remains useful as
+a validation pattern.  A standards-chain 8-VSB waveform was produced with the
+GNU Radio ATSC randomizer, Reed--Solomon encoder, interleaver, trellis encoder,
+field-sync multiplexer, and RRC pulse shaping.  Complex AWGN was added, the signal
+was passed through the four-tap sinc--Hamming reference PFB, and the samples were
+quantized to offset-binary \texttt{int4} at a declared $3\sigma$ clipping level.
+The sweep covered shelf SNR from $-38$ to $-24$~dB and pilot offsets of
+$-1$, $0$, and $+1$~kHz, with $1000$ trials at each of the $45$ grid points.
+Each trial carried both the packed-integer statistic and a matched
+full-precision-weight control, so the implementation comparison was paired
+rather than inferred from independently generated curves.
+
+\begin{table}[t]
+\centering
+\caption{Legacy paired implementation-loss measurement.  The entries are the
+horizontal difference between the full-precision and packed-\texttt{int4}
+crossings on the same trials; negative values indicate that the packed crossing
+was slightly more favorable.  These are measurements of the earlier
+$512$-row, coarse-statistic geometry, not of the present two-stage detector.}
+\label{tab:impl:legacyloss}
+\begin{tabular}{lcc}
+\toprule
+Operating crossing & Point estimate (dB) & Paired-bootstrap 95\% interval (dB) \\
+\midrule
+Fixed threshold, $P_{\rm d}=0.5$ & $-0.047$ & $[-0.121,+0.022]$ \\
+Fixed threshold, $P_{\rm d}=0.9$ & $-0.022$ & $[-0.100,+0.051]$ \\
+Positive excess, $P_{\rm d}=0.9$ & $-0.063$ & $[-0.238,+0.121]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:impl:legacyloss} disfavors quantization as the dominant term in
+the observed $+0.27$--$0.32$~dB ideal-to-measured crossing envelope, although
+the widest interval still permits an implementation contribution near
+$0.24$~dB.  A same-seed CPU/GPU spot check at $-31$~dB supplied an orthogonal
+gate: all $200$ packed trials agreed exactly in the statistic and in both sets
+of decisions ($126/200$ fixed-threshold and $197/200$ positive-excess
+detections).  The weight-bank hash also matched between the CPU sweep and GPU
+session.  This is stronger than comparing summary plots, but it remains a test
+of the earlier kernel and decision geometry.
+
+The experiment also exposed why an injected signal must be audited independently
+of the detector.  The nominal golden capture contained a generator startup
+transient: its first $5.6$~ms block carried $9.7$~dB less pilot power than the
+stationary mean, the second was $0.4$~dB low, and subsequent blocks were stable.
+After cropping to the stationary span, two independent estimators agreed within
+$0.007$~dB; the steady pilot was $0.136$~dB above the nominal ratio and required
+an amplitude retrim by $0.9845$.  A full-capture scalar had therefore mixed
+generator nonstationarity with detector loss.  The durable protocol is to crop,
+measure, and trim the exact span consumed by the evaluator before generating the
+sweep, and to report waveform calibration, model discrepancy, and implementation
+loss as separate terms.
+
+A still earlier CUDA prototype reported a shelf-equivalent mean bias of
+$-0.309$~dB and maximum absolute bias of $0.59$~dB, together with
+$216.23$ blocks/s ($29.02$~GB/s of packed input) against its stated
+$3051.76$-blocks/s requirement.  Those numbers characterize another kernel and
+another loss definition; they are not contradictory to the paired crossing
+shifts and are not portable correction constants.  Appendix~\ref{app:legacy}
+records the provenance and reuse boundary for both experiments.
+
+The present transform-only comparison of $-0.00026$~dB at a measured peak is
+narrower still: it isolates the frozen transform, not the complete signal chain.
+Before a sensitivity number becomes a headline result for this dissertation,
+the paired experiment must be regenerated with the current $K=128$, $L=128$,
+full-$2048$-input two-stage geometry, the designated-set statistic, empirical
+null calibration, and the forecast-selected rational threshold.  The legacy
+study supplies the experiment design and an honest prior bound; it does not
+substitute for that current-geometry measurement.

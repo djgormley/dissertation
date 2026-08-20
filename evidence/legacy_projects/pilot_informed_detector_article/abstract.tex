@@ -1,0 +1,29 @@
+Digital television occupies much of the 470--608\,MHz band,
+corresponding for 21\,cm intensity mapping to the redshift range
+$1.34 < z < 2.02$. ATSC 8-VSB emission fills its 6\,MHz allocation with
+noise-like symbols, and current CHIME analysis masks affected data with
+statistically triggered, allocation-wide rules at visibility cadence. We
+present a complementary per-frame approach keyed to the one deterministic
+feature of the 8-VSB signal, the pilot tone: a quantized-weight
+F-statistic from three int4 matched filters in the pilot-bearing coarse
+channel, evaluated exactly in integer arithmetic, designed to gate
+the station's full allocation. Synthetic characterization with a
+bit-exact CPU reference lies within $\approx$0.5\,dB of ideal detection
+statistics at the audited per-trial dimensionality, and
+frequency-offset capture loss matches the
+$\mathrm{sinc}^2$ prediction; headline thresholds await deployment-scale
+regeneration. Applied to 77\,423 archived CHIME
+baseband events spanning 7.6\,yr, the measured null-core zero points
+agree with the analytic prediction to a few parts in $10^{3}$, consistent
+with the ideal independent-row core width, with a five-channel family of
+static offsets associated with reference-bin geometry. Detection rates
+are non-stationary --- transitions consistent with the 2020
+spectrum-repack window, plus rate collapses, onsets, and multi-year rises
+--- sampled rates changed substantially between epochs separated by
+order-year intervals. A retrospectively motivated candidate three-arm mask, built from exact
+fixed-point compares, measures 39 per cent
+retention of pilot-channel frame-time (38 per cent deployment-eligible
+after a recovery-ineligibility rule masks two calibration-refused
+channels), with the kept power
+tail clipped at the veto threshold by construction; achieved-cleanliness
+measurements are pending.

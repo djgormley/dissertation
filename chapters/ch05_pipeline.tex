@@ -1,0 +1,259 @@
+
+\chapter{Multichannel Signal Processing \& Detection Pipeline}
+\label{sec:pipeline}
+
+\section{Problem Formulation \& System Definitions}
+\label{sec:pipeline:problem}
+
+Consider a multichannel receiving array consisting of $M = 2048$ spatial feeds operating over a discrete time frame of $N = 16384$ complex baseband samples. Let the received data frame be represented by the matrix $\mathbf{X} \in \mathbb{C}^{M \times N}$, where the scalar element $x_{m,n}$ denotes the sample acquired from feed $m \in \{0, 1, \dots, M-1\}$ at sample index $n \in \{0, 1, \dots, N-1\}$:
+\begin{equation}
+\mathbf{X} = \begin{bmatrix}
+x_{0,0} & x_{0,1} & \dots & x_{0, N-1} \\
+x_{1,0} & x_{1,1} & \dots & x_{1, N-1} \\
+\vdots & \vdots & \ddots & \vdots \\
+x_{M-1,0} & x_{M-1,1} & \dots & x_{M-1, N-1}
+\end{bmatrix}.
+\end{equation}
+The objective of the detection pipeline is to test, once per frame, whether a narrow pilot-like component is present in addition to the local background.  In the analytical model,
+\begin{align}
+H_0: &\quad x_{m,n}=n_{m,n}, \\
+H_1: &\quad x_{m,n}=a_m e^{j(2\pi \nu n+\phi_m)}+n_{m,n},
+\end{align}
+where $a_m$ and $\phi_m$ are feed-dependent nuisance parameters, $\nu$ lies in the fine search window around the synthesized pilot frequency, and $n_{m,n}$ is initially modeled as circular complex Gaussian noise.  This is the model under which the tone projection has the matched-filter interpretation; local references, rank normalization, frequency search, quantization, feed covariance, and empirical calibration are additional parts of the complete detector and are not covered by that simple optimality statement.
+
+The background power is unknown and time-varying --- receiver gain, sky temperature, and broadband interference all modulate it --- so the test must be invariant to the absolute noise scale. This requirement shapes the entire pipeline: every statistic below is ultimately a \emph{ratio} of target-matched power to reference-matched power.  Under the idealized $H_0$ model the common scale $\sigma^2$ cancels.  In operation, the thresholds are calibrated empirically rather than assumed to transfer perfectly across gain states; the ratio construction removes first-order scale dependence, while the measured null retains receiver correlations and non-Gaussian structure.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figs/fig_model_calibration_layers.pdf}
+\caption[Analytical model and empirical calibration layers]{The detector has two evidence layers.  The upper layer is the analytical known-tone, circular-Gaussian model used to derive the projection and idealized null.  The lower layer contains the instrument-specific effects that set the actual operating point: quantization, feed covariance, local spectral structure, frequency search, and per-epoch null calibration.  A theorem about the upper layer does not by itself establish global optimality of the complete lower-layer decision.}
+\label{fig:pipeline:modelcal}
+\end{figure}
+
+The test signal is defined by a length-$K$ weight profile against background noise estimated from auxiliary reference profiles. The weight coefficient vector length is fixed at $K = 128$ taps. We define $R = 3$ distinct weight profiles: one target profile ($r = 0$) and $N_{\text{ref}} = 2$ reference profiles ($r \in \{1, 2\}$). The reference profiles are the target profile displaced by $\pm 2$ bins of the length-$K$ filter's spectral grid (distinct from the fine bins of Section~\ref{sec:pipeline:coherent}), leaving a one-bin guard separation between target and reference, thereby establishing a spectrally local background estimate; their construction and the justification of every dimension are given in Chapter~\ref{sec:param}. These profiles are assembled into the weight matrix $\mathbf{W} \in \mathbb{C}^{K \times R}$:
+\begin{equation}
+\mathbf{W} = \begin{bmatrix}
+\mathbf{w}_{\text{target}} & \mathbf{w}_{\text{ref,1}} & \mathbf{w}_{\text{ref,2}}
+\end{bmatrix}.
+\end{equation}
+\textit{Remark on fixed-point arithmetic:} In the physical architecture, input samples and weight coefficients are packed as complex integer \texttt{int4} values with exact integer accumulation and frozen fixed-point FFT arithmetic that is bit-identical between reference software and GPU execution. While this section formulates the pipeline using continuous complex variables for analytical clarity, complete quantization and fixed-point implementation details are deferred to Chapter~\ref{sec:impl}. The formulation is nonetheless exact in structure: every sum written below is computed as written, in integer arithmetic, with accumulator widths chosen in Section~\ref{sec:param:tradeoffs} so that no rounding or saturation occurs before the final ratio. Figure~\ref{fig:pipeline} summarizes the complete processing chain developed in this section.
+
+\begin{figure}[t]
+\centering
+\input{figure_src/tikz/pipeline_chain.tikz}
+\caption{The pilot-proxy processing chain of this section. All quantities upstream of the recorded diagnostics are exact integers; the designated window, bulk mask, rank, and multiplier enter as per-channel calibration data. The coarse marginal $P_r$ is retained as the survey flag and doubles, through the Parseval relation of Eq.~\eqref{eq:parseval}, as the pipeline's internal verification tripwire (Section~\ref{sec:impl:verify}).}
+\label{fig:pipeline}
+\end{figure}
+
+\section{Sub-Frame Segmentation \& Weight Projection}
+\label{sec:pipeline:segmentation}
+
+To apply the weight profiles across the temporal frame, each feed's time series of length $N$ is partitioned into $L = N / K = 128$ non-overlapping sub-frames of length $K$. Let $\mathbf{s}_{m,\ell} \in \mathbb{C}^{K \times 1}$ denote the $\ell$-th sub-frame column vector of the $m$-th feed, where $\ell \in \{0, 1, \dots, L-1\}$:
+\begin{equation}
+\mathbf{s}_{m,\ell} = \begin{bmatrix}
+x_{m, \, \ell K} & x_{m, \, \ell K + 1} & \dots & x_{m, \, \ell K + (K-1)}
+\end{bmatrix}^T.
+\end{equation}
+Concatenating all sub-frames across all feeds yields the reshaped data matrix $\mathbf{Y} \in \mathbb{C}^{K \times P}$, where $P = M L = 262144$ represents the total number of sub-frames across the array:
+\begin{equation}
+\mathbf{Y} = \begin{bmatrix}
+\mathbf{s}_{0,0} & \dots & \mathbf{s}_{0, L-1} & \big| & \mathbf{s}_{1,0} & \dots & \mathbf{s}_{1, L-1} & \big| & \dots & \big| & \mathbf{s}_{M-1,0} & \dots & \mathbf{s}_{M-1, L-1}
+\end{bmatrix}.
+\end{equation}
+The segmentation is purely an indexing view --- the sub-frames tile the frame exactly ($KL = N$, Section~\ref{sec:param:tradeoffs}), so no samples are discarded, duplicated, or windowed, and the reshape involves no data movement in implementation. The temporal projection of the data frame onto the $R$ weight profiles is evaluated via the matrix inner product:
+\begin{equation}
+\mathbf{Z} = \mathbf{W}^H \mathbf{Y} \in \mathbb{C}^{R \times P},
+\end{equation}
+where $(\cdot)^H$ denotes the Hermitian (conjugate transpose) operator. Each column $p \in \{0, 1, \dots, P-1\}$ of $\mathbf{Z}$ contains the complex response of the target and reference profiles for a specific feed $m = \lfloor p / L \rfloor$ and temporal sub-frame index $\ell = p \bmod L$. This single product --- $P = 262144$ length-$K$ complex projections per $41.94$~ms frame, three profiles each --- is the pipeline's dominant arithmetic cost, and the stage the packed-integer kernel geometry of Section~\ref{sec:param:tradeoffs} is designed around. Everything downstream operates on the $3 \times 262144$ projected values rather than the $2048 \times 16384$ raw samples: the projection is also a ${\sim}43\times$ reduction in value count (${\sim}11\times$ in bytes at the widened integer precision) that renders the remaining stages computationally minor.
+
+\section{Coherent Spectral Integration}
+\label{sec:pipeline:coherent}
+
+The projection of Section~\ref{sec:pipeline:segmentation} is coherent only \emph{within} each $K$-sample sub-frame. A first-generation reduction may stop there: square each projection and sum the powers over all sub-frames and feeds (the coarse statistic of Section~\ref{sec:pipeline:noncoherent}). Such a reduction, however, discards the phase relationship \emph{between} successive sub-frames, which for the signal of interest is deterministic rather than random. A frequency-stable pilot line at residual offset $\Delta\nu$ from the synthesized tone advances its phase by exactly $2\pi \Delta\nu K$ between consecutive sub-frames of the same feed: the $L$ successive projections of a feed rotate deterministically, and integrating them coherently before squaring recovers deflection that incoherent summation forfeits. The available gain is substantial: coherent integration of $L$ sub-frames improves the deflection signal-to-noise ratio by up to $10 \log_{10} \sqrt{L} \approx 10.5$~dB over the incoherent baseline. Realizing it requires matching the unknown residual rotation --- which is precisely a spectral analysis across the sub-frame axis.
+
+To exploit this temporal coherence, the projected matrix $\mathbf{Z}^T \in \mathbb{C}^{P \times R}$ is partitioned vertically into $M$ distinct feed blocks $\{\mathbf{B}_0, \mathbf{B}_1, \dots, \mathbf{B}_{M-1}\}$, where each block $\mathbf{B}_m \in \mathbb{C}^{L \times R}$ collects the $L$ sequential temporal projections for feed $m$, defining the triple-indexed entries $z_{m,\ell,r} \equiv z_{r, \, mL+\ell}$:
+\begin{equation}
+\mathbf{B}_m = \begin{bmatrix}
+z_{m,0,0} & z_{m,0,1} & z_{m,0,2} \\
+z_{m,1,0} & z_{m,1,1} & z_{m,1,2} \\
+\vdots & \vdots & \vdots \\
+z_{m,L-1,0} & z_{m,L-1,1} & z_{m,L-1,2}
+\end{bmatrix}.
+\end{equation}
+Coherent temporal integration is performed by applying a zero-padded Discrete Fourier Transform (DFT) of length $L_F = 2L = 256$ independently across the sub-frame axis $\ell$ for each feed $m$ and weight profile $r$:
+\begin{equation}
+\widetilde{B}_m[f,r] = \sum_{\ell=0}^{L-1} B_m[\ell,r]\, e^{-j \frac{2\pi}{L_F} f \ell}, \qquad f \in \{0, 1, \dots, L_F-1\}.
+\end{equation}
+Each spectral bin $f$ coherently integrates the $L$ sub-frame projections under a frequency offset hypothesis of $f / (L_F K)$ cycles per sample (interpreted modulo the sub-frame rate: bins above $L_F/2$ correspond to negative offsets): the DFT evaluates all $L_F$ rotation hypotheses simultaneously, so no prior knowledge of the residual offset is needed --- the matched hypothesis corresponds to the bin of maximum response, whose index directly measures the pilot's residual frequency (the survey's per-channel \emph{anchor}, Section~\ref{sec:pipeline:decision}).
+
+Two distinct scalloping mechanisms bound the recovered gain, and they are treated separately here. The first is the \emph{sub-frame projection rolloff}: the $K$-tap projection has the Dirichlet response of Eq.~\eqref{eq:dirichlet}, so a pilot at the edge of the fine span ($\pm f_s/2K$, i.e.\ half a coarse grid bin from the synthesized tone) is attenuated by $|D_K(1/2)| = 2/\pi$, a worst-case loss of $3.92$~dB. This loss is a property of the segmentation geometry, not of the transform; it is minimized in practice because the synthesized tone absorbs each channel's nominal offset exactly (Section~\ref{sec:param:target}), leaving typical residuals far inside the span. The second is \emph{fine-grid scalloping}: a residual falling between adjacent fine bins splits its energy. The zero-padding factor of 2 --- fine-bin spacing $(f_s/K)/L_F \approx 11.9$~Hz --- halves the worst-case bin-center mismatch; a further doubling would halve it again, but at double the transform cost and shared-memory footprint for a residual the decision stage already absorbs, so the factor-2 padding represents the practical optimum. What padding leaves is captured by the $\pm 2$-bin designated window of Section~\ref{sec:pipeline:decision}, and this width is not an additional free parameter: on the window axis, a residual tone's response is the $L$-point analogue of Eq.~\eqref{eq:dirichlet}, whose main lobe spans $\pm 1$ window-rate bin --- exactly $\pm 2$ bins of the padded grid. The designated window is therefore the kernel's \emph{main-lobe extent}: with the anchor measured to the nearest fine bin, the two dominant bins straddling any sub-bin residual always lie inside it, evaluating the window as a maximum bounds the worst-case capture loss (measured below $1$~dB), and slow anchor drift \emph{within} a calibration epoch rides within the same margin. Era-scale changes do not: a station change moves the anchor by tens of fine bins --- measured across the archive's calendar halves at $11$ bins on channel 32 and $29$ on channel 35 --- and is handled as a calibration-epoch boundary with a re-derived anchor, not as drift (Section~\ref{sec:bao:eras}). The two $\pm 2$ displacements in this architecture are thus dual applications of the same response function (Figure~\ref{fig:dirichlet}): the coarse-grid $\pm 2$ of Section~\ref{sec:param:tradeoffs} places the references at the kernel's decayed skirts --- an \emph{exclusion} guard keeping pilot energy out of the background estimate --- while the fine-grid $\pm 2$ spans the kernel's main lobe --- a \emph{capture} window keeping pilot energy inside the detection set. Monte-Carlo evaluation of the complete evaluated geometry (reported in the results chapter) recovers $9.4$--$10.0$~dB of the $10.5$~dB coherent bound at the survey's operating false-alarm rates, confirming that the two scalloping budgets, the window maximum, and the finite-$P_{\text{fa}}$ threshold account for essentially all of the gap.
+
+One statistical consequence of padding must be carried forward: the $L_F = 2L$ output bins oversample an $L$-dimensional spectrum, so adjacent padded bins are statistically correlated, and only alternate spectral bins constitute independent noise samples. The null-estimation rule of Section~\ref{sec:pipeline:decision} is built on the independent subset.
+
+\section{Non-Coherent Spatial Integration \& Test Statistics}
+\label{sec:pipeline:noncoherent}
+
+The remaining axis is space. Here the pipeline makes the opposite choice, \emph{non-coherent} (power) integration across the $M = 2048$ feeds; this asymmetry is deliberate. Coherent combination across feeds would require the array to be phase-calibrated toward the interference source: a terrestrial transmitter in the array's near sidelobes, at unknown azimuth, reached by multipath that decorrelates across the aperture and varies with conditions. No stable steering vector exists to calibrate toward, and any attempt would couple the detector's sensitivity to the array's beamforming state --- exactly the dependence the flagging system must not have (Section~\ref{sec:param:tradeoffs}). Summing per-feed \emph{powers} instead accepts a $\sqrt{M}$ (rather than $M$) deflection scaling in exchange for complete immunity to inter-feed phase: the detector works identically whether the array is calibrated or not, and multipath phase structure across the aperture --- which would randomize a coherent sum --- contributes all its power to a non-coherent one. With $M = 2048$, the non-coherent deflection is ample, and the primary contribution of the feed sum is statistical depth: it supplies the $M$ in the degrees of freedom that concentrate the null distribution (Section~\ref{sec:pipeline:decision}).
+
+The system computes two complementary integration products: a coarse time-domain statistic and a fine frequency-domain statistic. The \textit{coarse marginal statistic} $P_r$ accumulates total projected energy directly across all $P = 262144$ sub-frames:
+\begin{equation}
+P_r = \sum_{p=0}^{P-1} |z_{r,p}|^2 = \sum_{m=0}^{M-1} \sum_{\ell=0}^{L-1} \left| B_m[\ell,r] \right|^2.
+\end{equation}
+The \textit{fine spectral statistic} $S_r[f]$ integrates spatial power per frequency bin $f$ across all $M$ feeds:
+\begin{equation}
+S_r[f] = \sum_{m=0}^{M-1} \left| \widetilde{B}_m[f,r] \right|^2, \qquad f \in \{0, 1, \dots, L_F-1\}.
+\end{equation}
+The two are not independent products: for the zero-padded DFT, Parseval's theorem equates each feed's total spectral energy to $L_F$ times its sub-frame energy (the padded transform is $L_F$ times an isometry on the $L$ nonzero inputs), and summing over feeds yields the frame-level identity
+\begin{equation}
+\label{eq:parseval}
+\sum_{f=0}^{L_F-1} S_r[f] = L_F \, P_r.
+\end{equation}
+The coarse statistic is thus the marginal of the fine spectrum: the fine analysis \emph{refines} the coarse energy across frequency rather than measuring something different. This structural redundancy is exploited deliberately for verification. The exact-integer marginal identity --- $P_r$ recomputed from the projected row sums must equal the independently accumulated kernel power sums bit-for-bit --- serves as the pipeline's internal verification tripwire, exercised continuously in verification runs and available as a runtime assertion: any fault in memory layout, accumulation, or kernel scheduling breaks an exact integer equality and is caught on the frame where it occurs, rather than surfacing as a subtle statistical bias discovered downstream. The Parseval relation of Eq.~\eqref{eq:parseval} additionally gates the floating-point FFT path at ULP level, and the fixed-point transform satisfies it to within its documented rounding contract. The coarse statistic $P_r$ is retained as a low-overhead survey flag, while the fine spectrum $S_r[f]$ provides the candidate runtime detection refinement.
+
+For each bin $f$, the fine test statistic $T[f]$ is defined by normalizing the target profile power by the summed background reference profile power:
+\begin{equation}
+T[f] = \frac{2\, S_0[f]}{S_1[f] + S_2[f]}.
+\end{equation}
+This is the scale-invariant form anticipated in Section~\ref{sec:pipeline:problem}: numerator and denominator are the same functional of the same frame through instrument responses differing only by the reference displacement, so the unknown background scale --- and, per bin, any spectrally smooth gain structure the slope cancellation of Section~\ref{sec:param:tradeoffs} removes --- divides out. \textit{Remark on profile norms:} Quantized weight profiles have slightly unequal vector norms, biasing the null center of the ratio away from unity by a factor common to all bins --- measured across the configured channels at up to $1.5\%$ (Section~\ref{sec:param:refs}), which would exceed the coarse axis's entire decision margin if left uncorrected. The recorded coarse flag applies an exact rational norm correction ($\mu_0$); the fine CFAR rule of Section~\ref{sec:pipeline:decision} requires none, since the common factor cancels identically between the designated bins and the null-bulk baseline.
+
+\section{Statistical Distribution \& CFAR Decision Rule}
+\label{sec:pipeline:decision}
+
+\subsection*{Idealized null distribution}
+Under the idealized null hypothesis ($H_0$: independent and identically distributed circularly symmetric complex normal noise across feeds and samples), the null distribution of $T[f]$ follows from a standard argument.  The complex-normal convention used here is
+\begin{equation}
+z \sim \mathcal{CN}(0,\sigma_z^2), \qquad
+\mathbb{E}|z|^2=\sigma_z^2, \qquad
+\frac{2|z|^2}{\sigma_z^2}\sim\chi_2^2.
+\label{eq:pipeline:cnconv}
+\end{equation}
+Each projection is a fixed linear functional of Gaussian noise, so $z_{m,\ell,r} \sim \mathcal{CN}(0, \sigma_z^2)$ with $\sigma_z^2 = \sigma^2 \|\mathbf{w}_r\|^2$.  Independence across feeds and sub-frames is an analytical approximation; the measured width of the null is used to reveal and absorb departures from it. The DFT is a fixed linear combination of $L$ independent such variables, so each bin is again complex normal, $\widetilde{B}_m[f,r] \sim \mathcal{CN}(0, L \sigma_z^2)$, with variance independent of $f$. Each squared magnitude contributes $\beta$ real degrees of freedom, where $\beta = 2$ for complex data ($\beta = 1$ for a real-valued field), giving $|\widetilde{B}_m[f,r]|^2 \sim \tfrac{L\sigma_z^2}{2} \chi^2_{\beta}$; summing over the $M$ independent feeds,
+\begin{equation}
+S_r[f] \sim \frac{L \sigma_z^2}{2} \, \chi^2_{\beta M}.
+\end{equation}
+The numerator of $T[f]$ therefore carries $\beta N_{\text{target}} M$ degrees of freedom ($N_{\text{target}} = 1$) and the denominator pools $\beta N_{\text{ref}} M$ across the two reference branches; the scale $L\sigma_z^2$ cancels in the ratio (equal weight norms in the continuous construction, Section~\ref{sec:param:refs}), leaving the central $F$-distribution
+\begin{equation}
+T[f] \big|_{H_0} \sim F(\beta N_{\text{target}} M, \, \beta N_{\text{ref}} M) = F(2M, \, 4M) = F(4096, \, 8192).
+\end{equation}
+Similarly, the coarse scalar ratio follows $F(\beta N_{\text{target}} P, \, \beta N_{\text{ref}} P) = F(524288, \, 1048576)$. These large degrees of freedom concentrate the idealized null distributions tightly about unity: mean $1.00024$ with standard deviation $2.71\%$ for the fine per-bin statistic, and mean $1.000002$ with standard deviation $0.239\%$ for the coarse scalar. Under the idealized model, sub-percent pilot excesses would therefore be significant at many standard deviations on the coarse axis.
+
+\subsection*{Detection-side distribution and the coherent-gain identity}
+The distribution under the alternative hypothesis completes the statistical description. Under $H_1$, a pilot at the matched bin adds a deterministic mean to each feed's bin value: if the per-sub-frame projection acquires coherent amplitude $a_m$ at feed $m$, the matched DFT bin accumulates $L a_m$, and $S_0[f]$ becomes noncentral,
+\begin{equation}
+T[f] \big|_{H_1} \sim F'\!\left(2M, \, 4M; \; \lambda\right),
+\qquad
+\lambda = \frac{2 L \sum_{m} |a_m|^2}{\sigma_z^2},
+\end{equation}
+a noncentral $F$ with the same degrees of freedom (the references remain central under the guard-band model of Section~\ref{sec:param:tradeoffs}).  The factor of two follows from Eq.~\eqref{eq:pipeline:cnconv}: one complex scalar contributes two real degrees of freedom when $\sigma_z^2$ denotes total complex variance, $\mathbb{E}|z|^2$.  The sum over $m$ then accumulates the feed-dependent noncentralities. The mean excess is $\mathbb{E}[T] - 1 \approx \lambda / (2M)$. The coarse statistic absorbs the \emph{same} total signal energy --- by the Parseval identity of Eq.~\eqref{eq:parseval}, its noncentrality is also $\lambda$ --- but spreads it against a null of $2P$ rather than $2M$ numerator degrees of freedom. The deflection ratio between the two axes is therefore
+\begin{equation}
+\frac{d_{\text{fine}}}{d_{\text{coarse}}}
+= \frac{\lambda/(2M)}{\lambda/(2P)} \cdot
+\sqrt{\frac{\mathrm{Var}[T_{\text{coarse}}|H_0]}{\mathrm{Var}[T[f]\,|H_0]}}
+= \sqrt{\frac{P}{M}} = \sqrt{L},
+\end{equation}
+recovering the $10 \log_{10} \sqrt{L} \approx 10.5$~dB coherent-integration bound of Section~\ref{sec:pipeline:coherent} as a degrees-of-freedom concentration identity: the fine axis concentrates the same signal energy against $L$ times fewer null degrees of freedom. The Monte-Carlo measurement of $9.4$--$10.0$~dB recovered gain (results chapter) corresponds to this identity evaluated through the complete evaluated geometry, including scalloping, the window maximum, and finite-$P_{\text{fa}}$ thresholds.
+
+\subsection*{Measured departure from the i.i.d.\ model}
+Empirical system measurements reveal that the idealized model's tails cannot be trusted for threshold setting: the observed coarse null is ${\sim}19\times$ wider than the i.i.d.\ $F$-model, while the fine per-bin null exhibits a near-ideal core contaminated by a heavy ${\sim}0.3\%$ tail that inflates its width factor to ${\sim}13.8\times$. Both factors are raw standard-deviation ratios against the analytic i.i.d.\ widths, measured during calibration-era processing on the survey's one pre-verified transmitter-off cohort (channel 521's off-air epoch, 2020 captures); they are quoted to motivate the design, not as portable constants. Width factors of this kind are sensitive to the estimator and the cohort --- a robust core-width estimate of the same nulls sits an order of magnitude lower, precisely because the tail carries the width --- so the results chapter re-derives them from the final survey under a single pinned definition set (estimator, transient handling, cohort), reporting the robust-core equivalents alongside. The physical origins are receiver systematics --- gain variations across the frame, spectral leakage from features elsewhere in the channel, and non-Gaussian interference --- none of which the i.i.d.\ derivation models. Two design consequences follow. First, thresholds must be \emph{calibrated from measured nulls} rather than computed from the $F$ survival function; the analytic distribution is retained as the idealized baseline and as a lower bound on achievable width, not as the operating calibration. Second, the fine null's specific structure --- a clean core with a thin contaminated tail --- discriminates between estimator families: any threshold built from moments (mean and variance) of the observed bulk is dragged by the tail, while an estimator that simply \emph{sorts} the bulk and reads off a value at a fixed position from the bottom is unmoved by any contamination that lands above that position, however extreme. This measured structure motivates the rank-based estimator formalized next.
+
+\textit{Remark: why there is no taper.} Both stages of the reduction are deliberately untapered, and the choice follows the same logic as the estimator above. Within the $K$-tap profile, uniform magnitude \emph{is} the matched filter for a tone of known frequency: any taper trades deflection for sidelobe suppression --- a Hann profile forfeits $1.8$~dB --- and sensitivity is the scarce resource for a beacon $11.3$~dB below its own shelf. Along the window axis the classic rectangular penalty is scalloping, and the padded transform is the free correction: doubling the hypothesis grid bounds the worst-case straddle loss near $0.9$~dB at no sensitivity cost, where a taper would pay decibels for the same coverage and widen the designated window besides. The failure modes tapering exists to prevent --- leakage from strong structure elsewhere in the coarse channel --- are instead absorbed downstream at zero sensitivity cost: the ratio statistic cancels spectrally smooth structure, the reference placement cancels the residual slope, guard and census-excluded bins remove the known offenders, and the rank estimator is immune by construction to the contaminated tail that survives them all. The design spends robustness where robustness is free, and sensitivity nowhere. The choice is also contractual: the profile norms are the exact integers behind $\mu_0$, so any taper is a new weight bank, a new null calibration, and a new survey epoch.
+
+
+\subsection*{Which axis decides, and which one only checks}
+The two axes are not two independent detectors. Under the declared known-tone, common-calibration model, the deflection identity above shows that the fine axis concentrates the same signal energy against $L$ times fewer null degrees of freedom and improves the idealized deflection by $\sqrt{L}$. This is a model result, not a universal dominance theorem: mismatch, nonstationary backgrounds, and different calibration errors can change empirical ordering. Detection is therefore assigned to the fine axis only after out-of-sample calibration, while the coherent summation of Section~\ref{sec:pipeline:coherent} is the sensitivity mechanism the runtime design intends to use.
+
+That second property sets the order in which the system could be brought up, and it is why the survey products analyzed in this work carry a coarse-rule mask. The fine decision needs a per-channel pilot anchor and a per-channel null, and measuring those is precisely what the survey exists to do; it could not be gated on quantities it was being run to produce. So the survey configuration falls back to the calibration-free rule, which rejects a frame exactly when the target profile carries more power than the mean of its two references --- a raw positive excess:
+\begin{equation}
+\label{eq:deployedrule}
+\text{reject } H_0 \iff F > \mu_0,
+\qquad
+F = \frac{2 P_0}{P_1 + P_2},
+\qquad
+\mu_0 = \frac{2\|\mathbf{w}_0\|^2}{\|\mathbf{w}_1\|^2 + \|\mathbf{w}_2\|^2},
+\end{equation}
+where $\mu_0$ is the exact rational norm correction of Section~\ref{sec:param:refs} and not a tuned quantity: it is the value $F$ takes under pure noise given the quantized profiles' unequal norms, so Eq.~\eqref{eq:deployedrule} asks only whether the target exceeds its own null center. Evaluated as the integer cross-multiplication $P_0 \|\mathbf{w}_1\|^2 {+} P_0\|\mathbf{w}_2\|^2 > 2 P_1 \|\mathbf{w}_0\|^2 {+} \dots$, it forms no quotient and involves no calibrated constant, which is why the survey-era contract records its threshold mode as \emph{none} and its decision as exactly reproducible.
+
+Two limitations follow, and both should be read as properties of the bootstrap configuration rather than of the method. It fires on \emph{any} detectable pilot, with no way to ask for less: the design intent was a threshold $\eta$ placed above this floor, so that frames whose inferred shelf sits far below what the science can register would be retained. Realizing that needs each channel's null characterized well enough to place a threshold against, and at the time the survey ran that characterization did not exist --- the measured nulls are wide, tail-dominated, and sensitive to the estimator and cohort used to summarize them (previous subsection), so no defensible per-channel $\eta$ could then be derived. Section~\ref{sec:bao:thresholds} now derives one per channel from the forecast instead of from the null. And it decides on the less sensitive axis, forgoing the $\approx 10.5$~dB the coherent stage offers. Every masked fraction quoted from the survey in this work, including those the noise-tolerance analysis of Chapter~\ref{sec:bao} prices, is therefore a measurement of this calibration-free rule and not of the designed detector.
+
+Chapter~\ref{sec:bao} changes how the first of those should be read. On the one channel where the full residual chain is measured, sweeping $\eta$ upward on this coarse rule and propagating each setting through to the science shows that the floor is the \emph{only} admissible operating point: the first relaxation that recovers a meaningful amount of data multiplies the surviving contamination by three orders of magnitude, because the coherence gain in the chain exceeds the proxy margin the relaxation was supposed to spend (Section~\ref{sec:bao:fisher}). On that channel the calibration-free rule is also the correct one, and what looked like a limitation is a result. Whether it holds where the residual correlation time is shorter is exactly what the sweep answers per channel, and is why $\eta$ remains an interface value rather than a frozen constant.
+
+\subsection*{The fine decision, and what it is waiting on}
+
+The fine axis runs on every frame and its per-frame CFAR products are recorded, but in the survey configuration it does not gate: the emitted rejection is bit-identical to Eq.~\eqref{eq:deployedrule} on every valid frame and differs from the fine stage's own detections. What follows is therefore the decision the detector is designed around, held back only by the calibration the survey is running to supply. In the proposed runtime design the roles complete their exchange: the fine designated-set rule is the sole decision path, and the coarse marginal retains no decision role at all --- it persists because it is nearly free (an exact integer sum the kernel already accumulates) and because it buys two things worth having: the Parseval tripwire of Section~\ref{sec:impl:verify}, and a development-mode sanity check that any build can evaluate without calibration data. A statistic that costs nothing, verifies the datapath, and once bootstrapped an entire survey earns its place in the products; it just never again decides anything.
+
+Its form is a Constant False Alarm Rate test, and the two words that matter are \emph{constant} and \emph{false alarm rate}. A fixed numerical threshold cannot hold a fixed false-alarm rate when the background moves, and the background here does move --- with receiver gain, with sky, with whatever else occupies the channel. A CFAR rule fixes the rate instead of the number: it estimates the background from the frame it is testing, and declares a detection only when a candidate bin exceeds that frame's own background by a set factor. The threshold floats; the false-alarm rate does not.
+
+How the background is estimated is then the whole design, and the measured null structure of the previous subsection dictates it. Averaging the bulk is the textbook choice and is exactly wrong here: a $0.3\%$ contaminated tail drags a mean or a variance on every frame it appears in, inflating the threshold and suppressing real detections. The alternative is to \emph{sort} the bulk and read the background off at a fixed position from the bottom. Sorting is indifferent to how large the contaminated values are --- only to how many there are --- so a baseline taken from below them is untouched however extreme they get. This is the ordered-statistic CFAR family, standard in radar for precisely this situation \cite{rohling1983}.
+
+Concretely: sort the $|\mathcal{B}|$ background bins of a frame into ascending order and take the $\rho$-th value, written $T_{(\rho)}$. The rank $\rho$ is a position in that sorted list, and it is the estimator's single tuning knob. It has two readings, and holding both is what makes the choice intelligible. As a \emph{quantile}, $T_{(\rho)}$ estimates the $\rho/|\mathcal{B}|$ point of the null distribution --- $\rho = |\mathcal{B}|/2$ is the median, $\rho = |\mathcal{B}|$ is the maximum, and the baseline rises as $\rho$ does. As a \emph{breakdown point}, the estimator is unmoved by upward contamination of as many as $|\mathcal{B}| - \rho$ bins, so lowering $\rho$ buys robustness. A calibration would trade these against each other: with $|\mathcal{B}| = 125$ and a tail occupying ${\sim}0.3\%$ of bins --- under half a bin per frame on average --- even a rank one or two below the maximum absorbs the typical frame, while a rank far below it estimates a quantile so low that the baseline stops representing the null's working range. Through the survey era, both $\rho$ and the fine multiplier were blocked on the same missing null characterization as $\eta$. They no longer are: with the survey's per-bin \texttt{fstat\_fine} in hand, the calibration has been prototyped end to end on the ten measured channels, and three of its results belong here. First, the anchors are \emph{measured}: every channel's pilot sits hundreds of hertz to $1.4$~kHz off nominal ($-1371$~Hz on channel 32, $+1299$~Hz on channel 35), comfortably inside the $\pm 1.5$~kHz fine span; the estimator is the difference of per-bin medians between coarse-detected and coarse-quiet frames, so static structure common to both cohorts cancels, with a plain-median fallback (marked as such) on channels that never fall quiet. Second, the exchangeability guarantee holds on real data, not just on paper: on channel 29's quiet frames, a bulk bin tested against the rank of the remaining bulk exceeds it at the combinatorial rate $(|\mathcal{B}|+1-\rho)/(|\mathcal{B}|+1)$ to three significant figures at every rank tested. Third, the pair $(\rho, \eta_{q16})$ is selected by the same objective that selects the coarse operating point (Section~\ref{sec:bao:thresholds}), under a discipline in which every stage is either data or a named ordering: feasibility must hold on the full archive \emph{and} in each calendar half of it --- the mask-side twin of the forecast's stability gate --- cost ties within the $2\%$ plateau are broken by the worst era-half cost, and only exact ties fall through to fixed orderings ($\eta$ nearest one, then largest breakdown headroom $|\mathcal{B}| - \rho$). What that discipline exposed is that the operating point is per-\emph{epoch} data rather than per-channel data: measured anchors move by tens of bins when stations change (Section~\ref{sec:bao:eras}), so the calibration block carries an epoch boundary exactly where the runtime-contract rule already requires one.
+
+The remaining definitions specify which bins are candidates and which are background. Let $f_a$ denote the measured per-channel pilot anchor bin --- the fine bin at which the survey localizes the channel's residual pilot offset. The designated detection window $\mathcal{D}$ encompasses $\pm 2$ fine bins around the anchor:
+\begin{equation}
+\mathcal{D} = \{ (f_a + k) \bmod L_F : |k| \le 2 \}.
+\end{equation}
+The background is estimated from the \emph{usable null bulk}: the set $\mathcal{B}$ of bins that are (i) members of the independent (alternate-bin) subset of Section~\ref{sec:pipeline:coherent}, (ii) outside the designated window $\mathcal{D}$, with no dilation beyond it --- the runtime exclusion is exactly $[f_a - 2,\, f_a + 2]$, since the window half-width \emph{is} the anchor's guard zone (one unpadded fine bin, equal to the pad factor in padded bins, per side): designated window and CFAR guard coincide by construction, (iii) not census-excluded as persistent RFI features, and (iv) statistically live in the current frame (nonzero reference denominator). For an even-parity anchor this exclusion removes three members of the $L_F/2 = 128$-bin independent subset, leaving $|\mathcal{B}| = 125$; for an odd-parity anchor it removes two, leaving $126$. In the odd case the pilot's $\pm 3$-padded-bin Dirichlet shoulders (the ${\approx}{-}13.5$~dB first sidelobe of Eq.~\eqref{eq:dirichlet} on the window axis) land on the independent grid and remain bulk members in the on state --- upward contamination of exactly the kind the rank baseline ignores by construction, with clause (iii) available to a calibration that prefers to census-exclude them explicitly.\footnote{The survey products additionally carry a per-frame \emph{diagnostic} CFAR (location, scale, threshold), estimated on the independent bulk with only the envelope-DC guard zone excluded (designated bin $0$), because per-channel anchors were unmeasured before the survey ran; its median-location, left-side-scale policy is robust to the pilot then sitting \emph{inside} its bulk. That survey scaffolding is distinct from the decision rule defined here, whose bulk mask is per-channel calibration data validated to exclude the measured $\mathcal{D}$.} With those two sets fixed, the baseline is the order statistic defined above, $\hat{T}_{\mathrm{null}} = T_{(\rho)}$ over $\{T[f] : f \in \mathcal{B}\}$, and a frame is flagged as a detection if and only if any designated bin exceeds it by the calibrated factor:
+\begin{equation}
+\text{reject } H_0 \iff \max_{f \in \mathcal{D}} T[f] > \eta \cdot \hat{T}_{\mathrm{null}},
+\end{equation}
+where the multiplier and the rank would be quantile-calibrated jointly against that channel's measured off-epoch null. Two thresholds are in play and they are not the same. Calibrating so that the empirical exceedance rate over verified transmitter-off epochs equals a target false-alarm probability fixes the \emph{detection floor} --- the smallest multiplier that holds $P_{\text{fa}}$ --- and that is a statistics question. What the survey should actually use is the \emph{science} threshold, set by the contamination the measurement can absorb, and that is a cosmology question answered in Chapter~\ref{sec:bao}. The proxy margin below shows the two can differ by tens of decibels in principle; Section~\ref{sec:bao:fisher} finds that on the one fully measured channel the residual chain consumes the entire margin, so they coincide there. Both constants are per-channel \emph{data}, carried in the runtime calibration bundle with their calibration provenance; the decision arithmetic itself is frozen. The path by which the science threshold arrives is worth making concrete, because it closes a loop this dissertation opened in Section~\ref{sec:intro:tolerance}: the survey era ran the bootstrap placeholder --- the positive-excess rule, the multiplier's $T = 1$ --- and the mature forecast now replaces that placeholder with the tolerance-derived operating point, computed per channel by constrained optimization over the recorded statistics (Section~\ref{sec:bao:thresholds}). The multiplier enters the bundle as a Q16 fixed-point rational, $\eta_{q16} = \lfloor \eta \cdot 2^{16} \rceil$, so a forecast-selected threshold costs the exactness contract nothing: the comparison remains an integer cross product, and the threshold remains data rather than code.
+
+Three properties justify this specific form. \emph{Robustness:} the breakdown property above is what removes an entire class of operational complexity. No contamination-triggered fallback mode is needed, no outlier-rejection pass runs before the estimate, and no frame takes a different code path from any other; the estimator is unconditionally the same arithmetic on every frame, and the tail is handled by the shape of the statistic rather than by logic that has to detect it first. \emph{Self-normalization:} the quantized-norm factor $\mu_0$ of Section~\ref{sec:param:refs} multiplies every bin's statistic equally, hence cancels between $\max_{\mathcal{D}} T$ and $\hat{T}_{\mathrm{null}}$; the fine decision needs no zero-point correction, and more broadly any per-frame, bin-common gain structure divides out --- the rule is CFAR against the frame's own background level by construction. \emph{Exactness:} because $T[f]$ is a ratio of integer power sums, rank comparisons and the threshold comparison can be evaluated in exact integer cross-multiplication without ever forming the quotients; the exact-integer kernel does precisely this, making the emitted decision bit-reproducible and verifiable against an arbitrary-precision reference; Section~\ref{sec:impl:decision} details this arithmetic.
+
+Two degenerate-frame rules complete the definition, both fail-safe toward non-rejection. A designated bin whose reference denominator is zero cannot fire (the per-bin analogue of the coarse path's zero-reference rule); and a frame whose usable bulk $\mathcal{B}$ is not deeper than the calibration rank $\rho$ is declared invalid and emits no rejection --- the detector refuses to flag data against a background estimate it cannot form. Both conditions are vanishingly rare in nominal operation but are defined, deterministic outcomes rather than undefined behavior: in an unattended flagging system, an estimator that cannot form a valid background must default to retaining the data rather than rejecting it.
+
+\subsection*{Detectable versus harmful: the proxy margin}
+
+One quantity closes the argument of this section, and it is the reason the
+method is viable rather than merely exact. The decision rule above is calibrated
+against the \emph{pilot}; what threatens the measurement is the \emph{shelf}.
+Equation~\eqref{eq:shelfproxy} relates them at the transmitter, and the two
+occupy very different bandwidths: the pilot's power falls in one analysis bin of
+width $f_s/K$, while the shelf spreads over $B_{\text{DTV}}$. Comparing the two
+at the level relative to system noise that each produces,
+\begin{equation}
+\label{eq:proxymargin}
+\mathrm{SNR}_{\text{shelf}}
+= \mathrm{PNR}_{\text{bin}}
++ 10\log_{10}\!\left(\frac{P_{\text{shelf}}}{P_{\text{pilot}}}\right)
+- 10\log_{10}\!\left(\frac{B_{\text{DTV}}}{f_s/K}\right),
+\end{equation}
+which at the evaluated values ($11.3$~dB pilot-below-payload, $6$~MHz allocation,
+$3.052$~kHz analysis bin) evaluates to
+$\mathrm{SNR}_{\text{shelf}} = \mathrm{PNR}_{\text{bin}} - 21.6$~dB. The pilot
+therefore becomes detectable $21.6$~dB before the interference it implies
+reaches the same level relative to noise --- and that margin, not the detector's
+exactness, is what makes a per-frame decision useful: it is the gap inside which
+the operating threshold is placed. A rule set at the detection floor rejects
+every frame carrying a detectable pilot, including those whose implied shelf is
+tens of decibels below anything the science can register; a rule set at the
+science tolerance rejects only what matters and retains the rest. Both are the
+same detector with a different $\eta$. Whether the two differ in practice
+depends on how much of the margin the foreground-removal and integration
+stages consume before the residual reaches the power spectrum, which is
+measured per channel in Section~\ref{sec:bao:fisher}. Quantifying the tolerance, and hence the operating point, requires propagating the shelf through the
+foreground-removal stage of the cosmological pipeline; Chapter~\ref{sec:bao} constructs that
+propagation and the tolerance it yields, and the conversion to per-channel thresholds, with the
+measured distribution of inferred shelf levels across the monitored channels, is developed in the
+calibration and results chapters. What this section establishes is a \emph{transmitter-model screening margin}: it is large and computable from the nominal pilot-to-payload relation and the receiver analysis bandwidth.  It does not yet establish that the received shelf follows the pilot with a fixed ratio across an allocation, nor that the scalar pilot-power proxy maps directly onto a post-filter complex-visibility residual.  Those two transfer measurements are explicit closing gates in Sections~\ref{sec:bao:footprint} and~\ref{sec:bao:chain}.
+
+\section{A Worked Example}
+\label{sec:pipeline:example}
+The pipeline is illustrated with one frame of survey data from channel 506 (physical channel 36), captured 2025 July 31 at 15:52:22~\textsc{ut}, drawn from the channel's calibration-era processing cohort of $7010$ valid frames; the frame sits at the median of that cohort's masked population, and the channel's survey-measured anchor is $f_a = 62$ (an always-on channel, so its anchor comes from the fallback median estimator rather than the on-minus-off difference; Section~\ref{sec:pipeline:decision}). The frame's fine spectrum and coarse statistic are quoted from the recorded survey product, which evaluates the statistics of Section~\ref{sec:pipeline:noncoherent} in the analyzer's floating-point path; the bulk quantities below are then evaluated from that recorded spectrum under the bulk definition of Section~\ref{sec:pipeline:decision}, and the exact-integer kernel evaluates the same quantities as exact integers (Chapter~\ref{sec:impl}).
+
+Across the designated window $\mathcal{D} = \{60, \dots, 64\}$, the fine test statistic is
+\[
+T[60..64] = (1.066,\; 8.730,\; 18.615,\; 7.598,\; 1.083),
+\]
+displaying the main-lobe structure of Section~\ref{sec:pipeline:coherent}: a peak at the anchor, correlated shoulders on the adjacent padded bins, and near-unity values by the alternate (independent) bins. The usable null bulk for this frame contains $|\mathcal{B}| = 125$ bins with median $1.009$ and 90th percentile $1.165$. The designated-window maximum is therefore $18.6$, a factor of $18.4$ above the bulk median: the frame is rejected for any plausible calibration pair $(\rho, \eta)$, and the recorded coarse flag concurs ($F/\mu_0 = 1.258 > 1$).
+
+Figure~\ref{fig:example} displays both frames' complete fine spectra with the designated window, usable bulk, and rank baseline drawn; a secondary leakage feature near bin 168 is visible in the exemplar frame, and the rank baseline is insensitive to it --- the robustness property of Section~\ref{sec:pipeline:decision} exhibited incidentally on real data.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figs/fig_worked_example.pdf}
+\caption{The worked example of this subsection: fine spectra $T[f]$ for the two channel-506 frames, with the designated window $f_a \pm 2$ shaded, usable-bulk bins marked, and the bulk median (solid) and illustrative threshold $\eta\, T_{(\rho)}$ (dashed) drawn. (a) The exemplar masked frame: window maximum $18.6$, $18.4\times$ the bulk median. (b) The cohort's weakest valid frame: the coarse statistic sits below the positive-excess boundary ($F/\mu_0 = 0.897$), yet the pilot stands at $3.1\times$ the bulk median on the fine axis --- the coherent-integration sensitivity of Section~\ref{sec:pipeline:coherent} on survey data.}
+\label{fig:example}
+\end{figure}
+
+A more instructive companion is the cohort's weakest valid frame (2025 May 16). Its coarse statistic is $F/\mu_0 = 0.897$ --- below the positive-excess boundary, so the coarse flag retains the frame --- yet its designated-window maximum is $2.59$ against a bulk median of $0.833$, a ratio of $3.1$: the fine designated-set rule rejects it at any multiplier below ${\sim}3$. Of the cohort's $7010$ valid frames, only three fall below the coarse boundary, and this is one of them; on the fine axis it remains an unambiguous detection. (The full survey trawl re-processes a superset of these captures --- $38\,160$ frames for this channel, of which $34$ fall below the boundary, a comparable rate --- and the example's quoted values reproduce digit-for-digit in the superset product, each fine spectrum deriving deterministically from the exact integer row sums of Chapter~\ref{sec:impl}.) This is the coherent-integration sensitivity of Section~\ref{sec:pipeline:coherent} exhibited on survey data rather than in simulation, and it is the concrete evidence motivating the fine designated-set CFAR, rather than the coarse flag, as the candidate runtime decision. The calibration pair $(\rho, \eta)$ required before deployment is set by the campaign of the calibration chapter; the values here are illustrative and do not themselves define an operating point.
+

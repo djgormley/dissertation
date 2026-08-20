@@ -1,0 +1,87 @@
+{
+  "schema_version": "fstat_atsc_waveform_audit_v1",
+  "input_iq": "generated/atsc/atsc_8vsb_complex64.cfile",
+  "num_samples_used": 262144,
+  "sample_rate_hz": 10762237.762237763,
+  "symbol_rate_hz": 10762237.762237763,
+  "channel_width_hz": 6000000.0,
+  "pilot_offset_hz": 309441.0,
+  "expected_pilot_frequency_hz": -2690559.0,
+  "measured_pilot_frequency_hz": -2690559.4405594408,
+  "pilot_frequency_error_hz": -0.4405594407580793,
+  "measured_pilot_to_data_power_db": -11.918446920896088,
+  "measured_pilot_below_data_db": 11.918446920896088,
+  "occupied_bandwidth_hz": 5514775.357736753,
+  "occupied_power_fraction": 0.99,
+  "shelf_flatness_db": 7.879557835926479,
+  "edge_rolloff_check_db": -8.89432816166844,
+  "fft_bin_width_hz": 164.21871585492045,
+  "pilot_window_half_width_hz": 10000.0,
+  "pilot_exclusion_hz": 150000.0,
+  "edge_exclusion_hz": 250000.0,
+  "shelf_psd_median": 2.0580521819649676e-08,
+  "shelf_psd_mean": 2.28620341615753e-08,
+  "band_power_integrated": 0.1344576946516522,
+  "data_power_direct_integration": 0.1265187469610108,
+  "measured_pilot_below_data_direct_db": 12.02391941614048,
+  "measured_pilot_below_data_mean_shelf_db": 12.375031793356088,
+  "quality": {
+    "schema_version": "fstat_atsc_waveform_quality_v1",
+    "quality_passed": true,
+    "quality_score": 1.0,
+    "num_quality_checks_passed": 5,
+    "num_quality_checks": 5,
+    "quality_checks": [
+      {
+        "name": "pilot_frequency_error",
+        "passed": true,
+        "value": 0.4405594407580793,
+        "margin": 999.5594405592419,
+        "units": "Hz",
+        "description": "Absolute pilot frequency error from the expected ATSC pilot offset.",
+        "target": 0.0,
+        "tolerance": 1000.0
+      },
+      {
+        "name": "pilot_level",
+        "passed": true,
+        "value": 11.918446920896088,
+        "margin": 1.381553079103913,
+        "units": "dB",
+        "description": "Measured ATSC pilot power below the estimated data shelf.",
+        "target": 11.3,
+        "tolerance": 2.0
+      },
+      {
+        "name": "occupied_bandwidth",
+        "passed": true,
+        "value": 5514775.357736753,
+        "margin": 665224.6422632467,
+        "units": "Hz",
+        "description": "99% occupied bandwidth inside the nominal 6 MHz channel.",
+        "minimum": 4800000.0,
+        "maximum": 6180000.0
+      },
+      {
+        "name": "shelf_flatness",
+        "passed": true,
+        "value": 7.879557835926479,
+        "margin": 4.120442164073521,
+        "units": "dB",
+        "description": "95th-to-5th percentile PSD spread over the interior data shelf.",
+        "maximum": 12.0
+      },
+      {
+        "name": "edge_rolloff",
+        "passed": true,
+        "value": -8.89432816166844,
+        "margin": 5.89432816166844,
+        "units": "dB",
+        "description": "Mean channel-edge PSD relative to the interior data shelf; more negative is better.",
+        "maximum": -3.0
+      }
+    ]
+  },
+  "quality_passed": true,
+  "quality_score": 1.0
+}

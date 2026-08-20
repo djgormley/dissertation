@@ -1,0 +1,19 @@
+% Editable source for Figure \ref{fig:fused}.
+\begin{tikzpicture}
+\node[ppcontext,minimum width=52mm] (p1) at (0,0) {Phase 1: DP4A projections\\ row sums $\to$ shared memory};
+\node[ppcontext,minimum width=52mm] (p2) at (0,-1.45) {Phase 2: coarse marginals\\ block reduction, atomic add};
+\node[ppcontext,minimum width=52mm] (p3) at (0,-2.9) {Phase 3: cooperative \texttt{fxfft256}\\ disjoint butterfly writes; $|X|^2$ atomic add};
+\node[draw=ppPending!90!black,rounded corners=2pt,fit=(p1)(p2)(p3),inner sep=4.5pt,
+      label={[font=\scriptsize]north:{one 64-thread block per stream ($\times$ 2048 per frame)}}] (blk) {};
+\node[ppglobal] (tap) at (7.9,-0.0) {\texttt{RowSumsTap}\\ debug only; \texttt{NULL} in production};
+\node[ppglobal] (marg) at (7.9,-1.45) {\texttt{PowerTerms} (marginals)\\ optional debug};
+\node[ppglobal] (fine) at (7.9,-2.9) {\texttt{FinePowers}\\ $3 \times 256$ \texttt{uint64}};
+\node[ppcontext,minimum width=78mm] (p4) at (0.0,-4.35) {Phase 4, last-arriving block:\\ completion counter $\to$ re-read\\ finalized sums $\to$ exact decision arithmetic (Sec.~\ref{sec:impl:decision})};
+\node[ppglobal] (mask) at (7.9,-4.35) {\texttt{MaskOut}\\ counter, then mask bit};
+\draw[ppdashedarrow] (p1.east) -- (tap.west);
+\draw[ppdashedarrow] (p2.east) -- (marg.west);
+\draw[pparrowmeasured] (p3.east) -- (fine.west);
+\draw[pparrowmeasured] (fine.south west) to[out=-140,in=75] (p4.north east);
+\draw[pparrowmeasured] (p4) -- (mask);
+\node[pplabel] at (7.9,-3.8) {row sums never reach global memory in production};
+\end{tikzpicture}

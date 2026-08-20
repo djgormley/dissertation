@@ -1,0 +1,15 @@
+{
+  "datatrawl_inventory": 1,
+  "name": "chime-pilots",
+  "telescope": "chime",
+  "source": "cadc-datatrail",
+  "reader": "chime-baseband",
+  "scope": "chime.event.baseband.raw,chime.scheduled.baseband.raw",
+  "scopes": [
+    "chime.event.baseband.raw",
+    "chime.scheduled.baseband.raw"
+  ],
+  "scope_request": null,
+  "freq_ids": "506,521,537,552,568,583,598,614,629,644,660,675,690,706,721,736,752,767,783,798,813,829,844",
+  "created": "2026-07-03T22:06:59+00:00"
+}

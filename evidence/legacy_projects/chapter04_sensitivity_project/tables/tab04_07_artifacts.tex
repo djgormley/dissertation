@@ -1,0 +1,17 @@
+\begin{table}[ht]
+\centering
+\caption{Recommended dissertation sensitivity artifacts.}
+\label{tab:sensitivity-artifacts}
+\begin{tabularx}{\textwidth}{l l Y}
+\toprule
+Artifact & Format & Purpose \\
+\midrule
+injection\_grid\_results & NPZ & Stores raw $P_D({\rm SNR},P_{FA})$ arrays and trial counts. \\
+required\_snr\_table & CSV/JSON & Supports fixed-$P_D$ threshold curves and dissertation tables. \\
+roc\_curves & CSV & Detector operating curves at fixed injected SNR. \\
+normalization\_manifest & JSON & Records pilot-to-shelf conversion, shelf support, offset response, and score floor. \\
+sensitivity\_scaling & CSV/JSON & Records $M$, $K$, pilot-offset, and pilot-ratio sensitivity sweeps. \\
+figure\_manifest & JSON & Connects figures to data products, code version, and detector configuration. \\
+\bottomrule
+\end{tabularx}
+\end{table}

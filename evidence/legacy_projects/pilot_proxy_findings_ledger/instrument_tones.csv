@@ -1,0 +1,7 @@
+atsc_channel,freq_id,f_bb_hz,offset_from_pilot_khz,prominence_db_before,prominence_db_after_analytic_mask,width_bins,identification,action
+14,844,-78129.8,81.19,16.4,16.5,2,-SR/5,notched_in_supplement_only
+17,798,157284.7,-185.48,6.1,6.1,1,unidentified,retained
+25,675,-130200.4,148.88,6.1,6.1,1,-SR/3,notched_in_supplement_only
+28,629,130200.4,-142.77,8.8,8.9,2,+SR/3,notched_in_supplement_only
+29,614,156259.5,-309.45,18.6,18.6,7,+2SR/5,notched_in_supplement_only
+34,537,-156259.5,81.19,12.6,12.3,3,-2SR/5,notched_in_supplement_only

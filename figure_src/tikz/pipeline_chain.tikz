@@ -1,0 +1,23 @@
+% Editable source for Figure \ref{fig:pipeline}.
+\begin{tikzpicture}
+\node[ppmeasured] (x) at (0,0) {frame $\mathbf{X}$\\ $M \times N$ packed \texttt{int4}};
+\node[ppmeasured] (y) at (3.8,0) {segment\\ $L = 128$ sub-frames of $K$};
+\node[ppmeasured] (z) at (7.6,0) {project $\mathbf{Z} = \mathbf{W}^H \mathbf{Y}$\\ $3 \times P$, exact int};
+\node[ppmeasured] (fft) at (11.3,0) {zero-padded DFT\\ $L_F = 256$, per feed};
+\node[ppmeasured] (p) at (7.6,-1.9) {coarse marginal $P_r$\\ survey flag ($\mu_0$-corrected)};
+\node[ppmeasured] (sn) at (11.3,-1.9) {fine powers $S_r[f]$\\ $\sum_m |\cdot|^2$, \texttt{uint64}};
+\node[ppmeasured] (t) at (11.3,-3.7) {ratio\\ $T[f] = 2 S_0 / (S_1 {+} S_2)$};
+\node[ppmodel] (dec) at (7.6,-3.7) {rank CFAR\\ $\max_{\mathcal{D}} T > \eta\, T_{(\rho)}$};
+\node[ppconditional] (mask) at (4.2,-3.7) {mask bit\\ per frame};
+\draw[pparrowmeasured] (x) -- (y);
+\draw[pparrowmeasured] (y) -- (z);
+\draw[pparrowmeasured] (z) -- (fft);
+\draw[pparrowmeasured] (fft) -- (sn);
+\draw[pparrowmeasured] (z) -- (p);
+\draw[pparrowmeasured] (sn) -- (t);
+\draw[pparrowmodel] (t) -- (dec);
+\draw[pparrowconditional] (dec) -- (mask);
+\draw[ppdashedarrow] (p.east) -- (sn.west);
+\node[pplabel] at (9.45,-2.55) {Parseval / exact-marginal tripwire};
+\node[pplabel,text=ppModel!95!black] at (7.6,-4.65) {calibration inputs $(f_a, \mathcal{B}, \rho, \eta)$: per-channel bundle data (Sec.~\ref{sec:pipeline:decision})};
+\end{tikzpicture}

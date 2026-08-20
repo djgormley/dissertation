@@ -1,0 +1,14 @@
+{
+  "K": 128,
+  "M": 1048576,
+  "df1": 2097152,
+  "df2": 4194304,
+  "fine_bin_hz": 3051.7578125,
+  "pilot_offset_mhz": 0.309440559,
+  "pilot_to_integrated_data_db": -11.7,
+  "shelf_bins": 16,
+  "pilot_to_shelf_per_bin_db": 0.3411998265592491,
+  "pilot_to_shelf_per_bin_linear": 1.0817327606271712,
+  "pfa_default": 0.001,
+  "threshold": 1.0037122049331666
+}

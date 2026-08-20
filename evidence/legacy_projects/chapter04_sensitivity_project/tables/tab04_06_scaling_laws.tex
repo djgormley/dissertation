@@ -1,0 +1,16 @@
+\begin{table}[ht]
+\centering
+\caption{Sensitivity-scaling relationships used as design diagnostics. These are not substitutes for injection tests, but they indicate which variables control the operating point.}
+\label{tab:scaling-laws}
+\begin{tabularx}{\textwidth}{l l Y}
+\toprule
+Effect & Approximate dependence & Interpretation \\
+\midrule
+Accumulation length & required weak-signal power $\propto M^{-1/2}$ & Larger $M$ tightens the null distribution and lowers required pilot power, at the cost of latency and buffer requirements. \\
+Pilot-to-shelf convention & $\gamma_{pilot}=N_s10^{-11.7/10}\gamma_{shelf}$ & Changing the assumed shelf support or pilot ratio shifts the reported data-shelf SNR scale. \\
+Frequency offset & $\gamma_{eff}=\gamma_{pilot}|H(\Delta f)|^2$ & A shifted pilot pays an SNR penalty determined by the fine-bin/PFB response. \\
+Fine-bin factor & $\Delta f=\Delta f_{coarse}/K$ & Larger $K$ improves spectral localization but narrows offset tolerance and increases compute. \\
+Guard spacing & reference leakage decreases with guard & Wider guards reduce pilot leakage into references but may make the background estimate less local. \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,112 @@
+\documentclass[11pt,oneside]{report}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{siunitx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{cleveref}
+
+\graphicspath{{figures/}}
+\newcommand{\pfa}{P_{\rm FA}}
+\newcommand{\pd}{P_{\rm D}}
+\newcommand{\snrshelf}{\gamma_{\rm shelf}}
+\newcommand{\snrpilot}{\gamma_{\rm pilot}}
+\newcommand{\Tstat}{T}
+\newcommand{\etaop}{\eta_0}
+\newcommand{\epsscore}{\epsilon_s}
+\newcommand{\Msamp}{M}
+\newcommand{\Kfine}{K}
+\newcommand{\shelf}{\mathrm{shelf}}
+\newcommand{\pilot}{\mathrm{pilot}}
+\newcommand{\snr}{\mathrm{SNR}}
+\newcommand{\Hz}{\,\mathrm{Hz}}
+\newcommand{\kHz}{\,\mathrm{kHz}}
+\newcommand{\MHz}{\,\mathrm{MHz}}
+\newcommand{\db}{\,\mathrm{dB}}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{1.2in}
+{\Huge\bfseries Chapter 4\\[0.3em] Synthetic Signal Model and Detection Sensitivity\par}
+\vspace{0.6in}
+{\Large Dissertation working chapter\par}
+\vspace{0.3in}
+{\large ATSC Pilot RFI Detector\par}
+\vfill
+{\large Dylan J. Gormley\par}
+{\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+
+\setcounter{chapter}{3}
+\input{chapter04_sensitivity.tex}
+
+
+\begin{thebibliography}{9}
+\bibitem{gormley2026draft}
+Dylan J. Gormley and Kevin M. Bandura.
+\newblock A calibrated pilot-tone F-statistic detector and GPU prototype for digital-television RFI mitigation in radio astronomy.
+\newblock Working manuscript draft, 2026.
+
+\bibitem{atsc_a53_2011}
+Advanced Television Systems Committee.
+\newblock \emph{ATSC Digital Television Standard, Part 2: RF/Transmission System Characteristics}.
+\newblock A/53 Part 2:2011, 2011.
+
+\bibitem{kay_detection}
+Steven M. Kay.
+\newblock \emph{Fundamentals of Statistical Signal Processing, Volume 2: Detection Theory}.
+\newblock Prentice Hall, 1998.
+
+\bibitem{van_trees_detection}
+Harry L. Van Trees.
+\newblock \emph{Detection, Estimation, and Modulation Theory, Part I}.
+\newblock Wiley, 2001.
+
+\bibitem{fridman2001rfi}
+P. A. Fridman and W. A. Baan.
+\newblock RFI mitigation methods in radio astronomy.
+\newblock \emph{Astronomy \& Astrophysics}, 378:327--344, 2001.
+
+\bibitem{chime2022overview}
+CHIME Collaboration, M. Amiri, and others.
+\newblock An overview of CHIME, the Canadian Hydrogen Intensity Mapping Experiment.
+\newblock \emph{The Astrophysical Journal Supplement Series}, 261(2):29, 2022.
+
+\bibitem{nita_gary_2007}
+G. M. Nita, D. E. Gary, Z. Liu, G. J. Hurford, and S. M. White.
+\newblock Radio Frequency Interference Excision Using Spectral-Domain Statistics.
+\newblock \emph{Publications of the Astronomical Society of the Pacific}, 119:805--827, 2007.
+
+\bibitem{taylor_chime_sk_2019}
+J. Taylor and others.
+\newblock Spectral Kurtosis-Based RFI Mitigation for CHIME.
+\newblock \emph{Journal of Astronomical Instrumentation}, 8(1):1940004, 2019.
+
+\bibitem{bull_2015}
+P. Bull, P. G. Ferreira, P. Patel, and M. G. Santos.
+\newblock Late-time cosmology with 21 cm intensity mapping experiments.
+\newblock \emph{The Astrophysical Journal}, 803(1):21, 2015.
+\end{thebibliography}
+
+\end{document}

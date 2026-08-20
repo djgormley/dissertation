@@ -1,0 +1,217 @@
+\chapter{Calibration: Anchors, Nulls, \& Operating Points}
+\label{sec:calibration}
+
+Calibration turns the detector's fixed arithmetic into per-channel,
+per-epoch policy data.  It does not retune the pilot to whatever line happens to
+be strongest: the synthesized target remains the nominal ATSC pilot.  Calibration
+localizes the residual offset around that target, characterizes the empirical
+null, identifies intervals for which a floor or correlation time is measurable,
+and selects an operating point under the cosmological cost constraint.  Every
+estimator is allowed to refuse when the archive lacks the population it requires.
+
+\section{Anchor Localization}
+\label{sec:calibration:anchors}
+
+For fine bin $f$, let $T_f^{\mathrm{on}}$ and $T_f^{\mathrm{quiet}}$ denote the
+sets of recorded fine statistics in coarse-detected and coarse-quiet frames.
+The primary anchor estimator is
+\begin{equation}
+  \widehat f_a
+  = \operatorname*{arg\,max}_{f}
+  \left[
+    \operatorname{median}(T_f^{\mathrm{on}})
+    - \operatorname{median}(T_f^{\mathrm{quiet}})
+  \right].
+  \label{eq:calibration:anchor}
+\end{equation}
+Static structure common to both cohorts cancels, so the contrast isolates the
+feature associated with the transmitter state rather than simply returning the
+largest fixed instrumental bin.  A channel with no defensible quiet cohort uses
+a plain-median fallback and is labelled as such; that fallback is adequate to
+place a designated window around an always-present line but does not create a
+transmitter-off null.
+
+The current products place the dominant anchors from hundreds of
+hertz to approximately $-1.37$~kHz from the synthesized tone, within the
+$\pm1.526$~kHz fine span; the lower-band completion extends the same picture,
+with its persistent carriers anchored between $-0.70$ and $+1.26$~kHz.
+Calendar splits also reveal station changes rather
+than gradual drift: channel 32 moves by 11 fine bins and channel 35 by 29, and
+channel 17's recovered anchor shifts between its two on-epochs as the later
+transmitter configuration comes to dominate the archive.  The
+correct calibration object is therefore $(c,e)$, channel and epoch, not channel
+alone.  When an epoch boundary is known, the bundle carries separate anchors;
+a wide union window is a temporary compatibility measure, not a substitute for
+an epoch-specific calibration.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figs/fig_epoch_operating_points.pdf}
+\caption[Why operating points are epoch-specific]{Why an archive-average
+operating point can describe no physical era.  A station departure can move a
+channel from the occupancy wall into a usable region, while a switch-on can move
+another channel in the opposite direction.  Anchor, bulk mask, threshold, and
+cost are therefore calibrated and versioned by epoch.  The numbers shown are the
+prototype values reported by the present draft; missing Q16 thresholds are left
+missing rather than inferred from the figure.  The frozen export additionally
+carries the epoch pairs of the dated sign-off channels 19, 20, 26, and 27
+(Section~\ref{sec:bao:lowerband}); the figure keeps the original two worked
+examples.}
+\label{fig:calibration:epochs}
+\end{figure}
+
+\section{A Floor Is Not the Smallest Observed Value}
+\label{sec:calibration:nulls}
+
+A sensitivity floor is a property of a specified null population and estimator.
+It is not the minimum value observed in a mixture of quiet and contaminated
+frames.  For a channel with verified quiet data, calibration reports the
+empirical null distribution of the selected statistic, its sample size, the
+block structure used for uncertainty, the tail quantiles relevant to the false
+alarm requirement, and the corresponding shelf-level mapping.  A robust core
+width and an ordinary standard deviation are both useful because a thin
+contaminated tail can leave the former nearly ideal while inflating the latter.
+
+Channels that are effectively always on are censored in the wrong direction for
+an empirical off-state floor.  For them, the calibration can still report:
+
+\begin{enumerate}[leftmargin=2em]
+  \item an analytical or injected-signal sensitivity under the declared noise model;
+  \item the distribution of retained-frame proxy levels under a chosen policy; and
+  \item an upper bound on a quiet-state floor if an independently verified off epoch exists elsewhere.
+\end{enumerate}
+
+It cannot call the least contaminated retained frame an off-state measurement.
+This distinction is especially important for channels 35 and 36, for which the
+full-archive null population is absent or severely limited.  Parenthesized or
+bounded values in Chapter~\ref{sec:bao} remain diagnostic rather than silently
+becoming measured floors.
+
+The fine null is calibrated empirically because the independent-feed Gaussian
+model of Chapter~\ref{sec:pipeline} is only a baseline.  Feed covariance,
+receiver gain structure, spectral leakage, and intermittent non-Gaussian
+features change the effective width and tail.  The exchangeability check for an
+order statistic is performed on held-out quiet blocks: a bulk bin tested against
+the rank of the remaining bulk should exceed it at the combinatorial rate implied
+by that rank.  Agreement is evidence for the rank calibration on that cohort,
+not a universal guarantee across station epochs.
+
+\section{Correlation Time and Refusal Semantics}
+\label{sec:calibration:correlation}
+
+The residual chain needs a coherence scale, but the archive contains dense
+samples only within a short capture and sparse samples between captures.  The
+estimator therefore uses same-day or same-epoch structure functions with
+bootstrap resampling over sidereal-day blocks and reports one of three outcomes:
+
+\begin{equation}
+  \widehat\tau_c \in
+  \{\text{measured interval},\; \text{one-sided bound},\; \text{refused}\}.
+\end{equation}
+
+A refusal is propagated as a conservative sidereal-day cap in the screening
+forecast and is visually and numerically distinguished from a measurement.
+Channels 31 and 35 currently carry measured values near 34 and 45 minutes,
+respectively; channel 33 carries an upper bound; and channels 29 and 34 remain
+sensitive to the unresolved cadence gap.  Because the verdict for channel 29 can
+change by orders of magnitude across that gap, a contiguous-scan campaign is a
+required measurement rather than an optional precision improvement.
+
+\section{Per-Epoch Operating Points}
+\label{sec:calibration:operating}
+
+For each channel and epoch, the calibration searches candidate decision policies
+and minimizes the forecast cost
+\begin{equation}
+  \mathcal{C}(\pi)=\frac{1+r_{\rm var}(\pi)}{1-f(\pi)}
+\end{equation}
+subject to the separate coherent-bias constraint
+$r_{\rm sys}(\pi)\le r_{{\rm sys},\rm tol}$ and the stability gates of
+Chapter~\ref{sec:bao}. Until the visibility transfer is measured, the survey
+reports $r_{\rm proxy}$ and carries $r_{\rm var}=g_{\rm var}r_{\rm proxy}$ and
+$r_{\rm sys}=g_{\rm sys}r_{\rm proxy}$ as explicit calibration closures rather
+than silently setting them equal.  On the coarse axis the policy is a threshold $\eta$; on
+the fine axis it is $(f_a,\mathcal D,\mathcal B,\rho,\eta_{q16})$.  Feasibility
+must hold on the full calibration block and on its era-preserving halves.  Among
+policies within a 2\% cost plateau, the selection minimizes the worst holdout
+cost before applying fixed tie-breaks.  This prevents a numerically sharp optimum
+from being chosen on a statistically flat surface.
+
+\begin{table}[t]
+\centering
+\caption{Prototype epoch split for channels whose station environment changes
+the operating regime.  Values are those already present in the draft analysis.
+The exact selected $\eta^*$ and Q16 bundle values were not included in the source
+archive supplied for this revision and are therefore marked pending.}
+\label{tab:calibration:epochs}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{c>{\raggedright\arraybackslash}Xcccc}
+\toprule
+Channel & Epoch & \shortstack{Coarse\\masked} & \shortstack{Fine\\masked $f$} & \shortstack{Fine\\residual $r$} & \shortstack{$\eta^*$ /\\Q16} \\
+\midrule
+32 & pre-2021 station era & 99.8\% & 7 frames retained & not certified & \pending \\
+32 & post-2021 departure & 59.0\% & 43.3\% & 0.0155 & \pending \\
+35 & pre-2021 quiet era & 46.1\% & 18.1\% & dilation tier & \pending \\
+35 & post-2021 switch-on & 94.2\% & 98.8\% & 0.237 & \pending \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:calibration:epochs} makes the consequence concrete.  Channel 32's
+current epoch is more favorable than its archive average, while channel 35's is
+less favorable.  A single archive-wide threshold would blend physically
+different transmitters, anchors, and duty cycles.  The runtime bundle therefore
+carries an epoch validity interval and refuses to load a calibration outside it.
+
+\section{Legacy Sensitivity Scale and the Cost of Tail Cutting}
+\label{sec:calibration:legacywidth}
+
+The earlier positive-excess detector admits a useful dimensionless sensitivity
+coordinate.  If a shelf SNR $s$ moves the mean statistic by $C s$ and the
+idealized null width is
+\begin{equation}
+  \sigma = \sqrt{\frac{1}{R}+\frac{1}{2R}},
+  \qquad k = \frac{Cs}{\sigma},
+\end{equation}
+then the detection curves at different row counts collapse approximately onto
+one curve in $k$.  In the retained development study, the width crossing
+$k=1$ gave $P_{\rm d}=0.833$ at $-34.30$~dB for the measured $512$-row trials;
+the analytically scaled full-frame value was $P_{\rm d}=0.841$ at
+$-47.85$~dB.  The latter was not a deployment-scale injection measurement and
+is retained only as the scaling prediction that the current-geometry sweep must
+test.
+
+The same coordinate clarifies why moving a keep threshold deep into the left
+tail is not a substitute for sensitivity.  Under the shifted-Gaussian model, a
+threshold two null widths below the mean retains $2.3\%$ of clean frames rather
+than $50\%$: approximately $22\times$ less exposure and $4.7\times$ worse map
+noise at fixed survey time.  The contamination fraction among retained frames
+improves by only $1.2\times$ for $k=0.1$, $1.6\times$ for $k=0.3$, and
+$5.4\times$ even at $k=1$.  Below the width crossing, both signal and null are
+retained at nearly the same rate, so purity changes slowly while exposure falls
+exponentially.  Moreover, low statistic values need not be especially pure:
+power entering a reference cell depresses the ratio, so reference contamination
+can populate the far left tail.
+
+This legacy calculation explains the role of the coarse mean crossing as a
+parameter-free health diagnostic, not as the final science policy.  The present
+fine-stage rule instead calibrates its rank and multiplier on measured
+transmitter-off epochs and selects the operating point against the cosmological
+cost of Chapter~\ref{sec:bao}.  Injection retention, a pilot-free floor,
+reference-cell vetoes, and per-channel occupancy priors are the measurements
+that constrain the $k\ll1$ regime.  Appendix~\ref{app:legacy} preserves the
+older derivation and its source products so this design argument can be reused
+without importing its superseded detector geometry.
+
+\section{Closing Calibration Campaign}
+\label{sec:calibration:closing}
+
+The final campaign produces one immutable record per channel--epoch pair:
+anchor and uncertainty; designated and bulk masks; null sample count and block
+definition; false-alarm curve; selected rank and Q16 multiplier; masked fraction
+and residual on disjoint holdout blocks; correlation-time outcome; proxy-transfer
+version; and all source/product hashes.  It also includes simultaneous spectra
+across each 6-MHz allocation and contaminated complex visibilities before and
+after the sidereal filter.  Those latter products close the two transfer gates
+that a pilot-only calibration cannot close by itself.

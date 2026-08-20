@@ -1,0 +1,866 @@
+diff --git a/analysis/aggressiveness_study.py b/analysis/aggressiveness_study.py
+index d63b5e7..8df7349 100644
+--- a/analysis/aggressiveness_study.py
++++ b/analysis/aggressiveness_study.py
+@@ -18,6 +18,7 @@ from pilot_proxy.plot_style import setup_matplotlib
+ from scipy.stats import norm  # noqa: E402
+ 
+ plt = setup_matplotlib()
++PCT = r"\%" if plt.rcParams["text.usetex"] else "%"
+ OUT = _paths.OUT
+ COARSE_MHZ = 400.0 / 1024.0
+ C_A, C_B, C_C = "#0072B2", "#D55E00", "#009E73"
+@@ -27,7 +28,9 @@ study = {int(r["atsc_channel"]): r for r in
+          csv.DictReader(open(OUT / "empirical_zero_points.csv"))}
+ chans = sorted({int(k[2:].split("_")[0]) for k in z.files})
+ 
+-KS = np.linspace(0.0, 3.0, 61)
++# k < 0 places the ceiling ABOVE the measured core (the region the adopted
++# operating point actually occupies); k > 0 is the aggressive one-sided cut.
++KS = np.linspace(-1.5, 3.0, 91)
+ TRUNC = 0.8796  # std correction for a +/-2.5-sigma truncated Gaussian window
+ 
+ per = {}
+@@ -41,7 +44,7 @@ for ch in chans:
+     with np.errstate(divide="ignore", invalid="ignore"):
+         f = 2.0 * pt / pr
+     fv = f[valid & np.isfinite(f)]
+-    mu0 = float(s["mu0_manifest"])
++    mu0 = float(s["mu0_analytic"])
+     c = float(s["mu0_empirical"])
+     w = fv[np.abs(fv - c) <= 6e-3 * mu0]
+     sigma = float(w.std(ddof=1)) / TRUNC
+@@ -77,11 +80,16 @@ ax1.plot(KS, rec_bk, color=C_C, lw=1.6,
+          label="band-keep ($\\tau-3\\sigma \\leq F \\leq \\tau$)")
+ ax1.plot(KS, h0_curve, color="0.5", ls="--", lw=1.0,
+          label="pure-H0 expectation")
+-ax1.set_xlabel(r"threshold depth below measured core  $k$  "
+-               r"[$\sigma_{\rm core}$]")
+-ax1.set_ylabel("recovered bandwidth [MHz]")
+-ax1.set_title(f"(a) recovered bandwidth vs aggressiveness "
+-              f"({len(per)} trusted channels)", fontsize=10)
++ax1.axvline(0.0, color="0.55", lw=0.8, ls=":")
++ax1.text(0.03, 0.03, "ceiling above core\n($k<0$)", transform=ax1.transAxes,
++         fontsize=7.5, color="0.35", va="bottom")
++ax1.text(0.45, 0.03, "one-sided cut below core", transform=ax1.transAxes,
++         fontsize=7.5, color="0.35", va="bottom")
++ax1.set_xlabel(r"threshold offset below measured core  $k$  "
++               r"[$\sigma_{\rm core}$]  (negative: ceiling above core)")
++ax1.set_ylabel("kept pilot-channel bandwidth [MHz]")
++ax1.set_title(f"(a) kept bandwidth vs threshold offset "
++              f"({len(per)} null-calibrated channels)", fontsize=10)
+ ax1.legend(fontsize=8)
+ ax1.grid(color="0.92", lw=0.5)
+ ax1.set_axisbelow(True)
+@@ -94,9 +102,10 @@ for (ch, lbl), col in zip(SHOW, ("#D55E00", "#7B4FA6", "#00795A",
+         continue
+     ax2.plot(KS, 100 * per[ch]["cont_1s"], color=col, lw=1.5, label=lbl)
+     ax2.plot(KS, 100 * per[ch]["cont_bk"], color=col, lw=1.2, ls="--")
+-ax2.set_xlabel(r"threshold depth below measured core  $k$  "
+-               r"[$\sigma_{\rm core}$]")
+-ax2.set_ylabel("contamination fraction of KEPT data [%]")
++ax2.axvline(0.0, color="0.55", lw=0.8, ls=":")
++ax2.set_xlabel(r"threshold offset below measured core  $k$  "
++               r"[$\sigma_{\rm core}$]  (negative: ceiling above core)")
++ax2.set_ylabel(f"contamination fraction of kept data [{PCT}]")
+ ax2.set_title("(b) solid: one-sided keep;  dashed: band-keep", fontsize=10)
+ ax2.legend(fontsize=7.5)
+ ax2.grid(color="0.92", lw=0.5)
+@@ -110,24 +119,26 @@ fig.savefig(OUT / "fig_aggressive_masking_tradeoff.pdf", bbox_inches="tight")
+ with open(OUT / "aggressive_masking.csv", "w", newline="") as fh:
+     w = csv.writer(fh)
+     w.writerow(["atsc_channel", "sigma_core_1e3_of_mu0",
++                "kept_km1", "contfrac_km1",
+                 "kept_k0", "contfrac_k0", "kept_k1", "contfrac_k1",
+                 "kept_k165", "contfrac_k165", "kept_k233", "contfrac_k233",
+                 "keptband_k0", "contfracband_k0",
+                 "keptband_k165", "contfracband_k165"])
++    def kidx(kk):
++        return int(np.argmin(np.abs(KS - kk)))
+     for ch, p in sorted(per.items()):
+         s = study[ch]
+-        mu0 = float(s["mu0_manifest"])
+-        idx = {0.0: 0, 1.0: 20, 1.65: 33, 2.33: 47}
++        mu0 = float(s["mu0_analytic"])
+         row = [ch, f"{1e3*p['sigma']/mu0:.2f}"]
+-        for kk in (0.0, 1.0, 1.65, 2.33):
+-            i = idx[kk]
++        for kk in (-1.0, 0.0, 1.0, 1.65, 2.33):
++            i = kidx(kk)
+             row += [f"{p['kept_1s'][i]:.4f}", f"{p['cont_1s'][i]:.4f}"]
+         for kk in (0.0, 1.65):
+-            i = idx[kk]
++            i = kidx(kk)
+             row += [f"{p['kept_bk'][i]:.4f}", f"{p['cont_bk'][i]:.4f}"]
+         w.writerow(row)
+ 
+-i0, i165 = 0, 33
++i0, i165 = int(np.argmin(np.abs(KS))), int(np.argmin(np.abs(KS - 1.65)))
+ print(f"trusted channels: {len(per)}")
+ print(f"k=0    : one-sided {rec_1s[i0]:.2f} MHz | band {rec_bk[i0]:.2f} MHz")
+ print(f"k=1.65 : one-sided {rec_1s[i165]:.2f} MHz | band {rec_bk[i165]:.2f} MHz")
+diff --git a/analysis/build_concept_fig.py b/analysis/build_concept_fig.py
+index 0da871b..6a371af 100644
+--- a/analysis/build_concept_fig.py
++++ b/analysis/build_concept_fig.py
+@@ -11,6 +11,7 @@ import _paths  # noqa: F401  (repo src on sys.path + shared locations)
+ from pilot_proxy.plot_style import setup_matplotlib
+ 
+ plt = setup_matplotlib()
++PCT = r"\%" if plt.rcParams["text.usetex"] else "%"
+ OUT = _paths.OUT
+ C_H0, C_SIG, C_REF = "0.35", "#009E73", "#D55E00"
+ C_TAU, C_BAND = "#0072B2", "#7B4FA6"
+@@ -38,7 +39,7 @@ ax1.text(-1.88, 2.2e-4, r'"aggressive" $\tau$ $-2\sigma$', color=C_TAU,
+ ax1.axvline(-3.5, color=C_BAND, lw=1.2, ls="-.")
+ ax1.text(-3.38, 2.2e-4, "band floor", color=C_BAND, fontsize=8.5,
+          rotation=90, va="bottom")
+-ax1.annotate("kept at $-2\\sigma$:\nclean 2.3%\nref-leak $\\approx$ all of it",
++ax1.annotate(f"kept at $-2\\sigma$:\nclean 2.3{PCT}\nref-leak $\\approx$ all of it",
+              xy=(-4.6, 3e-3), fontsize=8, color=C_REF, ha="center")
+ ax1.set_xlabel(r"$(F-\hat{\mu}_0)/\sigma_{\rm core}$")
+ ax1.set_ylabel("probability density (log)")
+@@ -70,7 +71,8 @@ ax2.set_axisbelow(True)
+ ax2t = ax2.twiny()  # no second scale -- annotate bandwidth cost as ticks
+ ax2t.set_xlim(0, 3)
+ ax2t.set_xticks([0, 1, 1.65, 2.33, 3])
+-ax2t.set_xticklabels(["keep 50%", "16%", "5%", "1%", "0.1%"], fontsize=7)
++ax2t.set_xticklabels([f"keep 50{PCT}", f"16{PCT}", f"5{PCT}", f"1{PCT}",
++                      f"0.1{PCT}"], fontsize=7)
+ ax2t.set_xlabel("bandwidth kept (pure H0)", fontsize=8)
+ fig.suptitle("Schematic: one-sided depth vs kept-data composition "
+              "(populations illustrative, scaled from ch31/32-like tails)",
+diff --git a/analysis/build_empirical_thresholds.py b/analysis/build_empirical_thresholds.py
+index 9d83a0e..5c186f4 100644
+--- a/analysis/build_empirical_thresholds.py
++++ b/analysis/build_empirical_thresholds.py
+@@ -34,7 +34,7 @@ rows = []
+ worst_bits = 0
+ for ch in chans:
+     s = study[ch]
+-    mu0 = float(s["mu0_manifest"])
++    mu0 = float(s["mu0_analytic"])
+     mu_hat = float(s["mu0_empirical"])
+     trusted = s["zero_point_trusted"] == "1"
+     scal = PF[f"ch{ch}_scalars"]          # [mu0, tns, rnss, fid, ...]
+diff --git a/analysis/build_excess_histograms.py b/analysis/build_excess_histograms.py
+index d9ab98d..ce4d168 100644
+--- a/analysis/build_excess_histograms.py
++++ b/analysis/build_excess_histograms.py
+@@ -19,6 +19,7 @@ import _paths  # noqa: F401  (repo src on sys.path + shared locations)
+ from pilot_proxy.plot_style import setup_matplotlib
+ 
+ plt = setup_matplotlib()
++PCT = r"\%" if plt.rcParams["text.usetex"] else "%"
+ OUT = _paths.OUT
+ INK, C_SUP = "0.3", "#D55E00"
+ KEPT_C, MASK_C, HAT_C = "#0072B2", "#D55E00", "#0072B2"
+@@ -60,7 +61,7 @@ for j, ch in enumerate(chans):
+         f = 2.0 * pt / pr
+     fv = f[valid & np.isfinite(f)]
+     s = study[ch]
+-    mu0 = float(s["mu0_manifest"])
++    mu0 = float(s["mu0_analytic"])
+     mu_hat = float(s["mu0_empirical"])
+     trusted = s["zero_point_trusted"] == "1"
+     x = 1e3 * (fv / mu0 - 1.0)          # pilot excess, tau at 0
+@@ -89,14 +90,14 @@ for j, ch in enumerate(chans):
+         # leak at tau = mu_hat: threshold sits AT the measured core
+         leak_hat_f, leak_hat_s = leak_estimate(x, c, c)
+         ax.text(0.03, 0.80,
+-                f"sub-$\\tau$ signal {100*leak_mu0_f:.1f}% of frames "
+-                f"({100*leak_mu0_s:.0f}% of tail)",
++                f"sub-$\\tau$ signal {100*leak_mu0_f:.1f}{PCT} of frames "
++                f"({100*leak_mu0_s:.0f}{PCT} of tail)",
+                 transform=ax.transAxes, fontsize=5.8)
+     else:
+         leak_mu0_f = leak_mu0_s = leak_hat_f = leak_hat_s = float("nan")
+         ax.text(0.03, 0.80, "core untrusted", transform=ax.transAxes,
+                 fontsize=6, color="0.4")
+-    ax.text(0.03, 0.90, f"kept {100*kept_frac:.1f}%",
++    ax.text(0.03, 0.90, f"kept {100*kept_frac:.1f}{PCT}",
+             transform=ax.transAxes, fontsize=6.2)
+     tcol = C_SUP if ch in SUPPRESSED else "black"
+     ax.set_title(f"ch{ch} (fid {s['freq_id']})", fontsize=7.5, color=tcol,
+diff --git a/analysis/build_histograms_all23.py b/analysis/build_histograms_all23.py
+index 23ef5b1..44644e1 100644
+--- a/analysis/build_histograms_all23.py
++++ b/analysis/build_histograms_all23.py
+@@ -16,6 +16,7 @@ import _paths  # noqa: F401  (repo src on sys.path + shared locations)
+ from pilot_proxy.plot_style import setup_matplotlib
+ 
+ plt = setup_matplotlib()
++PCT = r"\%" if plt.rcParams["text.usetex"] else "%"
+ OUT = _paths.OUT
+ INK, C_SUP, C_HAT, C_TAIL = "0.3", "#D55E00", "#0072B2", "0.75"
+ SUPPRESSED = {14, 21, 25, 28, 36}
+@@ -36,7 +37,7 @@ for j, ch in enumerate(chans):
+         f = 2.0 * pt / pr
+     fv = f[valid & np.isfinite(f)]
+     s = study[ch]
+-    mu0 = float(s["mu0_manifest"])
++    mu0 = float(s["mu0_analytic"])
+     mu_hat = float(s["mu0_empirical"])
+     gap = 1e3 * (mu_hat - mu0) / mu0
+     trusted = s["zero_point_trusted"] == "1"
+@@ -62,7 +63,7 @@ for j, ch in enumerate(chans):
+             f"$\\Delta$={gap:+.1f}" + ("" if trusted else " (untrusted)"),
+             transform=ax.transAxes, fontsize=6.5,
+             color=C_SUP if ch in SUPPRESSED else "black")
+-    ax.text(0.03, 0.80, f"low {100*low:.1f}% / high {100*high:.1f}%",
++    ax.text(0.03, 0.80, f"low {100*low:.1f}{PCT} / high {100*high:.1f}{PCT}",
+             transform=ax.transAxes, fontsize=6)
+     tcol = C_SUP if ch in SUPPRESSED else "black"
+     ax.set_title(f"ch{ch} (fid {s['freq_id']})", fontsize=7.5, color=tcol,
+diff --git a/analysis/seasonal_propagation.py b/analysis/seasonal_propagation.py
+index 8870337..664b72a 100644
+--- a/analysis/seasonal_propagation.py
++++ b/analysis/seasonal_propagation.py
+@@ -18,6 +18,7 @@ import _paths  # noqa: F401  (repo src on sys.path + shared locations)
+ from pilot_proxy.plot_style import setup_matplotlib
+ 
+ plt = setup_matplotlib()
++PCT = r"\%" if plt.rcParams["text.usetex"] else "%"
+ OUT = _paths.OUT
+ 
+ z = np.load(_paths.PERFRAME)
+@@ -37,11 +38,12 @@ month_cnt = np.zeros((len(chans), 12))       # frames per month (all chans)
+ month_hit = np.zeros((len(chans), 12))       # hi frames per month
+ depth = {}
+ qtr = {}                                     # ch -> {(yr,q): [hi, n]}
++qtr_units = {}                               # ch -> {(yr,q): [(hi_u, n_u)]}
+ ym = {}                                      # ch -> {(yr,m): [hi, n]}
+ years_seen = {}                              # yr -> [hi, n] episodic only
+ for i, ch in enumerate(chans):
+     s = study[ch]
+-    mu0 = float(s["mu0_manifest"])
++    mu0 = float(s["mu0_analytic"])
+     mu_hat = float(s["mu0_empirical"])
+     pt = z[f"ch{ch}_p_target_u64"].astype(np.float64)
+     pr = z[f"ch{ch}_p_ref_sum_u64"].astype(np.float64)
+@@ -86,6 +88,16 @@ for i, ch in enumerate(chans):
+                 ymd[(int(y), m)] = [int((hi & sel).sum()), n]
+     qtr[ch] = qd
+     ym[ch] = ymd
++    # per-unit (event) counts per quarter, for block-bootstrap intervals
++    n_u = np.bincount(fui[ok], minlength=t0.size)
++    h_u = np.bincount(fui[hi], minlength=t0.size)
++    qu = {}
++    for j in np.nonzero(fin_u)[0]:
++        if n_u[j] == 0:
++            continue
++        qu.setdefault((int(yr_u[j]), int(mo_u[j]) // 3), []).append(
++            (int(h_u[j]), int(n_u[j])))
++    qtr_units[ch] = qu
+     if episodic[ch]:
+         for y in np.unique(years[years > 0]):
+             sel = ok & (years == y)
+@@ -188,37 +200,95 @@ fig.savefig(OUT / "fig_seasonal_propagation.png", dpi=300,
+ fig.savefig(OUT / "fig_seasonal_propagation.pdf", bbox_inches="tight")
+ 
+ # ---------------- figure 2: secular quarterly time series --------------------
+-fig2, ax = plt.subplots(figsize=(9.2, 4.4))
++# Lines break across quarters with no (or <=200-frame) sampled exposure;
++# intervals are 68% per-event block bootstraps; the strip shows exposure.
++fig2 = plt.figure(figsize=(9.2, 5.6))
++gs2 = fig2.add_gridspec(2, 1, height_ratios=[3.0, 1.0], hspace=0.12)
++ax = fig2.add_subplot(gs2[0])
++axe = fig2.add_subplot(gs2[1], sharex=ax)
+ all_q = sorted({k for ch in epi_chs for k in qtr[ch]})
++y0, q0 = all_q[0]
++y1, q1 = all_q[-1]
++grid = []
++gy, gq = y0, q0
++while (gy, gq) <= (y1, q1):
++    grid.append((gy, gq))
++    gq += 1
++    if gq == 4:
++        gq, gy = 0, gy + 1
+ 
+ 
+ def qx(k):
+     return k[0] + (k[1] + 0.5) / 4.0
+ 
+ 
++xs_grid = np.array([qx(k) for k in grid])
++
++
++def boot_ci(pairs, n_boot=300, seed=31):
++    if len(pairs) < 2:
++        return (float("nan"), float("nan"))
++    h = np.array([u[0] for u in pairs], dtype=float)
++    n = np.array([u[1] for u in pairs], dtype=float)
++    rng2 = np.random.default_rng(seed)
++    U = len(pairs)
++    r = np.empty(n_boot)
++    for b in range(n_boot):
++        pick = rng2.integers(0, U, U)
++        r[b] = h[pick].sum() / max(n[pick].sum(), 1.0)
++    lo, hi_ = np.percentile(r, [16, 84])
++    return (float(lo), float(hi_))
++
++
++def series(qd, qu, floor):
++    ys = np.full(len(grid), np.nan)
++    e_lo = np.zeros(len(grid))
++    e_hi = np.zeros(len(grid))
++    for i, k in enumerate(grid):
++        hn = qd.get(k)
++        if hn and hn[1] > floor:
++            rate = hn[0] / hn[1]
++            ys[i] = 100 * rate
++            lo, hi_ = boot_ci(qu.get(k, []))
++            if np.isfinite(lo):
++                e_lo[i] = 100 * max(rate - lo, 0.0)
++                e_hi[i] = 100 * max(hi_ - rate, 0.0)
++    return ys, e_lo, e_hi
++
++
+ for ch in chans:
+     if ch not in SHOW:
+         continue
+-    ks = sorted(qtr[ch])
+-    xs = [qx(k) for k in ks if qtr[ch][k][1] > 200]
+-    ys = [100 * qtr[ch][k][0] / qtr[ch][k][1] for k in ks
+-          if qtr[ch][k][1] > 200]
+-    ax.plot(xs, ys, "-o", ms=3, lw=1.1, color=SHOW[ch], label=f"ch{ch}",
+-            alpha=0.85)
+-agg_x, agg_y = [], []
+-for k in all_q:
+-    h = sum(qtr[ch].get(k, [0, 0])[0] for ch in epi_chs)
+-    n = sum(qtr[ch].get(k, [0, 0])[1] for ch in epi_chs)
+-    if n > 500:
+-        agg_x.append(qx(k))
+-        agg_y.append(100 * h / n)
+-ax.plot(agg_x, agg_y, "k-", lw=2.4, label="episodic channels", zorder=5)
+-ax.set_xlabel("year")
+-ax.set_ylabel("high-tail (detection) rate [% of frames]")
+-ax.set_title("Quarterly detection rate over the archive span", fontsize=10.5)
++    ys, e_lo, e_hi = series(qtr[ch], qtr_units[ch], 200)
++    ax.errorbar(xs_grid, ys, yerr=[e_lo, e_hi], fmt="-o", ms=3, lw=1.1,
++                color=SHOW[ch], label=f"ch{ch}", alpha=0.85, capsize=1.5,
++                elinewidth=0.8)
++agg_qd, agg_qu = {}, {}
++for ch in epi_chs:
++    for k, v in qtr[ch].items():
++        e = agg_qd.setdefault(k, [0, 0])
++        e[0] += v[0]
++        e[1] += v[1]
++    for k, v in qtr_units[ch].items():
++        agg_qu.setdefault(k, []).extend(v)
++ys, e_lo, e_hi = series(agg_qd, agg_qu, 500)
++ax.errorbar(xs_grid, ys, yerr=[e_lo, e_hi], fmt="-", color="k", lw=2.4,
++            label="episodic channels", zorder=5, capsize=0, elinewidth=1.0)
++ax.set_ylabel(f"high-tail (detection) rate [{PCT} of frames]")
++ax.set_title("Quarterly per-frame detection rates within sampled exposure "
++             f"(68{PCT} per-event intervals)", fontsize=10.5)
++ax.tick_params(labelbottom=False)
+ ax.legend(fontsize=8, ncol=3)
+ ax.grid(color="0.92", lw=0.6)
+ ax.set_axisbelow(True)
++expo = np.array([agg_qd.get(k, [0, 0])[1] for k in grid], dtype=float)
++axe.bar(xs_grid, np.maximum(expo, 0.5), width=0.22, color="0.8", zorder=2)
++axe.set_yscale("log")
++axe.set_ylim(bottom=100)
++axe.set_ylabel("frames")
++axe.set_xlabel("year")
++axe.grid(color="0.92", lw=0.6, axis="y", which="both")
++axe.set_axisbelow(True)
+ fig2.tight_layout()
+ fig2.savefig(OUT / "fig_secular_rates.png", dpi=300, bbox_inches="tight")
+ fig2.savefig(OUT / "fig_secular_rates.pdf", bbox_inches="tight")
+diff --git a/analysis/tail_decomposition.py b/analysis/tail_decomposition.py
+index 4b400cb..7943cf4 100644
+--- a/analysis/tail_decomposition.py
++++ b/analysis/tail_decomposition.py
+@@ -17,6 +17,7 @@ import _paths  # noqa: F401  (repo src on sys.path + shared locations)
+ from pilot_proxy.plot_style import setup_matplotlib
+ 
+ plt = setup_matplotlib()
++PCT = r"\%" if plt.rcParams["text.usetex"] else "%"
+ OUT = _paths.OUT
+ DRAO_LON_H = -119.6175 / 15.0
+ C_LOW, C_CORE, C_HIGH = "#D55E00", "0.55", "#009E73"
+@@ -30,7 +31,7 @@ SHOW = [32, 31, 35, 21]
+ 
+ def analyze(ch):
+     s = study[ch]
+-    mu0 = float(s["mu0_manifest"])
++    mu0 = float(s["mu0_analytic"])
+     mu_hat = float(s["mu0_empirical"])
+     pt = z[f"ch{ch}_p_target_u64"].astype(np.float64)
+     pr = z[f"ch{ch}_p_ref_sum_u64"].astype(np.float64)
+@@ -72,19 +73,42 @@ def analyze(ch):
+     p_low = len(units_low) / len(all_units)
+     p_low_given_high = (len(units_low & units_high) / len(units_high)
+                         if units_high else float("nan"))
+-    # diurnal profiles of tail rates
+-    tf = t0[fui]
+-    hours = ((tf / 3600.0 + DRAO_LON_H) % 24.0).astype(int)
++    # diurnal profiles of tail rates, with hourly denominators and
++    # per-event (unit) block-bootstrap 68% intervals: frames within a
++    # capture unit are not independent, so resample whole units.
++    n_u = np.bincount(fui[ok], minlength=t0.size)
++    lo_u = np.bincount(fui[low], minlength=t0.size)
++    hi_u = np.bincount(fui[high], minlength=t0.size)
++    ok_u = np.isfinite(t0) & (t0 > 1e9) & (n_u > 0)
++    hours_u = np.full(t0.size, -1)
++    hours_u[ok_u] = ((t0[ok_u] / 3600.0 + DRAO_LON_H) % 24.0).astype(int)
++    rng = np.random.default_rng(23)
+     prof_low = np.full(24, np.nan)
+     prof_high = np.full(24, np.nan)
++    band_low = np.full((24, 2), np.nan)
++    band_high = np.full((24, 2), np.nan)
++    denom = np.zeros(24)
+     for h in range(24):
+-        selh = ok & (hours == h)
+-        if selh.sum() > 100:
+-            prof_low[h] = (low & selh).sum() / selh.sum()
+-            prof_high[h] = (high & selh).sum() / selh.sum()
++        us = np.nonzero(hours_u == h)[0]
++        nh = n_u[us].sum()
++        denom[h] = nh
++        if nh <= 100:
++            continue
++        prof_low[h] = lo_u[us].sum() / nh
++        prof_high[h] = hi_u[us].sum() / nh
++        U = us.size
++        bl, bh = np.empty(300), np.empty(300)
++        for b in range(300):
++            pick = us[rng.integers(0, U, U)]
++            nb = max(n_u[pick].sum(), 1)
++            bl[b] = lo_u[pick].sum() / nb
++            bh[b] = hi_u[pick].sum() / nb
++        band_low[h] = np.percentile(bl, [16, 84])
++        band_high[h] = np.percentile(bh, [16, 84])
+     return dict(res=res, nt=nt, nr=nr, low=low, core=core, high=high,
+                 p_low=p_low, p_low_given_high=p_low_given_high,
+-                prof_low=prof_low, prof_high=prof_high)
++                prof_low=prof_low, prof_high=prof_high,
++                band_low=band_low, band_high=band_high, denom=denom)
+ 
+ 
+ print(f"{'ch':>3} {'class':>5} {'n':>6} {'target/base':>12} {'refs/base':>10}")
+@@ -100,47 +124,78 @@ for ch in SHOW:
+           f"(enhancement x{a['p_low_given_high']/max(a['p_low'],1e-9):.1f})")
+ 
+ # ---- figure ------------------------------------------------------------------
+-fig, axes = plt.subplots(1, 2, figsize=(11.2, 4.5))
+-ax = axes[0]
++from matplotlib.colors import LogNorm
++from matplotlib.patches import Patch
++from matplotlib.lines import Line2D
++
++fig = plt.figure(figsize=(11.2, 5.0))
++gs = fig.add_gridspec(2, 2, width_ratios=[1.0, 1.08],
++                      height_ratios=[2.6, 1.0], hspace=0.12, wspace=0.24)
++ax = fig.add_subplot(gs[:, 0])
+ a = results[32]
+-sub = {}
++sel = a["core"]
++x_c = 10 * np.log10(a["nt"][sel])
++y_c = 10 * np.log10(a["nr"][sel])
++H, ex, ey = np.histogram2d(x_c, y_c, bins=140,
++                           range=[[-6, 14], [-6, 14]])
++ax.pcolormesh(ex, ey, H.T, norm=LogNorm(vmin=0.8), cmap="Greys",
++              rasterized=True, zorder=0)
++cx = 0.5 * (ex[:-1] + ex[1:])
++cy = 0.5 * (ey[:-1] + ey[1:])
++ax.contour(cx, cy, H.T, levels=[10, 100, 1000], colors="0.25",
++           linewidths=0.6, zorder=4)
+ rng = np.random.default_rng(7)
+-for cls, c, m in (("core", C_CORE, "."), ("high", C_HIGH, "^"),
+-                  ("low", C_LOW, "v")):
++for cls, c, m in (("high", C_HIGH, "^"), ("low", C_LOW, "v")):
+     sel = a[cls]
+     idx = np.flatnonzero(sel)
+     if idx.size > 4000:
+         idx = rng.choice(idx, 4000, replace=False)
+     ax.plot(10 * np.log10(a["nt"][idx]), 10 * np.log10(a["nr"][idx]),
+-            m, ms=2.5 if cls == "core" else 3.5, color=c, alpha=0.35,
+-            mew=0, label=f"{cls} tail" if cls != "core" else "core")
++            m, ms=3.5, color=c, alpha=0.35, mew=0, rasterized=True)
+ ax.axhline(0, color="0.6", lw=0.7)
+ ax.axvline(0, color="0.6", lw=0.7)
+ ax.set_xlabel("target power vs unit baseline [dB]")
+ ax.set_ylabel("reference power vs unit baseline [dB]")
+ ax.set_title("(a) ch32: what moved, target or references?", fontsize=10)
+-ax.legend(fontsize=8, loc="upper left")
++ax.legend(handles=[
++    Patch(fc="0.55", label="core (log density + contours)"),
++    Line2D([], [], marker="^", ls="", color=C_HIGH, label="high tail"),
++    Line2D([], [], marker="v", ls="", color=C_LOW, label="low tail")],
++    fontsize=8, loc="upper left")
+ ax.grid(color="0.93", lw=0.5)
+ ax.set_axisbelow(True)
+ ax.set_xlim(-6, 14)
+ ax.set_ylim(-6, 14)
+ 
+-ax = axes[1]
++axb = fig.add_subplot(gs[0, 1])
++axd = fig.add_subplot(gs[1, 1], sharex=axb)
+ for ch, c in ((32, "#D55E00"), (31, "#7B4FA6"), (35, "#00795A")):
+     a = results[ch]
+-    ax.plot(range(24), 100 * a["prof_low"], "-", color=c, lw=1.5,
+-            label=f"ch{ch} low tail")
+-    ax.plot(range(24), 100 * a["prof_high"], "--", color=c, lw=1.1,
+-            label=f"ch{ch} high tail")
+-ax.set_xlabel("local solar hour at DRAO")
+-ax.set_ylabel("tail rate [% of frames]")
+-ax.set_title("(b) both tails share diurnal structure "
+-             "(solid: low; dashed: high)", fontsize=10)
+-ax.set_xticks(range(0, 24, 3))
+-ax.legend(fontsize=7, ncol=3)
+-ax.grid(color="0.93", lw=0.5)
+-ax.set_axisbelow(True)
++    axb.plot(range(24), 100 * a["prof_low"], "-", color=c, lw=1.5,
++             label=f"ch{ch} low tail")
++    axb.fill_between(range(24), 100 * a["band_low"][:, 0],
++                     100 * a["band_low"][:, 1], color=c, alpha=0.13, lw=0)
++    axb.plot(range(24), 100 * a["prof_high"], "--", color=c, lw=1.1,
++             label=f"ch{ch} high tail")
++    axb.fill_between(range(24), 100 * a["band_high"][:, 0],
++                     100 * a["band_high"][:, 1], color=c, alpha=0.13, lw=0)
++    axd.plot(range(24), a["denom"] / 1e3, "-", color=c, lw=1.0)
++axb.set_ylabel(f"tail rate [{PCT} of frames]")
++axb.set_title("(b) both tails share diurnal structure\n"
++              f"(solid: low; dashed: high; 68{PCT} per-event intervals)",
++              fontsize=10)
++axb.tick_params(labelbottom=False)
++ylo, yhi = axb.get_ylim()
++axb.set_ylim(ylo - 0.30 * (yhi - ylo), yhi)
++axb.legend(fontsize=6.5, ncol=3, loc="lower center")
++axb.grid(color="0.93", lw=0.5)
++axb.set_axisbelow(True)
++axd.set_xlabel("local solar hour at DRAO")
++axd.set_ylabel(r"frames [$10^3$]")
++axd.set_xticks(range(0, 24, 3))
++axd.grid(color="0.93", lw=0.5)
++axd.set_axisbelow(True)
+ fig.tight_layout()
+ fig.savefig(OUT / "fig_tail_decomposition.png", dpi=300, bbox_inches="tight")
+-fig.savefig(OUT / "fig_tail_decomposition.pdf", bbox_inches="tight")
++fig.savefig(OUT / "fig_tail_decomposition.pdf", dpi=300, bbox_inches="tight")
+ print("wrote fig_tail_decomposition")
+diff --git a/analysis/threearm_fulldepth.py b/analysis/threearm_fulldepth.py
+index 013c6c9..0ca1101 100644
+--- a/analysis/threearm_fulldepth.py
++++ b/analysis/threearm_fulldepth.py
+@@ -26,6 +26,7 @@ import _paths  # noqa: F401  (repo src on sys.path + shared locations)
+ from pilot_proxy.plot_style import setup_matplotlib
+ 
+ plt = setup_matplotlib()
++PCT = r"\%" if plt.rcParams["text.usetex"] else "%"
+ OUT = _paths.OUT
+ COARSE_MHZ = 0.390625
+ PW = np.load(_paths.POWER)
+@@ -34,11 +35,37 @@ study = {int(r["atsc_channel"]): r for r in
+          csv.DictReader(open(OUT / "empirical_zero_points.csv"))}
+ chans = sorted(study)
+ 
++
++def boot_p999(vals, units, n_boot=300, q=0.999, seed=5):
++    """68% per-event block-bootstrap interval on the p99.9 of vals.
++
++    Frames cluster within capture units; resample whole units via
++    multiplicity weights on the sorted values (weighted percentile)."""
++    if vals.size < 100:
++        return (float("nan"), float("nan"))
++    order = np.argsort(vals)
++    v = vals[order]
++    uu, uinv = np.unique(units[order], return_inverse=True)
++    U = uu.size
++    if U < 2:
++        return (float("nan"), float("nan"))
++    rng = np.random.default_rng(seed)
++    out = np.empty(n_boot)
++    for b in range(n_boot):
++        m = np.bincount(rng.integers(0, U, U), minlength=U)
++        cw = np.cumsum(m[uinv])
++        if cw[-1] == 0:
++            out[b] = np.nan
++            continue
++        out[b] = v[min(np.searchsorted(cw, q * cw[-1]), v.size - 1)]
++    lo, hi = np.nanpercentile(out, [16, 84])
++    return (float(lo), float(hi))
++
+ rows = []
+ ccdf_data = {}
+ for ch in chans:
+     s = study[ch]
+-    mu0 = float(s["mu0_manifest"])
++    mu0 = float(s["mu0_analytic"])
+     mu_hat = float(s["mu0_empirical"])
+     trusted = s["zero_point_trusted"] == "1"
+     pt = PF[f"ch{ch}_p_target_u64"].astype(np.float64)
+@@ -91,12 +118,16 @@ for ch in chans:
+               if keep_b.sum() > 100 else (np.nan, np.nan))
+     q_kept = (np.percentile(pn_db[keep_f], [50, 99.9])
+               if keep_f.sum() > 100 else (np.nan, np.nan))
++    b_lo, b_hi = boot_p999(pn_db[keep_b], fui[keep_b])
++    k_lo, k_hi = boot_p999(pn_db[keep_f], fui[keep_f])
+     rows.append(dict(
+         ch=ch, fid=int(float(s["freq_id"])), n=nv, trusted=int(trusted),
+         kc_an=kc_an, kc=kc, kb=kb, kf=kf, inc=inc, sig_pct=100 * sig,
+         thr_db=10 * np.log10(thr), n_fallback_units=n_fallback,
+         band_p50_db=q_band[0], band_p999_db=q_band[1],
+-        kept_p50_db=q_kept[0], kept_p999_db=q_kept[1]))
++        kept_p50_db=q_kept[0], kept_p999_db=q_kept[1],
++        band_p999_lo=b_lo, band_p999_hi=b_hi,
++        kept_p999_lo=k_lo, kept_p999_hi=k_hi))
+     ccdf_data[ch] = dict(pn_db=pn_db[keep_b], thr_db=10 * np.log10(thr))
+ 
+ L1 = sum(r["kc_an"] for r in rows) * COARSE_MHZ
+@@ -112,7 +143,8 @@ with open(OUT / "threearm_fulldepth.csv", "w", newline="") as fh:
+                 "kept_band", "kept_final", "veto_incremental_frac",
+                 "veto_sigma_pct", "veto_thr_db", "units_fallback_baseline",
+                 "band_p50_db", "band_p999_db", "kept_p50_db",
+-                "kept_p999_db"])
++                "kept_p999_db", "band_p999_lo68", "band_p999_hi68",
++                "kept_p999_lo68", "kept_p999_hi68"])
+     for r in rows:
+         w.writerow([r["ch"], r["fid"], r["n"], r["trusted"],
+                     f"{r['kc_an']:.4f}", f"{r['kc']:.4f}", f"{r['kb']:.4f}",
+@@ -120,7 +152,9 @@ with open(OUT / "threearm_fulldepth.csv", "w", newline="") as fh:
+                     f"{r['sig_pct']:.2f}", f"{r['thr_db']:.3f}",
+                     r["n_fallback_units"],
+                     f"{r['band_p50_db']:.3f}", f"{r['band_p999_db']:.3f}",
+-                    f"{r['kept_p50_db']:.3f}", f"{r['kept_p999_db']:.3f}"])
++                    f"{r['kept_p50_db']:.3f}", f"{r['kept_p999_db']:.3f}",
++                    f"{r['band_p999_lo']:.3f}", f"{r['band_p999_hi']:.3f}",
++                    f"{r['kept_p999_lo']:.3f}", f"{r['kept_p999_hi']:.3f}"])
+ 
+ hdr = (f"{'ch':>3} {'tr':>2} {'keep_an':>8} {'keep_hat':>8} {'band':>6} "
+        f"{'final':>6} {'veto%':>6} {'sig%':>5} {'thr_dB':>7} "
+@@ -138,10 +172,14 @@ print(f"  + band floor                : {L3:.3f}")
+ print(f"  + common-mode power veto    : {L4:.3f}")
+ 
+ # ---------------- figure -------------------------------------------------------
++# Panel (a) channels span the observed classes: quiet cores (15, 20, 26),
++# heavy episodic tails (31, 32), and one calibration-refused channel (24).
+ SHOWA = {15: "#0072B2", 31: "#7B4FA6", 32: "#D55E00", 24: "#A85C85",
+          26: "#009E73", 20: "#E69F00"}
+-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.4, 4.5),
+-                               gridspec_kw={"width_ratios": [1, 1.35]})
++fig = plt.figure(figsize=(11.4, 4.9))
++gs = fig.add_gridspec(2, 2, width_ratios=[1.0, 1.35],
++                      height_ratios=[2.6, 1.0], hspace=0.12, wspace=0.20)
++ax1 = fig.add_subplot(gs[:, 0])
+ for ch, c in SHOWA.items():
+     d = ccdf_data[ch]["pn_db"]
+     if d.size < 100:
+@@ -163,30 +201,40 @@ ax1.legend(fontsize=7.5, ncol=2)
+ ax1.grid(color="0.92", lw=0.6, which="both")
+ ax1.set_axisbelow(True)
+ 
++ax2 = fig.add_subplot(gs[0, 1])
++ax3 = fig.add_subplot(gs[1, 1], sharex=ax2)
+ x = np.arange(len(rows))
+ b999 = np.array([r["band_p999_db"] for r in rows])
+ k999 = np.array([r["kept_p999_db"] for r in rows])
++b_err = np.array([[r["band_p999_db"] - r["band_p999_lo"] for r in rows],
++                  [r["band_p999_hi"] - r["band_p999_db"] for r in rows]])
++k_err = np.array([[r["kept_p999_db"] - r["kept_p999_lo"] for r in rows],
++                  [r["kept_p999_hi"] - r["kept_p999_db"] for r in rows]])
++b_err = np.nan_to_num(np.clip(b_err, 0, None))
++k_err = np.nan_to_num(np.clip(k_err, 0, None))
+ inc = np.array([100 * r["inc"] for r in rows])
+ for xi, b, k in zip(x, b999, k999):
+     ax2.plot([xi, xi], [k, b], "-", color="0.75", lw=1.4, zorder=1)
+-ax2.plot(x, b999, "o", ms=5, color="#D55E00", label="before veto (band only)")
+-ax2.plot(x, k999, "o", ms=5, color="#0072B2", label="after veto (kept)")
+-ax2.set_xticks(x)
+-ax2.set_xticklabels([str(r["ch"]) for r in rows], fontsize=7)
+-ax2.set_xlabel("ATSC channel")
+-ax2.set_ylabel("p99.9 of kept-frame power vs baseline [dB]")
+-ax2.set_title("(b) veto clips the residual power tail of the kept data",
+-              fontsize=10)
+-axb = ax2.twinx()
+-axb.bar(x, inc, width=0.55, color="0.85", zorder=0)
+-axb.set_ylabel("frames vetoed within the band [%]", color="0.45")
+-axb.tick_params(axis="y", colors="0.45")
+-axb.set_ylim(0, max(8.0, 1.15 * inc.max()))
+-ax2.set_zorder(axb.get_zorder() + 1)
+-ax2.patch.set_visible(False)
++ax2.errorbar(x, b999, yerr=b_err, fmt="o", ms=5, color="#D55E00",
++             capsize=1.5, elinewidth=0.8, lw=0,
++             label="before veto (band only)")
++ax2.errorbar(x, k999, yerr=k_err, fmt="o", ms=5, color="#0072B2",
++             capsize=1.5, elinewidth=0.8, lw=0, label="after veto (kept)")
++ax2.set_ylabel("p99.9 kept-frame power\nvs baseline [dB]")
++ax2.set_title("(b) veto clips the residual power tail of the kept data\n"
++              f"(68{PCT} per-event block-bootstrap intervals)", fontsize=10)
++ax2.tick_params(labelbottom=False)
+ ax2.legend(fontsize=8, loc="upper right")
+ ax2.grid(color="0.92", lw=0.6)
+ ax2.set_axisbelow(True)
++ax3.bar(x, inc, width=0.55, color="0.8")
++ax3.set_xticks(x)
++ax3.set_xticklabels([str(r["ch"]) for r in rows], fontsize=7)
++ax3.set_xlabel("ATSC channel")
++ax3.set_ylabel(f"vetoed [{PCT}]")
++ax3.set_ylim(0, max(8.0, 1.15 * np.nanmax(inc)))
++ax3.grid(color="0.92", lw=0.6, axis="y")
++ax3.set_axisbelow(True)
+ fig.tight_layout()
+ fig.savefig(OUT / "fig_threearm_veto.png", dpi=300, bbox_inches="tight")
+ fig.savefig(OUT / "fig_threearm_veto.pdf", bbox_inches="tight")
+diff --git a/analysis/zero_point_study.py b/analysis/zero_point_study.py
+index c5289da..89d3a05 100644
+--- a/analysis/zero_point_study.py
++++ b/analysis/zero_point_study.py
+@@ -53,6 +53,32 @@ def core_zero(f, mu0):
+     return mu_hat, err, window_frac, low_frac, high_frac
+ 
+ 
++def block_err(fv, fui_v, mu_hat, mu0, n_boot=400, seed=11):
++    """Per-event (unit) block-bootstrap error on the core-window mean.
++
++    Frames within a capture unit share conditions, so the naive SEM
++    understates the zero-point uncertainty; resampling whole units is the
++    honest interval."""
++    win = 6e-3 * mu0
++    sel = np.abs(fv - mu_hat) <= win
++    fw, uw = fv[sel], fui_v[sel]
++    if fw.size < 2:
++        return float("nan")
++    order = np.argsort(uw, kind="stable")
++    fw_s, uw_s = fw[order], uw[order]
++    units, starts = np.unique(uw_s, return_index=True)
++    if units.size < 2:
++        return float("nan")
++    sums = np.add.reduceat(fw_s, starts)
++    cnts = np.diff(np.append(starts, fw_s.size))
++    rng = np.random.default_rng(seed)
++    means = np.empty(n_boot)
++    for b in range(n_boot):
++        pick = rng.integers(0, units.size, units.size)
++        means[b] = sums[pick].sum() / max(cnts[pick].sum(), 1)
++    return float(np.std(means, ddof=1))
++
++
+ rows = []
+ frames_by_class_hour = {}
+ for ch in chans:
+@@ -65,8 +91,11 @@ for ch in chans:
+     mu0, tns, rnss, fid, pilot, center = z[f"ch{ch}_scalars"]
+     with np.errstate(divide="ignore", invalid="ignore"):
+         f = 2.0 * pt / pr
+-    fv = f[valid & np.isfinite(f)]
++    okf = valid & np.isfinite(f)
++    fv = f[okf]
++    fui_v = fui[okf]
+     mu_hat, mu_err, window_frac, low_frac, high_frac = core_zero(fv, mu0)
++    mu_err_blk = block_err(fv, fui_v, mu_hat, mu0)
+     mf_now = float(rej[valid].mean())
+     # distrust the empirical zero point when the H0 core is not identifiable
+     signal_dom = (mf_now > 0.9 or window_frac < 0.15
+@@ -87,6 +116,7 @@ for ch in chans:
+     rows.append(dict(
+         ch=ch, fid=int(fid), n_valid=int(fv.size),
+         mu0=float(mu0), mu_hat=mu_hat, mu_err=mu_err,
++        mu_err_blk=mu_err_blk,
+         gap_1e3=1e3 * (mu_hat - mu0) / mu0,
+         window_frac=window_frac, low_frac=low_frac, high_frac=high_frac,
+         signal_dominated=signal_dom,
+@@ -107,12 +137,12 @@ total = len(rows) * COARSE_MHZ
+ 
+ with open(OUT / "empirical_zero_points.csv", "w", newline="") as fh:
+     w = csv.writer(fh)
+-    w.writerow(["atsc_channel", "freq_id", "n_valid", "mu0_manifest",
++    w.writerow(["atsc_channel", "freq_id", "n_valid", "mu0_analytic",
+                 "mu0_empirical", "mu0_empirical_err", "gap_1e3",
+                 "core_window_frac", "low_tail_frac", "high_tail_frac",
+                 "zero_point_trusted",
+-                "mask_frac_manifest_tau", "mask_frac_empirical_tau",
+-                "kept_frac_2sided_veto"])
++                "mask_frac_analytic_tau", "mask_frac_empirical_tau",
++                "kept_frac_2sided_veto", "mu0_empirical_err_block"])
+     for r in rows:
+         w.writerow([r["ch"], r["fid"], r["n_valid"], f"{r['mu0']:.6f}",
+                     f"{r['mu_hat']:.6f}", f"{r['mu_err']:.6f}",
+@@ -121,7 +151,8 @@ with open(OUT / "empirical_zero_points.csv", "w", newline="") as fh:
+                     int(not r["signal_dominated"]),
+                     f"{r['mask_frac_manifest']:.4f}",
+                     f"{r['mask_frac_empirical']:.4f}",
+-                    f"{r['kept_2sided']:.4f}"])
++                    f"{r['kept_2sided']:.4f}",
++                    f"{r['mu_err_blk']:.6f}"])
+ 
+ print(f"{'ch':>3} {'n':>6} {'mu0':>8} {'mu_hat':>8} {'gap(1e-3)':>9} "
+       f"{'mf@mu0':>7} {'mf@hat':>7} {'low%':>6} {'high%':>6} {'trust':>5}")
+@@ -144,21 +175,27 @@ for r in rows:
+     c = (C_SUP if r["ch"] in SUPPRESSED else
+          C_ELE if r["signal_dominated"] or r["gap_1e3"] > 3 else C_NOM)
+     g = r["gap_1e3"]
++    if r["signal_dominated"]:
++        # no identifiable H0 core: the empirical gap is not a calibration
++        ax1.annotate(f"ch{r['ch']}: no null core",
++                     xy=(r["ch"], YLIM * 0.95), xytext=(r["ch"], YLIM * 0.62),
++                     ha="center", fontsize=7, color=c,
++                     arrowprops=dict(arrowstyle="->", color=c, lw=1))
++        continue
+     if abs(g) > YLIM:
+-        ax1.annotate(f"ch{r['ch']}: ${g:+.0f}$" if abs(g) < 1e3 else
+-                     f"ch{r['ch']}: untrusted",
++        ax1.annotate(f"ch{r['ch']}: ${g:+.0f}$",
+                      xy=(r["ch"], YLIM * 0.95), xytext=(r["ch"], YLIM * 0.62),
+                      ha="center", fontsize=7, color=c,
+                      arrowprops=dict(arrowstyle="->", color=c, lw=1))
+         continue
+-    ax1.errorbar(r["ch"], g, yerr=1e3 * r["mu_err"] / r["mu0"],
+-                 fmt="o", ms=4.5, color=c, capsize=2, lw=1,
+-                 alpha=0.4 if r["signal_dominated"] else 1.0)
++    yerr = r["mu_err_blk"] if np.isfinite(r["mu_err_blk"]) else r["mu_err"]
++    ax1.errorbar(r["ch"], g, yerr=1e3 * yerr / r["mu0"],
++                 fmt="o", ms=4.5, color=c, capsize=2, lw=1)
+ ax1.axhline(0, color="0.4", lw=0.8)
+ ax1.set_ylim(-YLIM, YLIM)
+ ax1.set_ylabel(r"$(\hat{\mu}_0-\mu_0)/\mu_0\ [10^{-3}]$")
+-ax1.set_title("Measured vs manifest zero point (mode-anchored H0 core, "
+-              "full depth)", fontsize=10)
++ax1.set_title("Measured vs analytic zero point (mode-anchored H0 core, "
++              "full depth; per-event block-bootstrap errors)", fontsize=10)
+ ax1.grid(axis="y", color="0.92", lw=0.6)
+ ax1.set_axisbelow(True)
+ w = 0.36
+@@ -169,7 +206,7 @@ for r in rows:
+             alpha=0.45)
+     ax2.bar(r["ch"] + w / 2, r["mask_frac_empirical"], width=w, color=c)
+ ax2.axhline(0.5, color="0.25", ls="--", lw=0.9)
+-ax2.set_ylabel(r"mask fraction (left: $\tau=\mu_0$; right: $\tau=\hat{\mu}_0$)")
++ax2.set_ylabel(r"mask fraction (light: $\tau=\mu_0$; dark: $\tau=\hat{\mu}_0$)")
+ ax2.set_xlabel("ATSC physical channel")
+ ax2.set_xticks([r["ch"] for r in rows])
+ ax2.tick_params(axis="x", labelsize=8)
+@@ -178,10 +215,11 @@ ax2.set_axisbelow(True)
+ from matplotlib.lines import Line2D
+ ax1.legend(handles=[
+     Line2D([], [], marker="o", ls="", color=C_SUP, label="suppressed family"),
+-    Line2D([], [], marker="o", ls="", color=C_ELE,
+-           label="signal-elevated / dominated"),
++    Line2D([], [], marker="o", ls="", color=C_ELE, label="signal-elevated"),
++    Line2D([], [], marker="o", ls="", mfc="none", color=C_ELE,
++           label="no null-core calibration (arrows)"),
+     Line2D([], [], marker="o", ls="", color=C_NOM, label="nominal")],
+-    fontsize=7.5, loc="lower left")
++    fontsize=7.5, loc="upper left")
+ fig.savefig(OUT / "fig_empirical_zero_points.png", dpi=300,
+             bbox_inches="tight")
+ fig.savefig(OUT / "fig_empirical_zero_points.pdf", bbox_inches="tight")
+diff --git a/src/pilot_proxy/plot_style.py b/src/pilot_proxy/plot_style.py
+index f48e713..bb197d1 100644
+--- a/src/pilot_proxy/plot_style.py
++++ b/src/pilot_proxy/plot_style.py
+@@ -73,7 +73,11 @@ def setup_matplotlib(*, force_agg: bool = True):
+             has_newtx = False
+         preamble = r"\usepackage{amsmath}"
+         if has_newtx:
++            # newtxmath supplies the AMS symbol set; loading amssymb on top
++            # of it clashes (\Bbbk etc. already defined).
+             preamble += r"\usepackage{newtxtext,newtxmath}"
++        else:
++            preamble += r"\usepackage{amssymb}"
+         matplotlib.rcParams["text.latex.preamble"] = preamble
+ 
+     import matplotlib.pyplot as plt

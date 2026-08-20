@@ -1,0 +1,157 @@
+\chapter{Real-Time Integration Contract \& Operations}
+\label{sec:deployment}
+
+This chapter specifies the real-time integration surface.  It does not claim
+that the detector has already operated as a production \texttt{kotekan} stage.
+The fused kernel has been benchmarked and verified on deployment-class hardware;
+the remaining step is to bind it to the live buffer, synchronization, error, and
+operations contracts described here.  Keeping that distinction explicit avoids
+using an offline archive result as evidence for a live system property.
+
+\section{Stage Boundary and Frame Alignment}
+\label{sec:deployment:stage}
+
+The intended stage sits after channelization and before visibility accumulation.
+It consumes the same packed samples that contribute to a visibility integration
+and emits one validity/mask decision for the corresponding monitored DTV
+allocation.  The acceptance condition is integer alignment: every detector
+frame must cover exactly one visibility integration or an explicitly declared
+integer number of them.  A partial overlap is rejected at configuration time
+because it has no unambiguous mask semantics.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figs/fig_deployment_lifecycle.pdf}
+\caption[Real-time stage lifecycle and failure semantics]{The proposed real-time
+stage lifecycle.  Initialization is part of correctness: geometry and epoch
+validity are checked before launch, outputs are zeroed in the same CUDA stream,
+and a CUDA, completion-counter, or exact-tripwire failure produces an invalid
+frame and operations event.  It never silently substitutes ``keep'' or ``mask''
+for an execution whose decision contract was not satisfied.}
+\label{fig:deployment:lifecycle}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Real-time interface contract.  Concrete C++ type names may change with
+the host framework; the semantic fields and failure outcomes may not.}
+\label{tab:deployment:interface}
+\small
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.18\linewidth}
+                             >{\raggedright\arraybackslash}p{0.30\linewidth}X}
+\toprule
+Surface & Required contract & Failure outcome \\
+\midrule
+Input samples & Contiguous packed complex \texttt{int4}; declared $M,N$, channel, frame identity, and time; immutable until stream completion & Frame invalid; no launch on size or geometry mismatch \\
+Calibration & Channel and epoch validity; weight/norm/twiddle hashes; anchor, masks, rank, Q16 multiplier & Bundle rejected before data taking \\
+CUDA stream & Input readiness event, stream-ordered output initialization, launch, completion event, and downstream wait & Frame invalid and stage health counter incremented \\
+Fine/coarse outputs & Declared spans for power terms, diagnostics, completion/mask word, and optional debug taps & No truncation; size mismatch is configuration failure \\
+Mask semantics & One aligned decision plus a separate validity bit; invalid is not encoded as clean & Downstream policy decides whether invalid data are retained, quarantined, or stop the run \\
+Provenance & Source, binary, toolkit, schema, and configuration hashes; epoch identifier attached to monitoring record & Run cannot enter science mode without complete manifest \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The benchmarked $N=16384$ geometry has a 41.94-ms detector cadence at
+$f_s=390.625$~kHz, whereas the published correlator uses a different integration
+length.  The live stage therefore passes only after the engine's actual frame
+contract is pinned and one-to-one or integer-to-one alignment is demonstrated
+with injected frame identities.  The detector can be regenerated for another
+power-of-two geometry, but the weights, transform bounds, golden vectors, and
+performance acceptance are then a new verified artifact rather than an informal
+runtime switch.
+
+\section{Initialization, Synchronization, and Failure Semantics}
+\label{sec:deployment:failure}
+
+The host wrapper owns all state that the kernel assumes.  Before each launch it
+zeros the fine and coarse accumulation buffers and the completion/mask word in
+the same CUDA stream, binds a calibration bundle whose epoch includes the frame
+time, and records the input-ready dependency.  The downstream consumer waits on
+the detector completion event before reading either the mask or validity bit.
+The raw kernel entry point remains internal so a caller cannot omit the
+completion-word initialization described in Chapter~\ref{sec:impl}.
+
+A live system must distinguish a scientific non-detection from an execution
+failure.  The following conditions set \texttt{valid=false}: geometry mismatch,
+invalid or expired calibration, zero-reference/bulk degeneracy beyond the
+specified detector rules, CUDA launch or asynchronous error, impossible
+completion count, exact-marginal tripwire failure, output checksum failure, or
+missing provenance.  The stage records the reason and the affected frame range.
+It does not manufacture a clean decision.  The collaboration's downstream data
+policy may conservatively quarantine invalid integrations, but that policy is
+outside the detector bit and remains visible.
+
+\section{Operations Runbook}
+\label{sec:deployment:runbook}
+
+A concise run sequence is sufficient because the calibration and binary are
+content-addressed artifacts rather than editable files:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Pre-run validation.} Verify receiver geometry, frame alignment,
+  GPU capability, free device memory, bundle epoch, all hashes, and the signed
+  pilot-injection convention.  Reject mixed or expired artifacts.
+  \item \textbf{Acceptance burst.} Process a deterministic quiet vector, a
+  signed-offset injected pilot, a zero-denominator case, and a nonzero-prefilled
+  mask-word case.  Require equality with the independent reference and the
+  staged kernel path.
+  \item \textbf{Science mode.} Enable the stage only after the acceptance burst;
+  record per-frame validity, mask, coarse/fine tripwire status, kernel duration,
+  and calibration identifier.
+  \item \textbf{Respond to a tripwire.} Stop promoting affected frames to science
+  products, preserve the input/product identifiers, capture a debug-tap
+  reproduction, and compare against the reference before resuming.
+  \item \textbf{Change control.} Treat any source, compiler, toolkit, geometry,
+  twiddle, weight, schema, or calibration change as a new manifest.  Code or
+  geometry changes repeat the full verification suite; an epoch calibration
+  change repeats the calibration and acceptance gates.
+\end{enumerate}
+
+\section{Monitoring: Tripwire, Sentinel, and Drift}
+\label{sec:deployment:monitoring}
+
+The exact-marginal tripwire compares independently accumulated coarse and fine
+marginals as integers.  It detects implementation and memory-path disagreement;
+it does not detect an astrophysical line at the wrong frequency.  A separate
+schedule-agnostic sentinel compares persistent coarse excess with the
+fine-designated decision.  Sustained coarse excess on frames the designated
+window does not reject is evidence for a moved anchor, an additional transmitter,
+or power outside the current census mask and triggers re-localization at the
+next epoch boundary.
+
+This sentinel is required by a concrete legacy failure, not only by defensive
+design.  In the earlier 23-channel survey, channel 33 appeared healthy inside
+the statistic --- a near-$0.5$ mask fraction and no measured target-cell leak ---
+while its extracted carriers lay in the skipped guard near $-3.6$~kHz with
+approximately $21$~dB integrated SNR.  The detector response there was about
+$-17$~dB.  A strong off-nominal pilot could therefore be less visible than a
+weaker nominal one: ``clean'' and ``blind'' were indistinguishable from the
+target statistic alone.  The same survey separated five likely instrument
+lines by rational receiver-clock coincidence, single-channel localization, and
+mask invariance, while retaining an unidentified sixth line rather than
+excising it by assumption.  Appendix~\ref{app:legacy} records those diagnostics
+and their unresolved attribution.  Operationally, the lesson is that a target
+statistic must be monitored by a broader spectral sentinel and a periodically
+refreshed line census.
+
+Monitoring therefore has three layers: exact arithmetic health, statistical
+null/false-alarm health on non-designated bins, and environment drift.  Dashboard
+rates are aggregated by channel, epoch, GPU, and calibration hash so an apparent
+broadcast change is not confused with a software rollout.  The live integration
+is complete only when these records, the invalid-frame handling, and a failure
+injection exercise have been demonstrated on the actual \texttt{kotekan} buffer
+path.
+
+\section{Performance Acceptance}
+\label{sec:deployment:performance}
+
+On an A100 benchmark GPU, the staged samples-to-powers path is reported at
+2.14~ms, the fused path at 0.77~ms, and the fused path with decision epilogue at
+0.90~ms for the $N=16384$ geometry.  These measurements demonstrate substantial
+compute margin relative to a 41.94-ms detector frame.  They do not by themselves
+include framework scheduling, input readiness, inter-stage contention, or
+visibility-buffer synchronization.  The live acceptance test therefore reports
+end-to-end latency percentiles and deadline misses under the full telescope load,
+with the kernel timing retained as a component rather than presented as the
+stage latency.

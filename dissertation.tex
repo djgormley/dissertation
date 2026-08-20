@@ -1,0 +1,210 @@
+% ============================================================================
+% The Pilot-Proxy Method -- dissertation master.
+% Chapter sources live in chapters/; this file carries the preamble and
+% front matter. The title and abstract pages follow the WVU ETD template.
+% ============================================================================
+\documentclass[11pt,oneside]{report}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{MaxMatrixCols}{20}
+
+% Float placement: several chapters carry closely related figures and tables.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.7}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{4}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,shapes.geometric}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{xcolor}
+% Shared semantic palette for Matplotlib and TikZ figures.
+% WVU visual-identity palette: safety blue, old gold, hemlock, woodburn,
+% seneca gray (scm.wvu.edu/brand/visual-identity/).
+\definecolor{ppMeasured}{HTML}{0062A3}
+\definecolor{ppModel}{HTML}{7F6310}
+\definecolor{ppConditional}{HTML}{6A724F}
+\definecolor{ppFailure}{HTML}{8D4638}
+\definecolor{ppPending}{HTML}{988E8B}
+\input{figure_src/tikz/figure_styles.tikz}
+\usepackage{array,tabularx,longtable,multirow}
+\usepackage{pdflscape}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage[hidelinks,bookmarksnumbered=true]{hyperref}
+\hypersetup{
+  pdftitle={The Pilot-Proxy Method},
+  pdfauthor={Dylan Gormley},
+  pdfsubject={Radio-astronomy interference detection and BAO noise tolerance},
+  pdfkeywords={CHIME, radio astronomy, radio-frequency interference, ATSC, signal processing, cosmology, BAO}
+}
+\raggedbottom
+
+% Compact, reusable status labels. These describe evidence maturity rather than
+% formatting decoration, so the definitions live in the master document.
+\newcommand{\measured}{\textsc{measured}}
+\newcommand{\modelled}{\textsc{modelled}}
+\newcommand{\pending}{\textsc{pending}}
+\newcommand{\conditional}{\textsc{conditional}}
+
+\begin{document}
+% The title page is unnumbered and should not create a duplicate page anchor.
+\hypersetup{pageanchor=false}
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+% ---------------------------------------------------------------- title page
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+\vspace*{0.65in}
+{\large\textbf{The Pilot-Proxy Method}}\\[0.70in]
+{\large Dylan Gormley}\\[0.70in]
+
+Dissertation submitted\\
+to the Benjamin M. Statler College of Engineering and Mineral Resources\\
+at West Virginia University\\[0.35in]
+in partial fulfillment of the requirements for the degree of\\[0.16in]
+Doctor of Philosophy in\\
+Electrical Engineering\\[0.65in]
+
+Kevin Bandura, Ph.D., Chair\\
+Duncan Lorimer, Ph.D., FRS\\
+Natalia Schmid, D.Sc.\\
+Matthew Valenti, Ph.D.\\
+Katerina Goseva-Popstojanova, Ph.D.\\[0.55in]
+
+Lane Department of Computer Science and Electrical Engineering\\[0.55in]
+
+Morgantown, West Virginia\\
+2027\\[0.55in]
+
+Keywords: radio astronomy, radio-frequency interference, signal processing,\\
+21\,cm intensity mapping, cosmology, forecasting, CHIME, CANFAR, Datatrail\\[0.24in]
+Copyright 2027 Dylan Gormley
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+% ------------------------------------------------------------------ abstract
+\clearpage
+\thispagestyle{empty}
+\begin{center}
+    {\textbf{Abstract}}\\[0.20in]
+    {\textbf{The Pilot-Proxy Method}}\\[0.18in]
+    {Dylan Gormley}\\[0.32in]
+\end{center}
+
+North American broadcast television occupies 470--608~MHz, a 138-MHz interval
+that maps to $1.34 \le z \le 2.02$ for the redshifted 21\,cm line and therefore
+covers roughly one third of CHIME's cosmological observing band.  The received
+8-VSB payload can lie below thermal noise in an individual correlator frame yet
+remain correlated long enough to bias an eight-year intensity-mapping survey.
+The resulting problem is not simply whether television can be detected, but
+whether a frame-level mask can remove enough contamination without discarding
+so much exposure that the baryon acoustic oscillation (BAO) measurement becomes
+impractical.
+
+This dissertation develops a pilot-proxy detector around the dominant
+continuously present, spectrally concentrated feature of an ATSC~A/53
+transmission: the suppressed-carrier pilot.  Under the declared known-tone,
+locally Gaussian model, the pilot projection is a matched-filter statistic; the
+complete proposed runtime decision also uses local references, a robust rank baseline,
+and per-epoch calibration measured from telescope data.  The implementation is
+an exact fixed-point pipeline whose projections, frozen Fourier transform,
+power sums, and mask decision are bit-reproducible against independent
+references.  A restartable survey processes triggered archival baseband
+captures and retains the decision statistics and provenance needed to revisit
+thresholds without reprocessing the raw archive.  Because the archive is
+trigger-selected rather than a uniform time sample, the dissertation states its
+selection limits explicitly and reserves final operating points for blocked,
+per-epoch validation.
+
+A Fisher-forecast framework converts masked fraction and surviving residual
+into integration-time cost and parameter-bias tolerance.  Ten contiguous
+channels, 27--36, currently have archival products.  Within the present
+pilot-to-shelf transfer model and per-redshift-bin Fisher estimator, channels
+32, 33, and the early epoch of channel~35 are forecast-feasible for the BAO
+dilation measurement; channels 27, 28, 30, 31, and 36 are excision candidates;
+and channels 29 and 34 remain controlled by measurements the snapshot archive
+cannot supply.  Recovery of the growth-rate parameter is conditional on booking
+the same BAO-preserving delay filter in both the residual and Fisher models.
+These are deliberately conditional verdicts: the closing campaign must validate
+the pilot proxy across each 6-MHz allocation, calibrate its transfer to
+visibility-domain residuals, reproduce the combined-bin forecast estimator,
+and measure the remaining thirteen channels.  The principal result is therefore
+both an instrument and an auditable decision framework: exact where the digital
+contract permits exactness, measured where the archive supplies evidence, and
+explicitly bounded where it does not.
+
+% ------------------------------------------------------------------ contents
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+\clearpage
+\chapter*{List of Acronyms and Abbreviations}
+\addcontentsline{toc}{chapter}{List of Acronyms and Abbreviations}
+\begin{longtable}{>{\bfseries}p{0.18\textwidth}p{0.74\textwidth}}
+8-VSB & eight-level vestigial sideband\\
+ATSC & Advanced Television Systems Committee\\
+BAO & baryon acoustic oscillation\\
+CANFAR & Canadian Advanced Network for Astronomical Research\\
+CFAR & constant false-alarm rate\\
+CHIME & Canadian Hydrogen Intensity Mapping Experiment\\
+CUDA & Compute Unified Device Architecture\\
+DFT & discrete Fourier transform\\
+DP4A & four-way packed 8-bit integer dot-product instruction\\
+DTV & digital television\\
+ENBW & equivalent noise bandwidth\\
+FFT & fast Fourier transform\\
+FRB & fast radio burst\\
+GPU & graphics processing unit\\
+HPC & high-performance computing\\
+NTSC & National Television System Committee\\
+OFDM & orthogonal frequency-division multiplexing\\
+PFB & polyphase filter bank\\
+PNR & pilot-to-noise ratio\\
+PSD & power spectral density\\
+Q15/Q16 & signed fixed-point formats with 15/16 fractional bits\\
+RFI & radio-frequency interference\\
+RRC & root-raised cosine\\
+SNR & signal-to-noise ratio\\
+\end{longtable}
+
+% ------------------------------------------------------------------ chapters
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\include{chapters/ch01_introduction}
+\include{chapters/ch02_context}
+\include{chapters/ch03_broadcast}
+\include{chapters/ch04_parameterization}
+\include{chapters/ch05_pipeline}
+\include{chapters/ch06_implementation}
+\include{chapters/ch07_survey}
+\include{chapters/ch08_calibration}
+\include{chapters/ch09_tolerance}
+\include{chapters/ch10_deployment}
+\include{chapters/ch11_conclusions}
+
+% ---------------------------------------------------------------- appendices
+\appendix
+\include{chapters/appA_evidence_matrix}
+\include{chapters/appB_legacy_evidence}
+
+% -------------------------------------------------------------- bibliography
+\clearpage
+\addcontentsline{toc}{chapter}{Bibliography}
+\input{chapters/bibliography}
+
+\end{document}

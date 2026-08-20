@@ -1,0 +1,50 @@
+% Local draft build (no mnras.cls required): latexmk -pdf draft_article.tex
+\documentclass[11pt]{article}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage[round]{natbib}
+\usepackage[hidelinks,
+  pdftitle={A pilot-informed F-statistic detector for digital television
+    in CHIME baseband data},
+  pdfauthor={Dylan J. Gormley and Kevin Bandura}]{hyperref}
+\usepackage{amssymb}
+\usepackage{placeins}
+% CM has no Type 1 TS1 companion here; keep the bullet in CMSY so the
+% PDF stays free of Type 3 bitmap fonts (RASTI preflight).
+\renewcommand{\labelitemi}{$\bullet$}
+\emergencystretch=2em
+% MNRAS-class conveniences used in the body:
+\providecommand{\la}{\lesssim}
+\providecommand{\ga}{\gtrsim}
+\graphicspath{{figs/}}
+
+\newcommand{\gpuslot}[2]{\begin{center}\fcolorbox{red}{red!4}{\parbox{0.94\linewidth}{\small\textcolor{red}{\textbf{[GPU slot -- Runbook #1]}} \small #2}}\end{center}}
+\newcommand{\gpuval}[1]{\textcolor{red}{\textbf{[#1]}}}
+% Author-input slots (blue): items only author can resolve -- see REFEREE_TRIAGE memo
+\newcommand{\needsdylan}[1]{\textcolor{blue}{\textbf{[TODO:} #1\textbf{]}}}
+
+\title{A pilot-informed F-statistic detector for digital television\\
+in CHIME baseband data\\
+\large\textcolor{red}{DRAFT --- article-class build; submission uses main.tex (MNRAS/RASTI class)}}
+\author{Dylan J. Gormley and Kevin Bandura (WVU)}
+\date{Draft of \today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\input{body}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\appendix
+\input{appendices}
+
+\end{document}

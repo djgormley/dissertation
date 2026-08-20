@@ -1,0 +1,199 @@
+% Appendices -- input AFTER \bibliography in both wrappers (journal order).
+\FloatBarrier  % keep appendix floats out of the reference list
+
+\section{All-channel diagnostics}
+\label{app:diagnostics}
+Full coarse-channel and pilot-zoom integrated spectra for all 23
+channels (raw, instrument-removed, and after-analytic-mask variants at
+shared
+per-channel scales, with the detector's target, skipped-guard, and
+reference cells marked) and the per-channel F distributions about the
+operating threshold (kept/masked split, both zero points, tail bounds,
+and the sub-threshold leak estimate in a single view) are provided as
+supplementary figures (\texttt{fig\_spectra\_all23\_*},
+\texttt{fig\_excess\_threshold\_all23}), together with the diurnal
+mask-fraction diagnostic. \needsdylan{decide: formal RASTI supplementary
+material vs.\ repository-only, and update this sentence accordingly.}
+
+Across all 23 channels the pilot-zoom panels validate the cell
+geometry on-sky: extracted carriers isolate in the target cell,
+sidelobe structure confines to the skipped guards, and no persistent
+narrow line above the extraction threshold is apparent in the
+reference cells. Resolved against the cells, 18 of the 19 line-bearing
+channels place their dominant extracted line inside the target cell,
+typically within a few hundred Hz of nominal; ch24's secondary lines
+sit at $+522$\,Hz (in-cell) and $+3121$\,Hz (skipped guard, where the
+target term recovers $-32$\,dB). The exception is ch33, whose
+\emph{only} extracted lines sit in the lower skipped guard ($-3.6$\,kHz
+at 21\,dB integrated SNR and $-2.8$\,kHz at 13\,dB; target-term
+recovery $-17$ and $-23$\,dB): a carrier parked there is strongly
+attenuated, not invisible, but the detector's response to it is
+suppressed by more than an order of magnitude. This is the
+operationally hazardous class
+--- a persistent co-channel station on the nominal pilot is detected
+and masked most of the time (analytic-mask fractions 0.69 on ch24 and
+0.98 on ch30), costing exposure only, whereas
+an off-nominal pilot is DTV the mask responds to only weakly, and its
+symbol shelf would ride into kept data largely undetected (to be
+bounded by the pending Phase-1a pilot-free floor measurement).
+Licensing is consistent with, but does not establish, the hazard: the
+census \emph{source} carries no frequency-tolerance entry for
+translator/LPTV classes (a blank field, not evidence that regulatory
+tolerances are absent), and ch33's current occupant is a translator. Because the
+accumulation is full-depth, the guard carrier could equally be the
+integrated signature of the departed pre-repack occupant; an
+epoch-split accumulation would distinguish the two. Re-centring ch33's
+target weight onto the measured offset is possible in principle --- a
+per-channel constants change within the existing machinery --- but is
+deliberately not implemented; we record the option for operations.
+An automated line search over the before-mask spectra (running-median
+background, 23.84\,Hz bins) outside a $\pm$10\,kHz exclusion around the
+nominal pilot (covering the $\pm$7.63\,kHz detector-cell support plus a
+buffer) and $\pm$100\,Hz around the coarse-channel DC finds six narrow
+lines above 4\,dB of local background across the 23 coarse channels
+(Table~\ref{tab:spurs}). Five lie within 9.5\,Hz --- less than half a
+spectral bin --- of rational fractions of the coarse sample rate
+$f_{\rm s}=390.625$\,kHz in baseband ($\pm f_{\rm s}/5$,
+$\pm f_{\rm s}/3$, $\pm 2f_{\rm s}/5$), each in a single coarse
+channel, and their prominence over the local background is unchanged
+under the analytic mask: consistent with instrumental or
+digital-processing spurs, pending operations confirmation. The ch17
+line is unidentified and retained. The nearest line lies more than
+73\,kHz from detector-cell support (75\,kHz from the nearest cell
+centre), 24 fine bins away, so none can materially perturb the
+statistic; they remain ordinary narrow-band RFI for downstream
+flagging. Notches are applied only to the supplementary plotting
+copies; every detector and mask result in this paper uses unnotched
+data. ``After mask'' in these supplementary spectra denotes the
+original analytic positive-excess production mask recorded in the
+archived products (mean masked fraction 0.476, matching the 4.708\,MHz
+analytic-ceiling rung of the ladder in Section~\ref{sec:operating}),
+not the candidate three-arm rule
+(inventory archived as \texttt{instrument\_tones.csv}).
+\needsdylan{optional: confirm spur provenance (clock fractions in the
+per-channel digitizer/processing chain) with CHIME operations.}
+
+\begin{table}[b]
+  \centering
+  \caption{Narrow lines above 4\,dB of local background found by the
+  automated search (before-mask integrated spectra, 23.84\,Hz bins;
+  search domain as stated in the text). This is the complete inventory
+  over all 23 coarse channels, not a selection. Prominence (dB) is measured
+  against each spectrum's own local running-median background;
+  $\Delta$ is the change in that \emph{prominence} under the analytic
+  positive-excess mask --- not an absolute-amplitude change, and no
+  invariance under the veto or the full three-arm rule is claimed.
+  ``Notched'' lines, and the coarse-channel DC spur in every channel,
+  are replaced by the local background in the instrument-removed
+  supplementary plotting copies only.}
+  \label{tab:spurs}
+  \begin{tabular}{rrrrrl}
+    \hline
+    ch & $f_{\rm bb}$ [kHz] & dB & \# bins & $\Delta$ [dB] &
+    identification \\
+    \hline
+    14 & $-78.130$  & 16.4 & 2 & $+0.1$ & $-f_{\rm s}/5$ (notched) \\
+    17 & $+157.285$ & 6.1  & 1 & $0.0$  & unidentified (retained) \\
+    25 & $-130.200$ & 6.1  & 1 & $0.0$  & $-f_{\rm s}/3$ (notched) \\
+    28 & $+130.200$ & 8.8  & 2 & $+0.1$ & $+f_{\rm s}/3$ (notched) \\
+    29 & $+156.260$ & 18.6 & 7 & $0.0$  & $+2f_{\rm s}/5$ (notched) \\
+    34 & $-156.260$ & 12.6 & 3 & $-0.3$ & $-2f_{\rm s}/5$ (notched) \\
+    \hline
+  \end{tabular}
+\end{table}
+Two of the diagnostics carry claims made in the main text and are
+reproduced here: the falsified PFB-prototype prediction
+(Fig.~\ref{fig:pfbpred}; Section~\ref{sec:zeropoints}) and the residual
+seasonal modulation after secular detrending (Fig.~\ref{fig:seasonal};
+Section~\ref{sec:secular}).
+
+\begin{figure}[t]
+  \includegraphics[width=\columnwidth]{fig_pfb_zero_point_prediction}
+  \caption{The falsified physics-based alternative --- a model test,
+  not a per-channel quality ranking. (a) Aliased-noise
+  gain of the 4-tap sinc-Hamming reference PFB prototype through the
+  $K=128$ window, with ch21's target and wrapped lower-reference
+  placements marked. (b) Predicted vs measured zero-point shifts (dashed:
+  prediction $=$ measurement): the prediction fails on the near-edge
+  channels 18/29/32/35, where measurements are consistent with zero, and
+  captures only a third of ch21's shift
+  (Section~\ref{sec:zeropoints}).
+  \label{fig:pfbpred}}
+\end{figure}
+
+\begin{figure}[t]
+  \includegraphics[width=\columnwidth]{fig_seasonal_propagation}
+  \caption{(a) Seasonal detection-rate anomaly (month over same-year
+  mean) after removing year-to-year secular drift, per episodic channel
+  (the Fig.~7 set) and their aggregate (black): $\le 1.24\times$ peak-to-trough and not
+  coherent across channels (Section~\ref{sec:secular}). (b) Excursion
+  spectra of tail frames --- the fraction beyond a given
+  $|F-\hat\mu_0|/\mu_0$, detections (solid) and fades (dashed); the axis
+  begins at the mask band edge ($12\times10^{-3}$).
+  \label{fig:seasonal}}
+\end{figure}
+
+\FloatBarrier  % keep Fig. 10 with Appendix A, ahead of Appendix B
+\section{Recorded analysis choices and the stack subset}
+\label{app:prereg}
+The combine rule was recorded 2026-07-08 and amended 2026-07-14 to
+``maximize common events subject to a $\ge$16-channel floor,''
+implemented as a \emph{signature-seeded heuristic}: an exact per-block
+search over the observed event-presence signatures, each candidate
+closed to the intersection of its covering signatures --- exact per
+block, but not an unrestricted maximization. This recorded procedure
+selects \textbf{16
+channels $\times$ 1548 common events} (physical channels 14, 16--19,
+21, 22, 25, 27--29, 31, 33--36). Event-keyed alignment retains 1329 of
+these events (5638 frames): the combine stacks frames by (event,
+frame-in-file) identity, so the 219 events whose per-channel captures
+differ in frame count or alignment drop out even though all 16 channels
+observed them. The procedure was re-run end-to-end on 2026-07-17
+against the complete product snapshot (77\,423 channel--event pairs,
+matching Section~\ref{sec:survey} exactly; integrity pass on all 23
+products) and reproduces the same selection, which the stacked
+analyses use. For completeness we record that an \emph{unrestricted}
+exhaustive search over all $\binom{23}{16}$ channel subsets finds a
+larger block --- 1829 common events on channels 15--23, 25, 27--29, 33,
+34, 36 --- that signature-seeded candidates structurally cannot reach
+(the seeded table is not even monotone in $k$); we retain the
+procedure-as-recorded selection and did not adopt the larger block.
+Robustness across blocks (measured, 2026-07-17): re-running the full
+pipeline with the unrestricted block as an explicit amendment yields the
+same 1829 presence-common events by the pipeline's own count, aligning
+to 1611 events (6890 frames), stack-level $\mathcal{H}_0$ tracking on
+10/16 channels (vs 8/16), and a stacked recovered-bandwidth headline of
+3.53 vs 3.74\,MHz of 6.25 --- a composition effect of the three-channel
+swap (the recorded block includes ch14, mask fraction 0.090), not an
+instability. Per-channel and full-depth quantities are block-independent
+(4.71 of 8.98\,MHz unchanged); no stacked conclusion in this paper
+depends on the block choice. Both runs' decision records are archived. The
+registered greedy rule strands at 22 channels $\times$ 12 events on the
+same data. The recorded procedure's by-$k$ table and drop-curve, and
+the unrestricted by-$k$ table, are archived
+(\texttt{appendix\_exact\_by\_k.csv}, \texttt{appendix\_dropcurve.csv},
+\texttt{appendix\_unrestricted\_by\_k.csv}, from
+\texttt{event\_presence\_signatures.npz} and
+\texttt{combine\_subset\_decision.json}). We describe these as recorded
+analysis choices rather than preregistration. \needsdylan{confirm which
+choices were recorded before inspecting any relevant outcome (e.g.,
+whether the 07-14 amendment postdated the drop curve); wording may be
+strengthened for those that were.}
+
+\section{Exact-integer threshold constants}
+\label{app:constants}
+The measured ceiling and floor are shipped as per-channel rational pairs
+$(P, Q)$, $Q \le 2^{16}$: mask$_{\rm hi}$ iff $P_t Q > P\,P_r$ and
+mask$_{\rm lo}$ iff $P_t Q_{\rm lo} < P_{\rm lo} P_r$. Approximation error
+is $\le 10^{-9}$ (four orders below the zero points' statistical error);
+verification against the float rules disagrees on 0 of 339\,196 frames;
+worst product width 55 bits. Full table:
+\texttt{empirical\_thresholds.csv}.
+
+\section{Reproducibility}
+\label{app:repro}
+Every number in this paper maps to a command in the repository
+(\texttt{analysis/README.md}); the analysis plan
+(\texttt{docs/PAPER\_PLAN.md}) records the figure inventory and
+decisions, and the CI suite includes the Monte-Carlo zero-point gate
+(\texttt{tests/core/test\_mask\_zero\_point.py}).

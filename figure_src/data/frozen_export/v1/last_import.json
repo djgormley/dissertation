@@ -1,0 +1,10 @@
+{
+  "imported_artifacts": [
+    "census_full_500mi.csv",
+    "census_inner_120mi.csv"
+  ],
+  "source_commit": "b533632b5d014486559f36ff5c006216e43a6b56",
+  "source_complete": false,
+  "source_export": "/home/djg/rail/pilot-proxy/exports/dissertation/v2-ised-census",
+  "source_repository": "WVURAIL/pilot-proxy"
+}

@@ -1,0 +1,18 @@
+\begin{table}[ht]
+\centering
+\caption{Signal-model quantities used in the synthetic sensitivity chapter.}
+\label{tab:signal-model-quantities}
+\begin{tabularx}{\textwidth}{l l Y}
+\toprule
+Quantity & Symbol & Definition \\
+\midrule
+Noise power per fine bin & $P_N$ & Local thermal/instrumental background power used to define SNR. \\
+Data-shelf power per fine bin & $P_{\rm shelf}$ & Mean DTV data-shelf power per fine bin in the injected channel. \\
+Reported shelf SNR & $\gamma_{\rm shelf}$ & $P_{\rm shelf}/P_N$; plotted in dB/bin. \\
+Pilot power & $P_{\rm pilot}$ & Narrow ATSC pilot power implied by the pilot-to-integrated-data convention. \\
+Effective pilot SNR & $\gamma_{\rm pilot,eff}$ & Pilot SNR after pilot-to-shelf conversion and frequency-offset response loss. \\
+Detector statistic & $T$ & $2P_T/(P_{R-}+P_{R+})$. \\
+Detection probability & $P_D$ & $\Pr(T>\eta\mid H_1)$ for a chosen signal model. \\
+\bottomrule
+\end{tabularx}
+\end{table}

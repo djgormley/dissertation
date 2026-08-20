@@ -1,0 +1,73 @@
+{
+  "artifacts": [
+    {
+      "authoritative_for_draft": true,
+      "authority": "authoritative-source-export",
+      "description": "Complete on-air ATSC 1.0 UHF emitter-channel census within 500 miles of DRAO.",
+      "owner": "pilot-proxy",
+      "path": "census_full_500mi.csv",
+      "replacement_required": false,
+      "rows": 499,
+      "sha256": "c6174228c950078b9d1df7ae4eff0ff6a4eb84d05fee892ca8262b5cca8f67c2",
+      "source_kind": "pilot-proxy-export",
+      "status": "frozen",
+      "upstream": "WVURAIL/pilot-proxy@b533632b5d014486559f36ff5c006216e43a6b56: census_full_500mi.csv"
+    },
+    {
+      "authoritative_for_draft": true,
+      "authority": "authoritative-source-subset",
+      "description": "Transmitter-census rows within 120 miles of DRAO.",
+      "owner": "pilot-proxy",
+      "path": "census_inner_120mi.csv",
+      "replacement_required": false,
+      "rows": 36,
+      "sha256": "180103f583a9cdaad8a6f30e097f86bc41e4fc1e3d198bfefd0c2147335f51cb",
+      "source_kind": "pilot-proxy-export",
+      "status": "frozen",
+      "upstream": "WVURAIL/pilot-proxy@b533632b5d014486559f36ff5c006216e43a6b56: census_inner_120mi.csv"
+    },
+    {
+      "authoritative_for_draft": false,
+      "authority": "legacy-artwork-recovery",
+      "description": "Pedagogical correlation-function curve reconstructed from the supplied vector PDF.",
+      "owner": "external-cosmology-model",
+      "path": "intro_wiggle_correlation.csv",
+      "replacement_required": true,
+      "rows": 61,
+      "sha256": "4fbaf702750dace4b3994259d4eae98d92f0fe00a9522988f2e649c39ef6bfd3",
+      "source_kind": "external-pedagogical-bridge",
+      "status": "frozen",
+      "upstream": "figure_src/legacy_reference/fig_intro_wiggle_original.pdf"
+    },
+    {
+      "authoritative_for_draft": false,
+      "authority": "legacy-artwork-recovery",
+      "description": "Pedagogical power-spectrum wiggle curve reconstructed from the supplied vector PDF.",
+      "owner": "external-cosmology-model",
+      "path": "intro_wiggle_power.csv",
+      "replacement_required": true,
+      "rows": 181,
+      "sha256": "aa3278975c525a9ca0dd0e762147fbd8af8ee00c0748a36632f38b3b4312739d",
+      "source_kind": "external-pedagogical-bridge",
+      "status": "frozen",
+      "upstream": "figure_src/legacy_reference/fig_intro_wiggle_original.pdf"
+    }
+  ],
+  "frozen_for": "pilot-proxy dissertation draft",
+  "schema": {
+    "name": "pilot-proxy-dissertation-frozen-data",
+    "version": 1
+  },
+  "upstream_exports": {
+    "pilot_proxy": {
+      "commit": "b533632b5d014486559f36ff5c006216e43a6b56",
+      "complete": false,
+      "repository": "WVURAIL/pilot-proxy",
+      "schema": {
+        "name": "pilot-proxy-dissertation-export",
+        "version": 1
+      },
+      "summary_snapshot_id": "dissertation-draft-2026-08-18"
+    }
+  }
+}

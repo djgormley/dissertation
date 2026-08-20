@@ -1,0 +1,190 @@
+\chapter{Conclusions \& Future Work}
+\label{sec:conclusions}
+
+\section{What This Work Establishes}
+\label{sec:conclusions:contributions}
+
+This dissertation develops an instrument and a decision framework for a problem
+that is simultaneously statistical, computational, and cosmological.  The
+engineering contribution is a narrow-line detector that uses the ATSC pilot as
+a continuously present, spectrally concentrated proxy; combines a fixed tone
+projection with local references and robust fine-axis normalization; and carries
+the complete decision through exact fixed-point arithmetic.  Its digital
+contract is unusually strong: for exercised cases, independent implementations
+can be compared by integer equality rather than by a floating tolerance.
+
+The scientific contribution is the refusal to stop at detectability.  The
+archive products preserve the statistics needed to sweep masking policies, and
+the forecast translates each policy into lost exposure, surviving residual, BAO
+parameter bias, and integration-time cost.  Equally important, the revised
+analysis marks where that chain is measured and where it is conditional: the
+standard fixes the pilot properties, the archive measures a scalar proxy in one
+coarse channel, and additional transfer measurements are required before that
+proxy becomes a validated visibility-domain contaminant across an entire 6-MHz
+allocation.  Exact implementation evidence cannot substitute for those
+measurements.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.98\linewidth]{figs/fig_channel_status_matrix.pdf}
+\caption[Current 23-channel evidence map]{Current evidence map for the 23 ATSC
+allocations in the CHIME band, from the frozen August 2026 export: all 23
+allocations carry archive products --- the ten contiguous channels 27--36 with
+the full residual-chain evaluation, and channels 14--26 at the survey, epoch,
+and residual-chain level (Section~\ref{sec:bao:lowerband}).  Categories are
+conditional on the pilot-to-allocation and visibility-transfer models and the
+per-bin Fisher estimator.  Half-filled cells are epoch-split between
+transmitter eras: channel 35's early archive is forecast-feasible for the
+dilation tier while its post-switch-on environment is excision-shaped, and the
+dated sign-offs on channels 19, 20, 26, and 27 pair a measurement-bound off
+epoch with an occupancy-pinned on epoch.  Channels 29 and 34 are controlled by
+measurements the snapshot archive cannot provide.}
+\label{fig:conclusions:status}
+\end{figure}
+
+The principal contributions can therefore be stated without claiming more than
+the evidence supports:
+
+\begin{enumerate}[leftmargin=2em]
+  \item a standards-grounded pilot-frequency model and a nominal
+  pilot-to-payload screening relation, separated from the received propagation
+  transfer that remains to be measured;
+  \item a constraint-derived, exact-integer detector with explicit overflow,
+  rounding, initialization, and verification contracts;
+  \item a restartable, bounded-storage archive survey that stores statistics and
+  provenance rather than only historical mask bits;
+  \item empirical anchor, null, epoch, and correlation-time estimators with
+  refusal semantics when a required population is absent; and
+  \item a two-tier BAO tolerance framework that can return recovery, excision,
+  or measurement-limited outcomes and exposes the assumptions responsible for
+  each.
+\end{enumerate}
+
+\section{Current Channel-Level Synthesis}
+\label{sec:conclusions:matrix}
+
+Under the current transmitter proxy, scalar residual chain, noise-shaped
+residual template, and per-redshift-bin Fisher estimator, the ten measured
+channels divide as follows:
+
+\begin{table}[t]
+\centering
+\caption{Current conditional synthesis of channels 27--36.  These are analysis
+statuses, not final operations commands.  ``Forecast-feasible'' means that the
+recorded policy enters the present dilation-tolerance region; it does not waive
+the transfer and estimator validations listed in the final column.}
+\label{tab:conclusions:matrix}
+\small
+\begin{tabularx}{\linewidth}{c>{\raggedright\arraybackslash}p{0.24\linewidth}X}
+\toprule
+Channel & Current status & Binding evidence or closing condition \\
+\midrule
+27 & excision candidate (archive average); era-split & Transmitter off since the 2021--22 collection gap; current epoch is trace-level with a measured off-epoch floor (Sec.~\ref{sec:bao:lowerband}) \\
+28 & excision candidate & Near-continuous occupancy and inadequate verified null population \\
+29 & measurement-limited & Correlation-time refusal; contiguous cadence can change the verdict \\
+30 & excision candidate & Occupancy/cost wall; collection curtailed after Sep 2023, so the current state is unmonitored \\
+31 & excision candidate & Near-continuous occupancy despite measured correlation scale \\
+32 & forecast-feasible, current epoch & Post-2021 epoch; validate allocation and visibility transfer \\
+33 & forecast-feasible, conditional & Multi-structure environment; validate template and transfer \\
+34 & measurement-limited & Correlation-time and contiguous-scan requirement \\
+35 & epoch-split & Early epoch forecast-feasible; post-2021 switch-on is excision-shaped \\
+36 & excision candidate & Effectively always on with no defensible off-state floor \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The remaining thirteen allocations --- channels 14--26 --- were
+completed by the trawl in August 2026 under the same immutable schema and a
+shared kernel cohort, each complete against its archive holdings; the
+band-edge pair 14--15, last in the scan order, finished on 2026-08-19 and
+closed the survey.  The caution against
+extrapolating from the ten-channel sample was borne out in the data: the new
+block contains two transmitter sign-offs resolved to the month (channels 19 and
+26), a two-stage step-down (channel 20), an epoch-split persistent carrier
+whose anchor moves between its on-epochs (channel 17), a
+collection-curtailed archive on channel 24, and, on the band-edge pair,
+episodic faint carriers that pin the survey rule while releasing
+three-quarters of current-epoch frames at the working threshold
+(Section~\ref{sec:bao:lowerband}).
+Their survey- and epoch-level rows are reported there, and their
+residual-chain rows now stand beside the first block's
+(Table~\ref{tab:bao:lowerchain}), computed by a released generator whose
+self-test reproduces the first block's published constants from raw products.
+Every screening status survives the chain unchanged; channel 21 emerges as
+the survey's best-floored coherence hostage ($14{,}647$ null frames, the
+archive's largest population) beside channel 29; channel 14 sets the
+survey's extremes of intra-day share ($52.6\%$) and ground-filter weakness
+($2.7$~dB); and no new-block channel
+reaches conditional recovery at the deployed basis under the coherence cap.
+
+The growth-rate result is more conditional than the dilation result.  In the
+present model, booking a BAO-preserving delay cut on both sides of the calculation
+can move the threshold-feasible channels inside the $f\sigma_8$ tolerance.  That
+claim must be repeated with the collaboration's actual combined-bin estimator
+and with residual templates that reflect measured visibility structure.  The
+appropriate conclusion is not that the growth rate has already been recovered,
+but that a self-consistent filter configuration exists in the screening model
+and merits the closing analysis.
+
+\section{What Remains to Close the Verdict}
+\label{sec:conclusions:future}
+
+The near program is fixed by the evidence matrix in Appendix~\ref{app:evidence}:
+
+\begin{enumerate}[leftmargin=2em]
+  \item attach the immutable release ledger behind the now-complete
+  23-channel inventory (the trawl itself finished in August 2026; the exact
+  discovered/eligible/processed/quarantined denominators of checklist
+  item~A remain to be exported);
+  \item run the specified cadence campaigns to measure or bound $\tau_c$
+  (checklist item C: half-day sessions at ${\sim}10$-s cadence, channels 29
+  and 21 first --- the survey's two best-floored coherence hostages --- then
+  34); if they are not executed, the sidereal-day caps stand as permanent
+  conservative bounds and certification shifts to the blocked holdout and
+  per-channel jackknife of the final analysis;
+  \item measure simultaneous power across each 6-MHz allocation to infer the
+  distribution of received pilot-to-shelf transfer by channel, epoch, and
+  propagation state;
+  \item measure contaminated complex visibilities before and after the
+  per-sidereal-day operation, preserving baseline and phase information, and
+  separate coherent systematic residual from stochastic added variance;
+  \item repeat the tolerance calculation with the published combined multi-bin
+  Fisher estimator and with localized, low-$k_\parallel$, wedge-like,
+  sidereal-coherent, and empirical residual templates;
+  \item complete blocked, per-epoch holdout calibration and attach exact event,
+  frame, storage, throughput, and reproduction denominators;
+  \item regenerate the standards-chain paired injection study through the
+  current full-$2048$-input, two-stage pipeline, using a stationary-span waveform
+  audit and reporting ideal-to-float, float-to-integer, and end-to-end crossing
+  shifts with paired uncertainty; and
+  \item integrate the stage into the actual \texttt{kotekan} buffer path and
+  pass alignment, failure-injection, monitoring, and end-to-end latency gates; and
+  \item schedule periodic spot-collection on channels excluded from baseband
+  collection (channel 30 since September 2023): three transmitter sign-offs
+  were recorded on collected channels during the survey span, and a channel the
+  instrument does not sample can never report its own sign-off, leaving
+  recoverable spectrum written off indefinitely.
+\end{enumerate}
+
+Several forward engineering extensions remain valuable after those gates.  A
+third, censored reference could protect the denominator from a discrete line;
+alternative reference weights could trade curvature rejection against variance;
+and the same exact-arithmetic and calibration architecture could target the
+bootstrap or pilot structures of OFDM broadcast standards.  These are extensions
+of the detector family, not prerequisites for making the present evidence
+honest.
+
+\section{Closing Perspective}
+\label{sec:conclusions:closing}
+
+The strongest result of this work is not a promise that every television channel
+can be saved.  It is a procedure that makes the answer auditable.  The procedure
+starts from a feature the transmitter is required to emit, follows it through a
+bit-reproducible digital instrument, records enough information to change the
+policy without changing the past, and prices the remaining contamination in the
+same units as the cosmological measurement.  Where a digital equality can be
+proved, the dissertation requires equality.  Where the telescope can supply a
+measurement, it reports the measurement and its population.  Where a transfer
+or cadence is missing, it carries a bound or a refusal rather than converting an
+assumption into a fact.  That separation is what allows positive and negative
+channel verdicts to be scientifically useful rather than merely operational.

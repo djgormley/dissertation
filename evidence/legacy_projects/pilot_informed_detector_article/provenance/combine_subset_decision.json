@@ -1,0 +1,879 @@
+{
+  "mode": "max-events-amendment",
+  "amendment_note": "Amendment to PAPER_PLAN.md pre-registered decision 1 (registered 2026-07-08): stacked subset chosen to maximize the common-event count subject to retaining at least 16 channels (exact search over event-presence signatures with closure). The registered greedy rule's outcome and full drop-curve are recorded here and reported in the appendix.",
+  "kept_channels": [
+    506,
+    521,
+    537,
+    552,
+    583,
+    614,
+    629,
+    644,
+    675,
+    721,
+    736,
+    767,
+    783,
+    798,
+    813,
+    844
+  ],
+  "dropped_channels": [
+    568,
+    598,
+    660,
+    690,
+    706,
+    752,
+    829
+  ],
+  "final_intersection_events": 1548,
+  "start_channels": [
+    506,
+    521,
+    537,
+    552,
+    568,
+    583,
+    598,
+    614,
+    629,
+    644,
+    660,
+    675,
+    690,
+    706,
+    721,
+    736,
+    752,
+    767,
+    783,
+    798,
+    813,
+    829,
+    844
+  ],
+  "start_intersection_events": 0,
+  "registered_rule": {
+    "rule": "drop most event-constraining channel while common events grow >= 50%, retain >= 16 channels",
+    "registered": "2026-07-08 (docs/PAPER_PLAN.md, decision 1)",
+    "start_channels": [
+      506,
+      521,
+      537,
+      552,
+      568,
+      583,
+      598,
+      614,
+      629,
+      644,
+      660,
+      675,
+      690,
+      706,
+      721,
+      736,
+      752,
+      767,
+      783,
+      798,
+      813,
+      829,
+      844
+    ],
+    "start_intersection_events": 0,
+    "kept_channels": [
+      506,
+      521,
+      537,
+      552,
+      568,
+      583,
+      598,
+      614,
+      629,
+      644,
+      660,
+      675,
+      690,
+      706,
+      721,
+      736,
+      752,
+      783,
+      798,
+      813,
+      829,
+      844
+    ],
+    "dropped_channels": [
+      767
+    ],
+    "final_intersection_events": 12,
+    "stopping_reason": "no candidate grew the intersection enough",
+    "decision_steps": [
+      {
+        "drop_fid": 767,
+        "n_channels_after": 22,
+        "intersection_events_after": 12,
+        "intersection_events_before": 0,
+        "growth_ok": true
+      },
+      {
+        "drop_fid": 506,
+        "n_channels_after": 21,
+        "intersection_events_after": 13,
+        "intersection_events_before": 12,
+        "growth_ok": false
+      }
+    ],
+    "full_drop_curve": [
+      {
+        "drop_fid": 767,
+        "n_channels_after": 22,
+        "intersection_events_after": 12
+      },
+      {
+        "drop_fid": 506,
+        "n_channels_after": 21,
+        "intersection_events_after": 13
+      },
+      {
+        "drop_fid": 598,
+        "n_channels_after": 20,
+        "intersection_events_after": 13
+      },
+      {
+        "drop_fid": 690,
+        "n_channels_after": 19,
+        "intersection_events_after": 13
+      },
+      {
+        "drop_fid": 660,
+        "n_channels_after": 18,
+        "intersection_events_after": 837
+      },
+      {
+        "drop_fid": 568,
+        "n_channels_after": 17,
+        "intersection_events_after": 1561
+      },
+      {
+        "drop_fid": 521,
+        "n_channels_after": 16,
+        "intersection_events_after": 1601
+      },
+      {
+        "drop_fid": 614,
+        "n_channels_after": 15,
+        "intersection_events_after": 1645
+      },
+      {
+        "drop_fid": 813,
+        "n_channels_after": 14,
+        "intersection_events_after": 1682
+      },
+      {
+        "drop_fid": 583,
+        "n_channels_after": 13,
+        "intersection_events_after": 1700
+      },
+      {
+        "drop_fid": 844,
+        "n_channels_after": 12,
+        "intersection_events_after": 1925
+      },
+      {
+        "drop_fid": 552,
+        "n_channels_after": 11,
+        "intersection_events_after": 1929
+      }
+    ]
+  },
+  "exact_best_by_k": [
+    {
+      "k": 22,
+      "common_events": 12,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        783,
+        798,
+        813,
+        829,
+        844
+      ],
+      "excluded": [
+        767
+      ]
+    },
+    {
+      "k": 21,
+      "common_events": 13,
+      "channels": [
+        521,
+        537,
+        552,
+        568,
+        583,
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        783,
+        798,
+        813,
+        829,
+        844
+      ],
+      "excluded": [
+        506,
+        767
+      ]
+    },
+    {
+      "k": 20,
+      "common_events": 824,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        614,
+        629,
+        644,
+        675,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ],
+      "excluded": [
+        598,
+        660,
+        690
+      ]
+    },
+    {
+      "k": 19,
+      "common_events": 842,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        614,
+        629,
+        644,
+        675,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ],
+      "excluded": [
+        583,
+        598,
+        660,
+        690
+      ]
+    },
+    {
+      "k": 18,
+      "common_events": 1066,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        614,
+        629,
+        644,
+        675,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829
+      ],
+      "excluded": [
+        583,
+        598,
+        660,
+        690,
+        844
+      ]
+    },
+    {
+      "k": 17,
+      "common_events": 1067,
+      "channels": [
+        521,
+        537,
+        552,
+        568,
+        614,
+        629,
+        644,
+        675,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829
+      ],
+      "excluded": [
+        506,
+        583,
+        598,
+        660,
+        690,
+        844
+      ]
+    },
+    {
+      "k": 16,
+      "common_events": 1548,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        583,
+        614,
+        629,
+        644,
+        675,
+        721,
+        736,
+        767,
+        783,
+        798,
+        813,
+        844
+      ],
+      "excluded": [
+        568,
+        598,
+        660,
+        690,
+        706,
+        752,
+        829
+      ]
+    },
+    {
+      "k": 15,
+      "common_events": 830,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        614,
+        629,
+        644,
+        675,
+        706,
+        721,
+        767,
+        813,
+        844
+      ],
+      "excluded": [
+        598,
+        660,
+        690,
+        736,
+        752,
+        783,
+        798,
+        829
+      ]
+    },
+    {
+      "k": 14,
+      "common_events": 832,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        614,
+        629,
+        675,
+        706,
+        721,
+        767,
+        813,
+        844
+      ],
+      "excluded": [
+        598,
+        644,
+        660,
+        690,
+        736,
+        752,
+        783,
+        798,
+        829
+      ]
+    },
+    {
+      "k": 13,
+      "common_events": 1832,
+      "channels": [
+        614,
+        629,
+        644,
+        675,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829
+      ],
+      "excluded": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        598,
+        660,
+        690,
+        844
+      ]
+    },
+    {
+      "k": 12,
+      "common_events": 839,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        614,
+        675,
+        721,
+        767,
+        813,
+        844
+      ],
+      "excluded": [
+        598,
+        629,
+        644,
+        660,
+        690,
+        706,
+        736,
+        752,
+        783,
+        798,
+        829
+      ]
+    },
+    {
+      "k": 11,
+      "common_events": 1656,
+      "channels": [
+        675,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ],
+      "excluded": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        598,
+        614,
+        629,
+        644,
+        660,
+        690
+      ]
+    },
+    {
+      "k": 10,
+      "common_events": 1883,
+      "channels": [
+        675,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829
+      ],
+      "excluded": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        598,
+        614,
+        629,
+        644,
+        660,
+        690,
+        844
+      ]
+    },
+    {
+      "k": 9,
+      "common_events": 1658,
+      "channels": [
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ],
+      "excluded": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706
+      ]
+    },
+    {
+      "k": 8,
+      "common_events": 1060,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        614,
+        844
+      ],
+      "excluded": [
+        598,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829
+      ]
+    },
+    {
+      "k": 7,
+      "common_events": 1240,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583,
+        614
+      ],
+      "excluded": [
+        598,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ]
+    },
+    {
+      "k": 6,
+      "common_events": 3898,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        568,
+        583
+      ],
+      "excluded": [
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ]
+    },
+    {
+      "k": 5,
+      "common_events": 5484,
+      "channels": [
+        506,
+        521,
+        537,
+        552,
+        583
+      ],
+      "excluded": [
+        568,
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ]
+    },
+    {
+      "k": 4,
+      "common_events": 6586,
+      "channels": [
+        506,
+        521,
+        537,
+        583
+      ],
+      "excluded": [
+        552,
+        568,
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ]
+    },
+    {
+      "k": 3,
+      "common_events": 7565,
+      "channels": [
+        506,
+        521,
+        537
+      ],
+      "excluded": [
+        552,
+        568,
+        583,
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ]
+    },
+    {
+      "k": 2,
+      "common_events": 8196,
+      "channels": [
+        521,
+        537
+      ],
+      "excluded": [
+        506,
+        552,
+        568,
+        583,
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ]
+    },
+    {
+      "k": 1,
+      "common_events": 8383,
+      "channels": [
+        537
+      ],
+      "excluded": [
+        506,
+        521,
+        552,
+        568,
+        583,
+        598,
+        614,
+        629,
+        644,
+        660,
+        675,
+        690,
+        706,
+        721,
+        736,
+        752,
+        767,
+        783,
+        798,
+        813,
+        829,
+        844
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+% Submission build: MNRAS class (RASTI uses the same family; swap the class
+% name per the journal's template at submission). For a locally compilable
+% draft without mnras.cls, build draft_article.tex instead — both wrap the
+% same body.tex/abstract.tex.
+\documentclass[fleqn,usenatbib]{mnras}
+
+\usepackage{newtxtext,newtxmath}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{placeins}
+\usepackage[table]{xcolor}
+\graphicspath{{figs/}}
+
+% ---- GPU-gated slots: red boxes keyed to GPU_SESSION_RUNBOOK.md phases ----
+\newcommand{\gpuslot}[2]{\begin{center}\fcolorbox{red}{red!4}{\parbox{0.94\linewidth}{\small\textcolor{red}{\textbf{[GPU slot -- Runbook #1]}} \small #2}}\end{center}}
+\newcommand{\gpuval}[1]{\textcolor{red}{\textbf{[#1]}}}
+% Author-input slots (blue): items only Dylan can resolve -- see REFEREE_TRIAGE memo
+\newcommand{\needsdylan}[1]{\textcolor{blue}{\textbf{[TODO:} #1\textbf{]}}}
+
+% Retitled per R3 (detector-scoped; both reviewers concur). Former title:
+% "Recovering DTV-contaminated bandwidth for 21 cm cosmology:
+%  a pilot-informed F-statistic detector for CHIME"
+\title[A pilot-informed F-statistic DTV detector for CHIME]{A
+pilot-informed F-statistic detector for digital television in CHIME
+baseband data}
+
+\author[D. J. Gormley and K. Bandura]{Dylan J. Gormley,$^{1,2}$\thanks{E-mail:
+dylan.j.gormley@gmail.com}
+Kevin Bandura$^{1,2}$
+\\
+$^{1}$Lane Department of Computer Science and Electrical Engineering,
+West Virginia University, Morgantown, WV 26506, USA\\
+$^{2}$Center for Gravitational Waves and Cosmology, West Virginia
+University, Morgantown, WV 26506, USA
+% ORCIDs (enter in the submission system; add \orcid macros if the RASTI
+% class supports them): DJG 0000-0002-8140-8248; KB 0000-0003-3772-2798.
+% confirm both address lines; check CHIME Collaboration author-list
+% policy (named authors vs "and the CHIME Collaboration").
+}
+
+\date{Draft compiled \today. GPU-gated values appear as red slots.}
+\pubyear{2026}
+
+\begin{document}
+\label{firstpage}
+\maketitle
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+% RASTI keyword scheme: 3-6 keywords, >=1 from the mandatory list
+% {Machine Learning, Software, Instrumentation, Data Methods, Numerical
+% methods, Algorithms} plus >=2 free keywords.
+\begin{keywords}
+Instrumentation -- Data Methods -- Algorithms -- radio frequency
+interference -- 21 cm intensity mapping
+\end{keywords}
+% Title adopted from R3's recommendation; R2's alternative was
+% "An exact-integer ATSC pilot detector for frame-cadence RFI masking in
+% CHIME" — swap if preferred.
+
+\input{body}
+
+\bibliographystyle{mnras}
+\bibliography{refs}
+
+\appendix
+\input{appendices}
+
+\label{lastpage}
+\end{document}

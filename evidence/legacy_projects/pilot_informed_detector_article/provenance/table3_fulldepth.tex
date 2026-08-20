@@ -1,0 +1,48 @@
+% Table 3: per-channel survey summary (full depth, tau = mu0).
+% Requires \usepackage{booktabs}. Deviation is (mean F - mu0)/mu0 in units of 1e-3.
+\begin{table*}
+  \centering
+  \caption{Per-channel survey summary at full depth. $N_{\rm valid}$ is the
+  number of valid 41.9\,ms detector frames; $\langle F\rangle$ is the mean
+  F-statistic over valid frames; $\Delta$ is the fractional zero-point
+  deviation $(\langle F\rangle-\mu_0)/\mu_0$ in units of $10^{-3}$ (statistical
+  uncertainty in parentheses); $f_{\rm mask}$ is the masked fraction of valid
+  frames at the shipped operating point $\tau=\mu_0$; recovered bandwidth is
+  $(1-f_{\rm mask})\times390.6$\,kHz. ``Stack'' marks membership in the
+  16-channel event-matched stack (amended selection; Appendix~X). Lines is the
+  number of carrier lines extracted for the transmitter-census case study.}
+  \label{tab:survey_summary}
+  \begin{tabular}{rrrrlllrrcr}
+    \toprule
+    Ch & freq\_id & $N_{\rm valid}$ & Hours & $\mu_0$ & $\langle F\rangle$ &
+    $\Delta\,[10^{-3}]$ & $f_{\rm mask}$ & Rec.\,[kHz] & Stack & Lines \\
+    \midrule
+    14 & 844 & 7765 & 0.090 & 1.0021 & 0.9981 & $-3.98\,(0.12)$ & 0.090 & 355 & \checkmark & 3 \\
+    15 & 829 & 7654 & 0.089 & 0.9945 & 0.9955 & $+1.04\,(0.07)$ & 0.624 & 147 & -- & 1 \\
+    16 & 813 & 7673 & 0.089 & 0.9998 & 1.0007 & $+0.90\,(0.08)$ & 0.617 & 150 & \checkmark & 1 \\
+    17 & 798 & 7643 & 0.089 & 1.0015 & 1.0071 & $+5.60\,(0.31)$ & 0.570 & 168 & \checkmark & 1 \\
+    18 & 783 & 7659 & 0.089 & 1.0111 & 1.0116 & $+0.44\,(0.07)$ & 0.553 & 175 & \checkmark & 2 \\
+    19 & 767 & 7739 & 0.090 & 1.0064 & 1.0079 & $+1.43\,(0.11)$ & 0.645 & 139 & \checkmark & 0 \\
+    20 & 752 & 7677 & 0.089 & 0.9853 & 0.9841 & $-1.20\,(0.07)$ & 0.342 & 257 & -- & 1 \\
+    21 & 736 & 7666 & 0.089 & 1.0076 & 0.9951 & $-12.41\,(0.20)$ & 0.013 & 386 & \checkmark & 0 \\
+    22 & 721 & 7665 & 0.089 & 1.0034 & 1.0021 & $-1.33\,(0.06)$ & 0.335 & 260 & \checkmark & 1 \\
+    23 & 706 & 7673 & 0.089 & 0.9946 & 0.9950 & $+0.39\,(0.10)$ & 0.598 & 157 & -- & 1 \\
+    24 & 690 & 9962 & 0.116 & 1.0047 & 1.0410 & $+36.11\,(0.76)$ & 0.686 & 123 & -- & 3 \\
+    25 & 675 & 7741 & 0.090 & 0.9983 & 0.9931 & $-5.19\,(0.23)$ & 0.108 & 349 & \checkmark & 0 \\
+    26 & 660 & 7891 & 0.092 & 1.0086 & 1.0097 & $+1.17\,(0.11)$ & 0.622 & 148 & -- & 1 \\
+    27 & 644 & 7809 & 0.091 & 0.9930 & 0.9936 & $+0.62\,(0.17)$ & 0.615 & 151 & \checkmark & 1 \\
+    28 & 629 & 7896 & 0.092 & 1.0033 & 1.0001 & $-3.19\,(0.20)$ & 0.126 & 341 & \checkmark & 1 \\
+    29 & 614 & 13706 & 0.160 & 1.0024 & 1.0030 & $+0.56\,(0.07)$ & 0.578 & 165 & \checkmark & 0 \\
+    30 & 598 & 9079 & 0.106 & 0.9966 & 11.3918 & $+10430.37\,(21.38)$ & 0.983 & 7 & -- & 10 \\
+    31 & 583 & 30090 & 0.351 & 1.0020 & 1.0012 & $-0.80\,(0.11)$ & 0.470 & 207 & \checkmark & 2 \\
+    32 & 568 & 25965 & 0.303 & 1.0023 & 1.0021 & $-0.16\,(0.30)$ & 0.632 & 144 & -- & 1 \\
+    33 & 552 & 31810 & 0.371 & 1.0050 & 1.0053 & $+0.30\,(0.08)$ & 0.476 & 205 & \checkmark & 2 \\
+    34 & 537 & 37474 & 0.437 & 1.0043 & 1.0047 & $+0.41\,(0.03)$ & 0.547 & 177 & \checkmark & 1 \\
+    35 & 521 & 37244 & 0.434 & 0.9975 & 0.9972 & $-0.25\,(0.07)$ & 0.501 & 195 & \checkmark & 1 \\
+    36 & 506 & 35715 & 0.416 & 0.9891 & 0.9869 & $-2.21\,(0.04)$ & 0.216 & 306 & \checkmark & 1 \\
+    \midrule
+    \multicolumn{8}{l}{Total recovered at $\tau=\mu_0$ (23 channels)} &
+    4708 & & \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
