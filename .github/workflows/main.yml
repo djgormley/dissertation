@@ -31,12 +31,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: WVURAIL/bao-noise-tolerance
+          # Pin the number gate and its data products so an upstream default-
+          # branch change cannot alter this dissertation's CI result silently.
+          ref: a7ee77eec63604ccf2560410887f5a86bae168d6
           path: bao
 
       - name: Check out pilot-proxy provenance snapshot
         uses: actions/checkout@v4
         with:
           repository: WVURAIL/pilot-proxy
+          # Keep the provenance input immutable for the same reason.
+          ref: 1d74e096855c4c9bef92c32a82723a3f50a2210b
           path: pilot-proxy
           sparse-checkout: |
             data/provenance
@@ -53,6 +58,6 @@ jobs:
         run: |
           python bao/scripts/check_dissertation_numbers.py \
             --tex dissertation.tex chapters \
-            --summary-json pilot-proxy/data/provenance/dissertation_summary_v2.json \
+            --summary-json pilot-proxy/data/provenance/dissertation_summary_v3.json \
             --also-scan figure_src/data \
             --baseline .number-gate-baseline

@@ -74,6 +74,8 @@ rather than being silently synthesized.
 - `figure_src/tikz/figure_styles.tikz` — matching TikZ conventions
 - `figure_src/README.md` — figure editing and export-import workflow
 - `requirements-figures.txt` — Python dependencies
+- `CANFAR_PRODUCT_HEALTH_AUDIT.json` — machine-readable all-23 product-health
+  audit, including validity, saturation/fill, and fine-designation findings
 - `evidence/legacy_projects/pilot_informed_detector_article/provenance/` — the
   retained PilotProxy patch, producing commit, decision records, and compact
   legacy provenance
@@ -84,15 +86,16 @@ The build fails rather than silently substituting a different font. No font
 files are bundled. Figure and dissertation PDF metadata are fixed so that the
 same inputs and toolchain produce byte-for-byte reproducible PDFs.
 
-Twelve CSV tables feed the active figures. Eight are represented by the
-current PilotProxy export boundary (the August 2026 v2 export replaced the
-recovered census-spectra, observing-time, and worked-example tables with
-direct result exports — the worked-example frames were located in the archive
-products and verified against the published values digit-for-digit); four
-remain explicit legacy-artwork or external-model bridges. The reference PDFs,
-recovery script, checksums, and limitation statement are retained. Those four
-tables are marked `replacement_required` and can be replaced without
-redesigning the figures.
+The dissertation-local frozen interface currently contains four CSV tables.
+Two are authoritative PilotProxy census exports
+(`census_full_500mi.csv` and `census_inner_120mi.csv`); two are pedagogical
+external-model bridges (`intro_wiggle_correlation.csv` and
+`intro_wiggle_power.csv`). Only the two bridge tables are marked
+`replacement_required`. Data behind the vendored result PDFs remain owned and
+validated by their analysis repositories rather than being duplicated in this
+local interface. The reference PDF, recovery provenance, checksums, and
+limitation statement are retained so that either bridge can later be replaced
+without redesigning its figure.
 
 ## Other important files
 
@@ -109,12 +112,19 @@ redesigning the figures.
 ## Evidence status
 
 The exact-arithmetic detector and its exercised implementation contracts are the
-strongest completed part of the work. The present ten-channel cosmology results
-remain screening results until the pilot-to-allocation transfer,
+strongest completed part of the work. The offline CANFAR trawl now covers all
+23 ATSC allocations (channels 14--36), including channels 14 and 15, and the
+dissertation carries an all-band archive and residual-chain screening result.
+Coverage is not the same as a final science release: the release must first
+resolve the fill/saturation-like and all-zero frames identified by the product
+audit, rebuild science products under the corrected data-health gate, and
+recompute the fine designated-window diagnostics from the retained 256-bin
+arrays rather than using the archived bin-0 ancillary CFAR fields. The
+all-23-channel results remain screening results until the current-geometry
+synthetic sensitivity/fixed-point-loss study, pilot-to-allocation transfer,
 visibility-domain transfer, combined-bin Fisher estimator, residual-template
-bank, and per-epoch holdout tests are completed. Eleven of the remaining
-thirteen ATSC allocations (channels 16--26) gained survey- and epoch-level
-products in the August 2026 completion; channels 14 and 15 still have none.
+bank, and per-epoch holdout tests are completed or the affected claims are
+explicitly kept conditional.
 
 ## Integrated legacy evidence
 

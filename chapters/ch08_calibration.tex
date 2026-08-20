@@ -31,10 +31,16 @@ a plain-median fallback and is labelled as such; that fallback is adequate to
 place a designated window around an always-present line but does not create a
 transmitter-off null.
 
-The current products place the dominant anchors from hundreds of
-hertz to approximately $-1.37$~kHz from the synthesized tone, within the
-$\pm1.526$~kHz fine span; the lower-band completion extends the same picture,
-with its persistent carriers anchored between $-0.70$ and $+1.26$~kHz.
+For the first-measured ten-channel calibration cohort, the primary estimator of
+Eq.~\eqref{eq:calibration:anchor} (or the explicitly labelled plain-median
+fallback where no quiet cohort exists) places the configured anchors from
+hundreds of hertz to approximately $-1.37$~kHz from the synthesized tone,
+within the $\pm1.526$~kHz fine span.  The lower-band integrated-spectrum plate
+in Figure~\ref{fig:bao:lowerpsd} separately shows archive-average dominant
+lobes within that span, but a lobe read from an archive-average spectrum is not
+the same estimand as a channel--epoch on-minus-off anchor.  Until the
+authoritative lower-band per-epoch anchor table is exported, no narrower
+numerical lower-band anchor range is asserted here.
 Calendar splits also reveal station changes rather
 than gradual drift: channel 32 moves by 11 fine bins and channel 35 by 29, and
 channel 17's recovered anchor shifts between its two on-epochs as the later
