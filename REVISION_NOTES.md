@@ -564,3 +564,70 @@ freezes the exact export it uses together with the producing commit.
   (summary snapshot v3: 14/15 measurement-bound), fig_census_psd re-exported
   from the 23-product census_psd.csv, fig_intro_band drops the hatched
   queued-pair marking.
+
+## Number-gate pass (2026-08-19/20): the encoded correction backlog, executed
+
+The repository's number-gate CI (bao-noise-tolerance
+`scripts/check_dissertation_numbers.py`) encodes the known content
+corrections as machine checks; this pass drives its 39 open failures to
+green. Content corrections, each per the gate's stated source of truth:
+
+- Abstract rewritten to the completed 23-channel survey (was "Ten
+  contiguous channels ... measure the remaining thirteen").
+- Eisenstein et al. 2005 detected the feature in 46,748 SDSS LRGs (with
+  ~221,000 2dFGRS galaxies contemporaneously), not "half a million".
+- The archive span is 7.6 years everywhere (was "eight-year" /
+  "eight years" in five places).
+- 41.94 ms is the detector frame, not a CHIME integration property (the
+  X-engine integrates ~31 ms); Ch. 1 reworded.
+- The measured shelf range is system-noise level to 44 dB below it (was
+  "10-35 dB"); the untreated tolerance excess spans ~3x10^2 (ch 33) to a
+  few 10^6 (ch 30), not "three hundred thousand to five hundred thousand".
+- Five transmitter sign-offs or station departures (19, 20, 26, 27, 32)
+  were recorded on collected channels, not three.
+- The survey archive is 8,983 usable snapshots (was "~8,500").
+- Station distances are great-circle to the verified licensed site from
+  the ISED-corrected census: CKVU-DT 241 km, CBUT-DT 242 km, KZJO 277 km
+  (the old 389/451 km were road distances); tab:census caption updated
+  and its export reference corrected to the 499-row census.
+- SS9.3 quarterly-table provenance rewritten: the generating rule IS now
+  identified (survey_composition.py, 2026-07-18, F > mu-hat + 0.012 mu0,
+  legacy-halfband weight bank b0dce17a, fs/2-mistuned, pilots suppressed
+  39-47 dB except channel 30's, which self-cancels 847 Hz from fs/4);
+  "unrecorded" claims removed, table caption updated.
+- Channel-33 chain ledger: the +30.5 dB is the NET chain gain (the
+  ground filter's -7.6 dB is already inside it); the stale "+22.9 dB
+  net" decomposition removed.
+- Frame-stage r_proxy list on 35/34/36 corrected to the Table 9.6
+  on-air shelves (0.085 / 3.9e-4 / 1.35e-3) with penalties recomputed.
+- The BAO hand-back of the 200-ns cut's incidental DTV suppression is
+  3.2-7.8 dB, not 5.9-7.8.
+- SS6.2 encoding story corrected: native samples are excess-8; the
+  ingest adapter repacks losslessly to two's complement (per byte,
+  XOR 0x88); the kernel sign-extends nibbles. The transform-only cost
+  of 5.9e-4 relative is -0.0026 dB (both quotes were 10x off).
+- Fig. 9.4 / SS9.7 policy case put on one population: keep-everything
+  regenerated on the acquisitions>=8 base (1566x residual multiple,
+  3.35x time; pilot-proxy time penalty 3.4x on the same base); summary
+  snapshot, figure table, and vendored Fig. 9.4 all updated.
+- Table 8.1's pending cells filled from the epoch-restricted fine
+  operating-point rerun (per-channel pairs: ch 31 1.50/98304, ch 32
+  1.15/75366, ch 35 7.61/498656) with the calendar-late residuals
+  (0.008 / 0.016 / 0.237) quoted in the text; captions updated to name
+  the authoritative CSV.
+- Table 11.1 extended from channels 27-36 to all 23 channels.
+- Evidence anchors: the deployed positive-excess rule's false-alarm
+  price is stated (48.5% of verified-quiet time in the candidate
+  record; 44.2% recomputed on the full 11,199-frame ch 35 off-era null)
+  and the committed coarse-vs-fine ROC / Youden-J analysis
+  (pilot-proxy analysis/youden_j.py) is cited; the coherent-gain credit
+  cites the committed fine-gain Monte Carlo evidence.
+- Editor's-note phrasing removed throughout ("supplied for this
+  revision", "not invented here", "the present draft", "left pending",
+  "remembered analysis", "dissertation-source bundle", "the revised
+  analysis").
+- Repository hygiene: line endings normalized to LF byte-exactly and
+  pinned with .gitattributes (the Overleaf import's blobs were already
+  byte-exact; the CRLF came from an autocrlf checkout), restoring the
+  frozen-table hashes; the gate itself gained TeX-aware normalization
+  ({,} digit-group commas, -- and --- dashes) in bao-noise-tolerance.

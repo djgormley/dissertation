@@ -104,8 +104,8 @@ Copyright 2027 Dylan Gormley
 North American broadcast television occupies 470--608~MHz, a 138-MHz interval
 that maps to $1.34 \le z \le 2.02$ for the redshifted 21\,cm line and therefore
 covers roughly one third of CHIME's cosmological observing band.  The received
-8-VSB payload can lie below thermal noise in an individual correlator frame yet
-remain correlated long enough to bias an eight-year intensity-mapping survey.
+8-VSB payload can lie below thermal noise in an individual detector frame yet
+remain correlated long enough to bias a multi-year intensity-mapping survey.
 The resulting problem is not simply whether television can be detected, but
 whether a frame-level mask can remove enough contamination without discarding
 so much exposure that the baryon acoustic oscillation (BAO) measurement becomes
@@ -127,18 +127,22 @@ selection limits explicitly and reserves final operating points for blocked,
 per-epoch validation.
 
 A Fisher-forecast framework converts masked fraction and surviving residual
-into integration-time cost and parameter-bias tolerance.  Ten contiguous
-channels, 27--36, currently have archival products.  Within the present
-pilot-to-shelf transfer model and per-redshift-bin Fisher estimator, channels
-32, 33, and the early epoch of channel~35 are forecast-feasible for the BAO
-dilation measurement; channels 27, 28, 30, 31, and 36 are excision candidates;
-and channels 29 and 34 remain controlled by measurements the snapshot archive
-cannot supply.  Recovery of the growth-rate parameter is conditional on booking
+into integration-time cost and parameter-bias tolerance.  The archive survey
+completed in August 2026: all 23 allocations, channels 14--36, carry products
+and residual-chain evaluations, spanning 7.6 years of captures.  Within the
+present pilot-to-shelf transfer model and per-redshift-bin Fisher estimator,
+channels 32, 33, and the early epoch of channel~35 are forecast-feasible for
+the BAO dilation measurement; six allocations with live carriers (17, 22, 24,
+30, 31, 35) are excision candidates; the measured transmitter sign-offs (19,
+20, 26, 27, 32) convert most of the band into clean, per-epoch-recoverable
+observing time at a tolerance-priced working threshold; and the remaining
+verdicts are controlled by coherence measurements the snapshot archive cannot
+supply.  Recovery of the growth-rate parameter is conditional on booking
 the same BAO-preserving delay filter in both the residual and Fisher models.
 These are deliberately conditional verdicts: the closing campaign must validate
 the pilot proxy across each 6-MHz allocation, calibrate its transfer to
 visibility-domain residuals, reproduce the combined-bin forecast estimator,
-and measure the remaining thirteen channels.  The principal result is therefore
+and pass the blocked per-epoch holdout.  The principal result is therefore
 both an instrument and an auditable decision framework: exact where the digital
 contract permits exactness, measured where the archive supplies evidence, and
 explicitly bounded where it does not.
