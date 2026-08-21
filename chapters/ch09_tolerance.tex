@@ -772,7 +772,8 @@ dominated by their transmitter-on epochs.  This peak location is not the same
 estimand as a channel--epoch on-minus-off anchor; those calibrated anchors can
 lie farther from synthesis and are reported only from their authoritative
 export.  Channel 14 carries the same instrumental channel-centre line that
-Figure~ef{fig:census:psd} identifies on channel 28 --- here $3.1$~kHz above
+Figure~
+ef{fig:census:psd} identifies on channel 28 --- here $3.1$~kHz above
 synthesis at $10.3$~dB, sitting in the skipped guard rather than on a
 reference --- and it is likewise not an emitter; channels 14 and 28 are the
 only two in the survey whose pilot lies within $15$~kHz of its own channel
@@ -958,10 +959,25 @@ materially --- the same property that prices the step-two rule at nearly
 half of verified-quiet time (Section~\ref{sec:pipeline:decision}).  Step three is the working threshold $F > \eta\,\mu_0$ with the
 band-wide $\eta = 1.4$, selected from the threshold sweeps priced through the
 forecast bank; it caps kept-frame pilot excess at
-$\hat{\rho} = F/\mu_0 - 1 \le 0.4$ ($+1.46$~dB) by construction.  Step four ---
+$\hat{\rho} = F/\mu_0 - 1 \le 0.4$ ($+1.46$~dB) by construction.  What the rule
+removes, rather than what it caps, is measurable directly from the stored
+per-frame fine statistic: averaging the latest era's fine spectrum over all
+frames and then over only the surviving frames, the threshold takes out
+between $0.13$ and $3.07$~dB of band-integrated power on the kept channels,
+and up to $13.7$~dB at the carrier itself on channel 14.  On channels 24, 30,
+31 and 35 it removes $0.02$ to $0.07$~dB: the carrier is present in
+substantially every frame, so the surviving set is the same population as the
+full one.  That is the excision case in spectral form --- on those channels
+there is no subset of the era worth keeping.  Step four ---
 a per-channel excess threshold $\hat{\rho}$ selected from each channel's own
-residual chain against the tolerance --- is the per-epoch evaluation this
-chapter leaves pending.
+residual chain against the tolerance --- is the per-epoch evaluation, and it
+is carried here under the second of the two conditions the limitation below
+names.  With the coherence time held at its permanent bound rather than
+measured, each channel's cost optimum is well defined, and evaluating it on
+the latest-era calibrated null gives per-channel thresholds spanning
+$\eta = 1.010$ to $1.834$ with a median of $1.159$.  What that resolution
+rests on is the adopted bound, not the data, and the limitation states the
+difference.
 
 The working threshold's limitations should be stated as plainly as its
 benefits.  \emph{First}, it is a cost-axis screening instrument: its
@@ -973,7 +989,16 @@ ends of the coherence bracket, because they are functions of the refused
 correlation times --- $\eta = 1.4$ is the point where the \emph{decision}
 (clean versus live) is bracket-stable, not where any channel's cost is
 minimized, and the per-channel step-four thresholds are unidentifiable until
-$\tau_c$ is measured or permanently bracket-bounded.  \emph{Third}, the
+$\tau_c$ is measured or permanently bracket-bounded.  That instability is now
+measured rather than asserted: evaluating each channel's cost optimum at both
+ends of the bracket, the ratio between them has a median of $2.08$ and reaches
+$9.92$ on channel 14, and it collapses to exactly $1.00$ on channels 24, 31
+and 35 --- the three carrying a measured correlation time.  The ordering that
+falls out is the material point.  The threshold is identified on five of the
+twenty-three channels, and all five are excised, so it is pinned precisely
+where it no longer governs anything and left open on the seventeen kept
+channels where it does.  The step-four values quoted above are therefore
+identified by the adopted bound rather than by the data.  \emph{Third}, the
 clean/live classification it induces is an occupancy gate (masked fraction
 below $15\%$ at $\eta = 1.4$), and the propagation-fed channels --- the
 burst-type 36 at $33.7\%$ and the episodic band-edge pair 14--15 at

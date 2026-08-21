@@ -162,6 +162,8 @@ included until its exact representation and retention window are specified.
 - Within-event frame-to-frame coherence from the existing archive is the
   no-new-collection fallback for the burst channels' fast end.
 
+Two orderings exist for these targets and they answer different questions. The scheduling above ranks channels whose *verdict* hangs on a measured correlation time. Ranking instead by how far a measured time would move the *operating threshold* -- the ratio between each channel's cost optimum at the two ends of the coherence bracket -- puts channels 14 (9.9x), 36 (8.3x), 18 (5.7x), 15 (4.6x) and 27 (4.0x) first, of which only 36 is scheduled here. Under the bounded basis no verdict depends on the measurement at all, since every excision is a carrier-dominance call; what it buys is cost. Revisit the ordering against whichever objective is in force when the campaign is revived.
+
 ## D. Validate the pilot proxy across each allocation
 
 **Status: requires data not present in the attachments.**  The supplied products
