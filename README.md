@@ -19,19 +19,19 @@ make all
 
 This command:
 
-1. regenerates the 17 bundle-scope vector PDFs from bundled Python source
-   (nine further active PDFs are vendored, rendered byte-reproducibly by
-   `WVURAIL/pilot-proxy` and `WVURAIL/bao-noise-tolerance`; the manifest
-   records the generating commit of each);
+1. regenerates every bundle-owned PDF from bundled Python source; current
+   result PDFs and the 23 channel diagnostic atlases are vendored from
+   `WVURAIL/pilot-proxy` and `WVURAIL/bao-noise-tolerance`, with producer
+   commits and immutable inputs recorded by the manifest;
 2. rebuilds the dissertation in three LaTeX passes;
 3. verifies the frozen data manifest, every figure source and dependency,
-   vector format, embedded Latin Modern fonts, and shared style conventions.
+   vector format, embedded Latin Modern fonts, shared style conventions, and
+   the hashes and reconciliation invariants of the vendored result releases.
 
 The two architecture diagrams are native TikZ files included directly from
-`figure_src/tikz/`. Twenty-five external PDFs and both TikZ figures are
-active in the document (sixteen rendered here, nine vendored from the
-analysis repositories); one additional generated PDF is retained as an
-editable unused alternative.
+`figure_src/tikz/`. The generated `FIGURE_AUDIT_REPORT.md` records the exact
+active, vendored, bundle-rendered, and inactive counts for the frozen release;
+`figure_src/figure_manifest.csv` is the authoritative per-artifact inventory.
 
 ## Repository/dissertation separation
 
@@ -76,12 +76,17 @@ rather than being silently synthesized.
 - `requirements-figures.txt` — Python dependencies
 - `CANFAR_PRODUCT_HEALTH_AUDIT.json` — machine-readable all-23 product-health
   audit, including validity, saturation/fill, and fine-designation findings
+- `scripts/verify_vendored_evidence.py` — standard-library CI check for the
+  immutable BAO and CANFAR evidence releases and their reconciliation invariants
 - `evidence/legacy_projects/pilot_informed_detector_article/provenance/` — the
   retained PilotProxy patch, producing commit, decision records, and compact
   legacy provenance
 
-All active external graphics are vector PDFs. Their labels are rendered through
-LaTeX using T1-encoded Latin Modern, the same family as the dissertation body.
+All active external graphics use PDF containers. Bundle-rendered plots and
+repository result figures are vector PDFs; the 23 diagnostic atlases
+deliberately embed declared raster heatmaps alongside vector histogram and
+spectrum panels. Their labels are rendered through LaTeX using T1-encoded
+Latin Modern, the same family as the dissertation body.
 The build fails rather than silently substituting a different font. No font
 files are bundled. Figure and dissertation PDF metadata are fixed so that the
 same inputs and toolchain produce byte-for-byte reproducible PDFs.
@@ -105,9 +110,10 @@ without redesigning its figure.
 - `REVISION_NOTES.md` — substantive dissertation changes and checks
 - `REVIEW_RESPONSE.md` — disposition of the supplied review
 - `archive_completion_checklist.md` — measurements and release records still needed
-- `evidence/` — curated legacy projects, fixed reference PDFs, compact data,
-  source generators, provenance notes, and a release manifest; Appendix B states
-  the reuse boundary
+- `evidence/` — immutable current archive-health and BAO-forecast releases plus
+  curated legacy projects, fixed reference PDFs, compact data, source
+  generators, provenance notes, and release manifests; Appendices B and C state
+  the current/legacy reuse boundaries
 
 ## Evidence status
 
@@ -115,16 +121,22 @@ The exact-arithmetic detector and its exercised implementation contracts are the
 strongest completed part of the work. The offline CANFAR trawl now covers all
 23 ATSC allocations (channels 14--36), including channels 14 and 15, and the
 dissertation carries an all-band archive and residual-chain screening result.
-Coverage is not the same as a final science release: the release must first
-resolve the fill/saturation-like and all-zero frames identified by the product
-audit, rebuild science products under the corrected data-health gate, and
-recompute the fine designated-window diagnostics from the retained 256-bin
-arrays rather than using the archived bin-0 ancillary CFAR fields. The
-all-23-channel results remain screening results until the current-geometry
-synthetic sensitivity/fixed-point-loss study, pilot-to-allocation transfer,
-visibility-domain transfer, combined-bin Fisher estimator, residual-template
-bank, and per-epoch holdout tests are completed or the affected claims are
-explicitly kept conditional.
+Coverage is not the same as a final operations recommendation.  The completed
+release audit now applies a fail-closed v1 health gate to the four all-zero
+detector-invalid frames and 178 mathematically identified constant-ceiling
+frames, writes an immutable reason-coded ledger, exactly repairs their
+aggregate spectral contribution, and recomputes fine designated-window
+diagnostics from the retained 256-bin arrays rather than using the archived
+bin-0 ancillary CFAR fields.  The all-23-channel results remain screening
+results until the current-geometry synthetic sensitivity/fixed-point-loss
+study, pilot-to-allocation transfer, visibility-domain transfer, empirical
+residual-template fit, and per-epoch holdout tests are completed or the
+affected claims are explicitly kept conditional.  The code-side forecast gate
+is now closed: the collaboration-style combined-bin estimator has been executed
+over all seven DTV redshift bins for four normalized analytic residual families
+and both declared time-scaling models.  Those calculations define a sensitivity
+envelope; they do not select a physical template in the absence of
+visibility-domain frequency, baseline, and sidereal structure.
 
 ## Integrated legacy evidence
 

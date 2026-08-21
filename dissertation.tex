@@ -120,8 +120,11 @@ and per-epoch calibration measured from telescope data.  The implementation is
 an exact fixed-point pipeline whose projections, frozen Fourier transform,
 power sums, and mask decision are bit-reproducible against independent
 references.  A restartable survey processes triggered archival baseband
-captures and retains the decision statistics and provenance needed to revisit
-thresholds without reprocessing the raw archive.  Because the archive is
+captures and retains the coarse integer statistics, floating fine diagnostics,
+and provenance needed to revisit coarse thresholds exactly and prototype fine
+thresholds without reprocessing the raw archive.  Exact replay of a new Q16
+fine decision still requires the unretained fine integer powers or raw data.
+Because the archive is
 trigger-selected rather than a uniform time sample, the dissertation states its
 selection limits explicitly and reserves final operating points for blocked,
 per-epoch validation.
@@ -131,10 +134,14 @@ into integration-time cost and parameter-bias tolerance.  The archive survey
 completed in August 2026: all 23 allocations, channels 14--36, carry products
 and residual-chain evaluations, spanning 7.6 years of captures.  A
 post-completion product-health audit found 178 nominally valid ceiling-power
-frames that require raw-source adjudication, so every affected product-derived
-summary is provisional until the reason-coded health gate is applied and the
-downstream products are regenerated.  Within the
-present pilot-to-shelf transfer model and per-redshift-bin Fisher estimator,
+frames.  A fail-closed, reason-coded v1 gate excludes those rows and the four
+already-invalid frames, leaving 750,279 science frames from 8,980 events; the
+constant-word rows also admit an exact correction of the two accumulated
+spectra.  The acquisition-side cause remains unknown, but no longer controls
+the scientific disposition.  The v4 integration retains the pre-health
+screening classifications provisionally rather than claiming a new blinded,
+health-recomputed verdict.  Within the
+present pilot-to-shelf transfer model and the tabulated per-redshift-bin Fisher estimator,
 channels 32, 33, and the early epoch of channel~35 are forecast-feasible for
 the BAO dilation measurement; five allocations with observed live carriers
 (17, 22, 24, 31, 35) are excision candidates, while channel~30's latest
@@ -146,9 +153,13 @@ point, and the remaining
 verdicts are controlled by coherence measurements the snapshot archive cannot
 supply.  Recovery of the growth-rate parameter is conditional on booking
 the same BAO-preserving delay filter in both the residual and Fisher models.
-These are deliberately conditional verdicts: the closing campaign must validate
-the pilot proxy across each 6-MHz allocation, calibrate its transfer to
-visibility-domain residuals, reproduce the combined-bin forecast estimator,
+These are deliberately conditional verdicts.  The completed code-side
+forecast now compares independent and joint multi-redshift-bin estimators and
+four authenticated analytic residual families over every DTV redshift bin; it
+finds a model-sensitivity envelope rather than evidence for which shape nature
+uses.  The closing campaign must still validate the pilot proxy across each
+6-MHz allocation, calibrate its transfer to visibility-domain residuals, build
+the empirical frequency/baseline/sidereal templates those products permit,
 and pass the blocked per-epoch holdout.  The principal result is therefore
 both an instrument and an auditable decision framework: exact where the digital
 contract permits exactness, measured where the archive supplies evidence, and
@@ -212,6 +223,7 @@ SNR & signal-to-noise ratio\\
 \appendix
 \include{chapters/appA_evidence_matrix}
 \include{chapters/appB_legacy_evidence}
+\include{chapters/appC_archive_diagnostics}
 
 % -------------------------------------------------------------- bibliography
 \clearpage

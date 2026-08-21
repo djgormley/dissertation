@@ -1,0 +1,14 @@
+# LaTeX build intermediates (the compiled dissertation.pdf remains tracked).
+*.aux
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+
+# Python caches and local rendering scratch.
+__pycache__/
+*.py[cod]
+/tmp/

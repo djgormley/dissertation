@@ -200,7 +200,10 @@ def main() -> int:
         if r"width=0.98\linewidth" not in options:
             errors.append(f"active external figure does not use the common 0.98-linewidth convention: {artifact}")
 
-    generated_pdf_set = {p.relative_to(ROOT).as_posix() for p in (ROOT / "figs").glob("*.pdf")}
+    generated_pdf_set = {
+        p.relative_to(ROOT).as_posix()
+        for p in (ROOT / "figs").rglob("*.pdf")
+    }
     manifest_pdf_set = {row["artifact"] for row in rows if row["kind"] == "pdf"}
     if generated_pdf_set != manifest_pdf_set:
         errors.append(
@@ -236,7 +239,9 @@ def main() -> int:
                     row_errors.append("generated figure is not exactly one PDF page")
                 fonts, font_errors = font_audit(artifact)
                 row_errors.extend(font_errors)
-                row_errors.extend(vector_audit(artifact))
+                raster_objects = vector_audit(artifact)
+                if raster_objects and "declared embedded raster" not in row["notes"]:
+                    row_errors.extend(raster_objects)
             errors.extend(f"{row['artifact']}: {e}" for e in row_errors)
             report_rows.append({
                 "artifact": row["artifact"],
@@ -261,7 +266,7 @@ def main() -> int:
         f"- Frozen data tables: {len(frozen_manifest['artifacts']) if frozen_manifest else 0}",
         f"- Frozen tables awaiting authoritative replacement: {sum(bool(a.get('replacement_required')) for a in frozen_manifest['artifacts']) if frozen_manifest else 0}",
         "- Production font contract: embedded Latin Modern; no Type 3 or DejaVu substitution",
-        "- Active external format contract: vector PDF only",
+        "- Active external format contract: PDF; embedded raster content is rejected unless explicitly declared in the artifact manifest",
         "- Inclusion-size contract: 0.98 of the dissertation text width",
         "",
     ]
@@ -285,7 +290,7 @@ def main() -> int:
         "",
         "This report verifies that every included visual is source-backed, that all listed dependencies are present, "
         "that the frozen-data manifest matches every CSV byte and row count, that the active external figures are "
-        "one-page vector PDFs, that their fonts are embedded Latin Modern fonts, and that the Python/TikZ semantic "
+        "one-page PDFs with any necessary raster content declared, that their fonts are embedded Latin Modern fonts, and that the Python/TikZ semantic "
         "palettes agree. It does not replace scientific validation of the values in the input tables; authority and "
         "replacement status are recorded in `figure_src/data/frozen_export/v1/frozen_data_manifest.json`.",
         "",

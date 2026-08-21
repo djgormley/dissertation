@@ -1,11 +1,18 @@
-# Integrated legacy evidence
+# Dissertation evidence releases and integrated legacy evidence
 
-This directory is the canonical home for the legacy work retained by the
-dissertation. Appendix B explains which findings were integrated, which numbers
-belong to superseded detector geometries, and which closing measurements remain.
+This directory is the canonical home for both the current evidence releases and
+the legacy work retained by the dissertation.  Appendices B and C explain which
+findings are current, which numbers belong to superseded detector geometries,
+and which closing measurements remain.
 
 ## Directory map
 
+- `canfar_archive_health_v1/` - immutable all-23-channel archive-health release,
+  exact exclusion ledger and spectrum repair, exposure accounting, status
+  exports, and 92 channel diagnostics from PilotProxy commit `2cf4d8c`.
+- `bao_forecast_completion/` - authenticated all-seven-bin, four-analytic-family
+  forecast completion release from `bao-noise-tolerance` scientific commit
+  `3b5fc5e` and deterministic dissertation-figure commit `db89d62`.
 - `legacy_projects/pilot_informed_detector_article/` - article source, figures,
   compact sweep/survey products, waveform audits, decision records, provenance
   memos, producing commit, and repository patch.
@@ -17,9 +24,11 @@ belong to superseded detector geometries, and which closing measurements remain.
   scripts, tone CSV, and figures.
 - `reference_pdfs/` - the four reviewed reading copies.
 - `legacy_review.md` - the original file-by-file preservation assessment.
-- `MANIFEST.sha256` - generated release hashes for every file in this directory.
+- `../MANIFEST.sha256` - root-level release hashes for every tracked file in the
+  dissertation bundle, including this directory; it is refreshed only after
+  the bundle is otherwise frozen.
 
-## Important boundary
+## Important legacy boundary
 
 The following large artifacts are named by the retained provenance but were not
 inside the supplied projects:

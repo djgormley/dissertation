@@ -3,9 +3,10 @@
 # Drop this file at .github/workflows/number-gate.yml in the dissertation
 # repository. On every push/PR it checks out bao-noise-tolerance (for the
 # gate script and out/*.csv) and the pilot-proxy provenance snapshot, then
-# runs the gate against dissertation.tex + chapters/, scanning the frozen
-# figure data for figure-borne numbers. The checker is stdlib-only, so no
-# pip install step is needed.
+# runs the historical 67/67 number gate against dissertation.tex + chapters/,
+# scanning the frozen figure data for figure-borne numbers. It also verifies
+# the immutable vendored evidence releases. Both checkers are stdlib-only, so
+# no pip install step is needed.
 #
 # If WVURAIL/bao-noise-tolerance or WVURAIL/pilot-proxy are private, add
 #   token: ${{ secrets.GH_PAT }}
@@ -22,32 +23,32 @@ on:
 
 jobs:
   gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out dissertation
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Check out bao-noise-tolerance (gate + out/*.csv)
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: WVURAIL/bao-noise-tolerance
           # Pin the number gate and its data products so an upstream default-
           # branch change cannot alter this dissertation's CI result silently.
-          ref: a7ee77eec63604ccf2560410887f5a86bae168d6
+          ref: db89d6260428430fd530b2352e1c2bc1cefcab06
           path: bao
 
       - name: Check out pilot-proxy provenance snapshot
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: WVURAIL/pilot-proxy
           # Keep the provenance input immutable for the same reason.
-          ref: 1d74e096855c4c9bef92c32a82723a3f50a2210b
+          ref: 2cf4d8cdc94a2beb2299f2b7ece0dcfe2662c6ee
           path: pilot-proxy
           sparse-checkout: |
             data/provenance
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
 
@@ -61,3 +62,6 @@ jobs:
             --summary-json pilot-proxy/data/provenance/dissertation_summary_v3.json \
             --also-scan figure_src/data \
             --baseline .number-gate-baseline
+
+      - name: Verify vendored evidence releases
+        run: python scripts/verify_vendored_evidence.py

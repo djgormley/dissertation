@@ -31,9 +31,15 @@ measurements.
 allocations in the CHIME band, from the frozen August 2026 export: all 23
 allocations carry archive products --- the ten contiguous channels 27--36 with
 the full residual-chain evaluation, and channels 14--26 at the survey, epoch,
-and residual-chain level (Section~\ref{sec:bao:lowerband}).  Categories are
-conditional on the pilot-to-allocation and visibility-transfer models and the
-per-bin Fisher estimator.  Half-filled cells are epoch-split between
+and residual-chain level (Section~\ref{sec:bao:lowerband}).  The cell
+classifications are the frozen, provisional pre-health-repair classifications;
+the v4 release attaches health-filtered denominators, corrects channel 27's
+off-epoch chain, and withdraws the old unqualified channel-21 null-population
+superlative, but deliberately does not pretend that the legacy operating points
+were re-blinded or health-recomputed.  Categories remain conditional on the
+pilot-to-allocation and visibility-transfer models and on selecting an empirical
+residual shape within the completed per-bin/joint analytic forecast envelope.
+Half-filled cells are epoch-split between
 transmitter eras: channel 35's early archive is forecast-feasible for the
 dilation tier while its post-switch-on environment is excision-shaped, and the
 dated sign-offs on channels 19, 20, 26, and 27 pair a measurement-bound off
@@ -52,7 +58,9 @@ the evidence supports:
   \item a constraint-derived, exact-integer detector with explicit overflow,
   rounding, initialization, and verification contracts;
   \item a restartable, bounded-storage archive survey that stores statistics and
-  provenance rather than only historical mask bits;
+  provenance rather than only historical mask bits, together with a
+  fail-closed post-archive health gate, immutable exclusion ledger, and exact
+  correction of the one reconstructible class of excluded spectra;
   \item empirical anchor, null, epoch, and correlation-time estimators with
   refusal semantics when a required population is absent; and
   \item a two-tier BAO tolerance framework that can return recovery, excision,
@@ -64,15 +72,18 @@ the evidence supports:
 \label{sec:conclusions:matrix}
 
 Under the current transmitter proxy, scalar residual chain, noise-shaped
-residual template, and per-redshift-bin Fisher estimator, the 23 measured
-channels divide as follows:
+residual template, and per-redshift-bin Fisher estimator, the evidence map for
+the 23 product-covered channels is summarized as follows:
 
 \begin{table}[t]
 \centering
-\caption{Current conditional synthesis of channels 14--36.  These are analysis
-statuses, not final operations commands.  ``Forecast-feasible'' means that the
-recorded policy enters the present dilation-tolerance region; it does not waive
-the transfer and estimator validations listed in the final column.}
+\caption{Provisional conditional synthesis of channels 14--36.  These are
+analysis statuses, not final operations commands.  The health-filtered v4
+release retains the legacy classifications rather than recomputing or
+re-blinding their operating points; the table therefore summarizes the current
+evidence record, not a new status adjudication.  ``Forecast-feasible'' means
+that the recorded policy enters the present dilation-tolerance region; it does
+not waive the transfer and estimator validations listed in the final column.}
 \label{tab:conclusions:matrix}
 \footnotesize
 \begin{tabularx}{\linewidth}{c>{\raggedright\arraybackslash}p{0.24\linewidth}X}
@@ -84,16 +95,16 @@ Channel & Current status & Binding evidence or closing condition \\
 16 & measurement-limited & Trace with warm-season swell; refused $\tau_c$ and unmeasured floor \\
 17 & excision candidate; era-split & Persistent carrier, two on-epochs; occupancy-pinned; twenty null frames too few to stand on \\
 18 & measurement-limited & Trace, rising since 2024; refused $\tau_c$; measured $-41.3$~dB floor \\
-19 & era-split & Sign-off Dec 2024; off-epoch floor $-33.5$~dB; off-epoch coherence refused, so the row is a bound \\
-20 & era-split & Step-down Sep 2022; off-epoch $\tau_c$ measured (167 min); conservative floor basis is the cheapest refinement \\
+19 & measurement-limited (off epoch); on-epoch excision candidate & Sign-off Dec 2024; off-epoch floor $-33.5$~dB; off-epoch coherence refused, so the row is a bound \\
+20 & measurement-limited (off epoch); historical/on-epoch excision candidate & Step-down Sep 2022; $23{,}666$ off-epoch null frames and health-filtered $\tau_c$ measured (165 min); the conservative floor basis still makes the row a bound \\
 21 & measurement-limited & Trace; largest detection-defined null population outside a transmitter-off epoch (14{,}647; floor $-43.2$~dB); cadence co-priority with 29 \\
 22 & excision candidate & Persistent, steady; occupancy-pinned; no null population \\
 23 & measurement-limited & Trace; $\tau_c \le 5$~min bounded; floor unmeasured --- fine-stage null re-decision target \\
 24 & excision candidate & Persistent; collection-curtailed archive; $\tau_c$ measured (62 min); occupancy/cost wall \\
 25 & measurement-limited & Trace; refused $\tau_c$ and unmeasured floor \\
-26 & era-split & Sign-off Apr 2023; off-epoch floor $-32.3$~dB; off-epoch coherence refused, so the row is a bound \\
+26 & measurement-limited (off epoch); on-epoch excision candidate & Sign-off Apr 2023; off-epoch floor $-32.3$~dB; off-epoch coherence refused, so the row is a bound \\
 \addlinespace[2pt]
-27 & excision candidate (archive average); era-split & Transmitter off since the 2021--22 collection gap; current epoch is trace-level with a measured off-epoch floor (Sec.~\ref{sec:bao:lowerband}) \\
+27 & measurement-limited (off epoch); historical excision candidate & Transmitter off since the 2021--22 collection gap; v4 measures $21{,}437$ off-epoch null frames and a $-24.44$~dB floor, but refuses the correlation time; the old archive-average excision classification is secondary context (Sec.~\ref{sec:bao:lowerband}) \\
 28 & excision candidate & Near-continuous occupancy and inadequate verified null population \\
 29 & measurement-limited & Correlation-time refusal; contiguous cadence can change the verdict \\
 30 & excision candidate & Occupancy/cost wall; collection curtailed after Sep 2023, so the current state is unmonitored \\
@@ -102,7 +113,7 @@ Channel & Current status & Binding evidence or closing condition \\
 33 & forecast-feasible, conditional & Multi-structure environment; validate template and transfer \\
 34 & measurement-limited & Correlation-time and contiguous-scan requirement \\
 35 & epoch-split & Early epoch forecast-feasible; post-2021 switch-on is excision-shaped \\
-36 & excision candidate & Effectively always on with no defensible off-state floor \\
+36 & excision candidate; kept-and-masked override & Effectively always on with no defensible off-state floor; operational override retains frames only under the explicit coherence-unverified exception of Sec.~\ref{sec:bao:lowerband} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -124,19 +135,31 @@ Their survey- and epoch-level rows are reported there, and their
 residual-chain rows now stand beside the first block's
 (Table~\ref{tab:bao:lowerchain}), computed by a released generator whose
 self-test reproduces the first block's published constants from raw products.
-Every screening status survives the chain unchanged; channel 21 emerges as
-the survey's best-floored coherence hostage ($14{,}647$ detection-defined
-null frames, the largest population not constructed from a transmitter-off
-epoch) beside channel 29; channel 14 sets the
-survey's extremes of intra-day share ($52.6\%$) and ground-filter weakness
+The v4 release deliberately carries the legacy classifications forward without
+claiming a new blinded, health-recomputed verdict; within that provisional
+scope no classification label was changed. Channel 21 emerges as
+the survey's best-constrained full-archive coherence hostage ($14{,}647$
+detection-defined null frames, the largest full-archive population not
+constructed from a transmitter-off epoch) beside channel 29; channel 14 sets the
+survey's extremes of intra-day share ($52.8\%$) and ground-filter weakness
 ($2.7$~dB); and no new-block channel
 reaches conditional recovery at the deployed basis under the coherence cap.
 
 The growth-rate result is more conditional than the dilation result.  In the
 present model, booking a BAO-preserving delay cut on both sides of the calculation
-can move the threshold-feasible channels inside the $f\sigma_8$ tolerance.  That
-claim must be repeated with the collaboration's actual combined-bin estimator
-and with residual templates that reflect measured visibility structure.  The
+can move the threshold-feasible channels inside the $f\sigma_8$ tolerance.  The
+collaboration-style combined-bin estimator is now implemented over all seven
+DTV redshift bins.  In the noise-shaped family its one-year growth-rate
+tolerance is $8$--$23\%$ looser than the independent per-bin value, depending
+on bin (about $10\%$ at $z=1.4$--$1.5$).  The low-$k_\parallel$, wedge-like,
+and localized-$|k|$ banks have also been executed for the exact triplet
+per-bin noise-normalized, combined noise-normalized, and combined
+fixed-physical; together they span joint-estimator tolerances
+of $1.455\times10^{-3}$--$3.795\times10^{-3}$.  This completes the
+code-supported estimator and analytic-shape sensitivity envelope, but it does
+not select which curve describes the telescope residual.  That selection and
+any channel-policy revision require templates fitted to measured visibility
+structure.  The
 appropriate conclusion is not that the growth rate has already been recovered,
 but that a self-consistent filter configuration exists in the screening model
 and merits the closing analysis.
@@ -144,20 +167,25 @@ and merits the closing analysis.
 \section{What Remains to Close the Verdict}
 \label{sec:conclusions:future}
 
-The near program is fixed by the evidence matrix in Appendix~\ref{app:evidence}:
+The near program is fixed by the evidence matrix in Appendix~\ref{app:evidence}.
+One formerly blocking item is now closed: the 178 ceiling-power rows and four
+detector-invalid rows have reason-coded dispositions under the versioned v1
+health gate, and the exactly reconstructible accumulated spectra and all
+scalar/policy inputs have been regenerated on the resulting $750{,}279$-frame
+scientific population.  The remaining program is:
 
 \begin{enumerate}[leftmargin=2em]
-  \item adjudicate the 178 ceiling-power rows identified by the
-  post-completion product-health audit, attach reason-coded validity, and regenerate every
-  affected spectrum, distribution, threshold, and rate before freezing a
-  scientific release;
-  \item attach the immutable release ledger behind the now-complete
-  23-channel inventory (the trawl itself finished in August 2026; the exact
-  discovered/eligible/processed/quarantined denominators of checklist
-  item~A remain to be exported);
+  \item retain the immutable release ledger behind the complete 23-channel
+  inventory.  The supplied enumeration now closes the discovered,
+  survey-scope, inventoried, processed, zero-frame, and quarantined
+  denominators, records the three scope events having two attempts, and binds
+  the products to the processing binary.  The exact
+  denominator behind the separate historical cross-build ``zero mismatches''
+  claim and acquisition-performance telemetry were not retained and must
+  either be recovered from independent logs or remain explicitly unavailable;
   \item run the specified cadence campaigns to measure or bound $\tau_c$
   (checklist item C: half-day sessions at ${\sim}10$-s cadence, channels 29
-  and 21 first --- the survey's two best-floored coherence hostages --- then
+  and 21 first --- large-null, coherence-limited co-priorities --- then
   34); if they are not executed, the sidereal-day caps stand as permanent
   conservative bounds and certification shifts to the blocked holdout and
   per-channel jackknife of the final analysis;
@@ -167,11 +195,15 @@ The near program is fixed by the evidence matrix in Appendix~\ref{app:evidence}:
   \item measure contaminated complex visibilities before and after the
   per-sidereal-day operation, preserving baseline and phase information, and
   separate coherent systematic residual from stochastic added variance;
-  \item repeat the tolerance calculation with the published combined multi-bin
-  Fisher estimator and with localized, low-$k_\parallel$, wedge-like,
-  sidereal-coherent, and empirical residual templates;
-  \item complete blocked, per-epoch holdout calibration and attach exact event,
-  frame, storage, throughput, and reproduction denominators;
+  \item retain the completed per-bin/joint and four-family analytic forecast
+  envelope as the model-sensitivity bound.  Once the visibility products exist,
+  fit and propagate frequency-, baseline-, sidereal-, and empirically structured
+  residual templates through every channel policy and selected threshold; do
+  not choose the most permissive analytic family as a substitute for that
+  measurement;
+  \item complete blocked, per-epoch holdout calibration and attach its exact
+  event/frame split and reproduction denominator; do not turn absent transfer,
+  throughput, peak-storage, GPU-time, or wall-time logs into estimated facts;
   \item regenerate the standards-chain paired injection study through the
   current full-$2048$-input, two-stage pipeline, using a stationary-span waveform
   audit and reporting ideal-to-float, float-to-integer, and end-to-end crossing

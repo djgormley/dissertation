@@ -1,34 +1,145 @@
 {
+  "schema_version": "dissertation_canfar_archive_audit_v3",
   "audit_date": "2026-08-20",
-  "archive": {
-    "name": "pilot-proxy-runs.zip",
-    "sha256": "67f29488919c6b3c50d49bd6a37295e1a6f4a2efe59f043c1e9141b4e415fff1"
+  "inputs": {
+    "per_pilot_archive": {
+      "name": "_per_pilot.zip",
+      "size_bytes": 728281286,
+      "sha256": "c78f4fa8a3b9c11bd22344360ea224c3f88ee8e39276fd61ed15f4e989210aaa",
+      "previous_wrapper_sha256": "67f29488919c6b3c50d49bd6a37295e1a6f4a2efe59f043c1e9141b4e415fff1",
+      "content_relation": "The 23 NPZ products and quarantine ledger are byte-identical to the previously audited pilot-proxy-runs.zip payload."
+    },
+    "inventory_archive": {
+      "name": "chime-pilots.zip",
+      "size_bytes": 2251998,
+      "sha256": "bc975ac7c97a70f2871eaec166136f5944c98ade1b658cdfdc6a7fa1ee5c697f",
+      "inventory_jsonl_sha256": "0ecadee63791328ab3c71dd88c668d3df595bd778229e0e5f3980431943175e5"
+    },
+    "detector_kernel": {
+      "name": "libfstatistic-2.1.0-c85f50dd.so",
+      "sha256": "c85f50ddf898517bc0101d1882c854c3df70b09f0ab0b58803dc32f59e3c6d12",
+      "version": "2.1.0",
+      "profile_length": 128,
+      "profiles": 3,
+      "component_bits": 4,
+      "reference_profile_offset": 2,
+      "block_threads": 64,
+      "uses_dp4a": true,
+      "uses_uint64_accumulators": true,
+      "relation_to_products": "The shared-object digest equals the kernel hash recorded in all 23 products."
+    }
   },
-  "inventory": {
+  "survey_enumeration": {
+    "enumerated_events": 16327,
+    "outrigger_labelled_excluded_events": 6140,
+    "survey_target_events": 10187,
+    "completed_events": 10184,
+    "pending_attempt_category_events": 3,
+    "pending_attempt_category_interpretation": "Frozen source-inventory category after two recorded attempts; the three unprocessed units are the released quarantines, not an active retry queue.",
+    "retried_scope_events": 3,
+    "retry_attempt_count_distribution": {
+      "2": 3
+    },
+    "completed_with_inventory_rows": 9214,
+    "completed_aged_out_empty": 107,
+    "completed_without_common_target_path_derived": 863,
+    "inventory_rows": 170377,
+    "inventory_unique_rows": 170377,
+    "inventory_duplicate_rows": 0,
+    "inventory_date_range_utc": ["2018-12-05", "2026-07-28"],
+    "triggered_inventory_rows": 166583,
+    "scheduled_inventory_rows": 3794,
+    "catalogued_object_bytes": 28237618443352,
+    "catalogued_object_bytes_scope": "Sum of object sizes in inventory.jsonl; not a measurement of bytes transferred during processing."
+  },
+  "product_inventory": {
     "physical_channels": [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
+    "freq_id_range": [506, 844],
     "npz_products": 23,
-    "distinct_source_events": 9214,
-    "distinct_source_events_with_valid_frames": 8983,
     "event_channel_units": 170374,
-    "frames": 750461,
+    "zero_frame_event_channel_units": 4692,
+    "distinct_source_events": 9214,
+    "distinct_source_events_with_archived_valid_frames": 8983,
+    "distinct_source_events_with_health_included_frames": 8980,
+    "stored_frames": 750461,
     "archived_denominator_valid_frames": 750457,
     "explicit_invalid_frames": 4,
-    "quarantined_raw_objects": 3
+    "health_included_frames": 750279,
+    "quarantined_raw_objects": 3,
+    "quarantine_reconciliation": "170377 inventory rows = 170374 product units + 3 explicit quarantine records.",
+    "source_cohorts": [
+      {
+        "source_sha256": "02066f1d6337a3e1f05bba57f37f2196cb35ecd686b497ac418874542d70d086",
+        "package_version": "pilot-proxy/0.3.0.dev0",
+        "physical_channels": [35, 36],
+        "event_channel_units": 16951,
+        "frames": 77935
+      },
+      {
+        "source_sha256": "9317d5be23a309e1226dbb5b1b2c5cc950f3aef71ec54cb89e034b1ae921d0ce",
+        "package_version": "pilot-proxy/1.0.0",
+        "physical_channels": [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34],
+        "event_channel_units": 153423,
+        "frames": 672526
+      }
+    ],
+    "cohort_compatibility": "Both cohorts record the same kernel digest, detector geometry, and product schema."
+  },
+  "health_filtered_exposure": {
+    "status": "partial because 2489 otherwise health-included frames lack a positive finite frame duration",
+    "health_included_frames": 750279,
+    "frames_with_reproducible_timestamp_and_duration": 747790,
+    "triggered": {
+      "processed_event_channel_units": 166581,
+      "health_included_frames": 699579,
+      "frames_with_reproducible_duration": 697090,
+      "health_included_exposure_seconds": 29238.0737536
+    },
+    "scheduled": {
+      "processed_event_channel_units": 3793,
+      "health_included_frames": 50700,
+      "frames_with_reproducible_duration": 50700,
+      "health_included_exposure_seconds": 2126.512128
+    },
+    "released_coordinates": [
+      "UTC month and hour",
+      "America/Vancouver civil month and hour",
+      "America/Vancouver meteorological season",
+      "local mean sidereal hour at longitude -119.6175 degrees"
+    ],
+    "sidereal_convention": "UTC is used as a documented proxy for UT1; the result is local mean rather than apparent sidereal time and is a coverage diagnostic, not an astrometry product."
+  },
+  "health_gate": {
+    "gate_id": "pilotproxy_archive_frame_health_gate_v1",
+    "policy": "Fail closed on archived detector-invalid rows or on the exact representation-ceiling signature; retain an immutable reason-coded frame ledger.",
+    "excluded_unique_frames": 182,
+    "health_included_frames": 750279,
+    "reason_counts": {
+      "detector_invalid": 4,
+      "detector_powers_all_zero": 4,
+      "native_complex_int4_mean_power_ceiling": 178
+    },
+    "overlap_note": "The four detector-invalid rows also have all-zero power fields; reason counts are not additive.",
+    "source_events_lost_after_health_gate": ["429795244", "1117173024", "20231122053252"],
+    "scientific_status": "Final for this archive release. The excluded values are mathematically inconsistent with a healthy sky measurement under the declared representation; raw files are not required to justify their exclusion."
   },
   "explicit_invalid_population": {
     "physical_channel": 17,
     "freq_id": 798,
     "source_event": "baseband_27112562.h5",
     "frames": 4,
-    "observed_state": "all target, reference, fine-statistic, and baseband-power fields are zero",
+    "observed_state": "All target, reference, fine-statistic, and baseband-power fields are zero.",
     "archive_disposition": "valid=0; reject_mask=0"
   },
   "ceiling_power_population": {
     "criterion": "valid && baseband_power_linear == 128.0",
-    "representation_basis": "For signed complex int4 in [-8, 7], 128=(-8)^2+(-8)^2 is the maximum sample power; a frame mean equal to 128 is consistent with constant packed 0x88 input or saturation.",
-    "status": "candidate input-health failure pending raw-source adjudication",
+    "representation_proof": "Each native excess-8 complex-int4 component decodes to an integer in [-8,7], so per-sample power is at most (-8)^2+(-8)^2=128. A frame mean equal to that bound is possible only when every sample is (-8,-8).",
+    "native_raw_byte": "0x00",
+    "detector_input_byte_after_xor_0x88_repack": "0x88",
     "frames": 178,
     "distinct_source_events": 8,
+    "event_channel_units": 70,
+    "event_channel_units_containing_only_ceiling_frames": 50,
     "affected_physical_channels": [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36],
     "source_events": [
       "baseband_191875121.h5",
@@ -40,14 +151,65 @@
       "baseband_20211020160923.h5",
       "baseband_20231122053252.h5"
     ],
-    "required_release_action": "Inspect raw sources and acquisition metadata; attach reason-coded validity; regenerate affected spectra, distributions, thresholds, rates, and downstream tables before the scientific release is frozen."
+    "acquisition_root_cause": "Unknown because the raw HDF5 objects and acquisition logs are not present; this uncertainty does not change the input-health disposition."
+  },
+  "aggregate_spectrum_repair": {
+    "basis": "A constant detector-input byte 0x88 is the complex value (-8,-8). Its unshifted 16384-point FFT has power only at bin 0, so its contribution to each stored accumulator is known exactly.",
+    "power_per_stream_at_unshifted_bin_0": 34359736320,
+    "streams_per_frame": 2048,
+    "power_per_frame_at_unshifted_bin_0": 70368739983360,
+    "frames_subtracted_from_before_mask": 178,
+    "frames_subtracted_from_after_mask": 118,
+    "ceiling_frames_already_rejected": 60,
+    "parseval_relative_tolerance": 5e-7,
+    "worst_parseval_relative_discrepancy": 2.0187703293158527e-07,
+    "validation": "Every repaired accumulator is nonnegative and agrees with the corresponding health-included frame-power sum within the declared Parseval tolerance."
+  },
+  "mask_reconciliation": {
+    "archived_valid_rejected": 678530,
+    "archived_valid_kept": 71927,
+    "health_included_rejected": 678470,
+    "health_included_kept": 71809,
+    "survey_cost_ratio": 1.1013,
+    "worst_bin_cost_ratio": 1.5853,
+    "survey_rule_excised_channels": 6,
+    "deployed_survey_cost_ratio": 1.2238,
+    "deployed_worst_bin_cost_ratio": 5.3701
   },
   "fine_designation_population": {
     "products": 23,
     "archived_fine_designated_bins": [0],
-    "status": "diagnostic survey scaffolding, not the mature per-channel fine decision",
-    "recoverability": "The complete 256-bin fstat_fine array is retained for every frame, so corrected anchors and designated windows can be recomputed without rerunning the CUDA detector.",
-    "required_release_action": "Estimate and validate per-channel, per-epoch anchors; reconstruct each designated window and usable null bulk from fstat_fine; do not use the archived fine_cfar or fine_detected ancillary arrays as final calibrated decisions."
+    "status": "Diagnostic survey scaffolding, not the mature per-channel fine decision.",
+    "recoverability": "The complete 256-bin fstat_fine array is retained for every frame, so the broad geometry-predicted acquisition neighborhood, circular windows, empirical epoch anchors, and null bulk can be recomputed without rerunning CUDA.",
+    "released_archive_diagnostic": "The v1 health release replaces the obsolete bin-zero view with a broad geometry-predicted +/-30 fine-bin acquisition neighborhood and, where declared persistence, separation, frame-count, and external-sentinel gates pass, a narrow retrospective quarterly measured-line +/-2 window. These are floating-point archive diagnostics, not authoritative station epochs or an exact Q16 runtime decision.",
+    "remaining_calibration_boundary": "A final decision bundle must estimate or refuse a measured anchor independently for each declared epoch, record its uncertainty and circular-bin convention, construct the null bulk around that measured window, and validate the selected Q16 threshold on a blocked holdout.",
+    "exact_replay_limit": "The archive stores float32 F ratios rather than the three uint64 fine-power accumulators, so an exact threshold-near Q16 replay of historical frames is unavailable without raw data.",
+    "release_rule": "Do not use archived fine_cfar or fine_detected ancillary arrays as final calibrated decisions."
   },
-  "interpretation": "All 23 products pass their declared structural and exact-arithmetic checks. Those checks do not establish that every denominator-valid input frame is a healthy sky measurement."
+  "provenance_availability": {
+    "raw_hdf5": false,
+    "scan_scope_json": false,
+    "run_and_resource_logs": false,
+    "measured_network_bytes": false,
+    "peak_storage": false,
+    "gpu_and_wall_time": false,
+    "throughput": false,
+    "retry_counts_and_attempt_multiplicity": true,
+    "retry_reason_codes_and_resource_metrics": false,
+    "complete_operations_state": false,
+    "disposition": "Report the three recorded two-attempt events exactly. Report the remaining fields as unavailable. Do not substitute catalogued object bytes for transferred bytes or infer performance telemetry from products."
+  },
+  "immutable_release": {
+    "producer_repository": "WVURAIL/pilot-proxy",
+    "producer_commit": "2cf4d8cdc94a2beb2299f2b7ece0dcfe2662c6ee",
+    "producer_worktree_clean": true,
+    "archive_health_summary_sha256": "7ce08b84ddbdf05cdce5010abc27ec092e062b7656def1599704b58846f62389",
+    "archive_exclusion_ledger_sha256": "b3b804273abc8ee55d7dfcc5ce969b89203de435a36a50cbbf539b3fbe42bfd0",
+    "health_corrected_integrated_spectra_sha256": "02b822132a7aa5929f3d60165e0541ff7e775b045e46c4866f58ef7e358e4fa1",
+    "diagnostic_manifest_sha256": "5bf7809cffc9c77eab44dae9a855996422f347a969a14344d0b2414920ba4e78",
+    "diagnostic_asset_count": 92,
+    "focused_attached_archive_tests": "21 passed",
+    "full_repository_tests": "1078 passed, 4 skipped"
+  },
+  "interpretation": "The inventory, products, quarantines, and supplied kernel reconcile exactly. The v1 health gate closes the archive input-health release blocker and supports repaired relative spectra, scalar distributions, thresholds, rates, fine-F diagnostics, and downstream policy tables. It does not create raw-voltage spectrograms, absolute calibrated PSDs, or missing operational telemetry."
 }

@@ -58,8 +58,11 @@ operating point can describe no physical era.  A station departure can move a
 channel from the occupancy wall into a usable region, while a switch-on can move
 another channel in the opposite direction.  Anchor, bulk mask, threshold, and
 cost are therefore calibrated and versioned by epoch.  The numbers shown are the
-prototype epoch-split values; the Q16 thresholds come from the
-epoch-restricted fine operating-point rerun (Table~\ref{tab:calibration:epochs}).
+frozen prototype epoch-split values of Table~\ref{tab:calibration:epochs}.
+They predate the v1 health repair, were selected in sample, and cannot be
+replayed as exact historical Q16 decisions because the three integer fine-power
+accumulators were not retained.  They illustrate why epochs matter; they are
+not runtime calibration bundles.
 The frozen export additionally
 carries the epoch pairs of the dated sign-off channels 19, 20, 26, and 27
 (Section~\ref{sec:bao:lowerband}); the figure keeps the original two worked
@@ -97,11 +100,13 @@ becoming measured floors.
 The fine null is calibrated empirically because the independent-feed Gaussian
 model of Chapter~\ref{sec:pipeline} is only a baseline.  Feed covariance,
 receiver gain structure, spectral leakage, and intermittent non-Gaussian
-features change the effective width and tail.  The exchangeability check for an
-order statistic is performed on held-out quiet blocks: a bulk bin tested against
-the rank of the remaining bulk should exceed it at the combinatorial rate implied
-by that rank.  Agreement is evidence for the rank calibration on that cohort,
-not a universal guarantee across station epochs.
+features change the effective width and tail.  The final exchangeability check
+for an order statistic must be performed on held-out quiet blocks: a bulk bin
+tested against the rank of the remaining bulk should exceed it at the
+combinatorial rate implied by that rank.  The reported channel-29 check applies
+this construction in sample and is prototype evidence only.  Agreement on a
+future disjoint block would support the rank calibration for that cohort, not a
+universal guarantee across station epochs.
 
 \section{Correlation Time and Refusal Semantics}
 \label{sec:calibration:correlation}
@@ -139,21 +144,26 @@ reports $r_{\rm proxy}$ and carries $r_{\rm var}=g_{\rm var}r_{\rm proxy}$ and
 $r_{\rm sys}=g_{\rm sys}r_{\rm proxy}$ as explicit calibration closures rather
 than silently setting them equal.  On the coarse axis the policy is a threshold $\eta$; on
 the fine axis it is $(f_a,\mathcal D,\mathcal B,\rho,\eta_{q16})$.  Feasibility
-must hold on the full calibration block and on its era-preserving halves.  Among
-policies within a 2\% cost plateau, the selection minimizes the worst holdout
-cost before applying fixed tie-breaks.  This prevents a numerically sharp optimum
-from being chosen on a statistically flat surface.
+must hold on the full calibration block and on its era-preserving halves.  In
+the reported in-sample prototype, policies within a 2\% cost plateau are ranked
+by their worst era-half cost before fixed tie-breaks are applied.  A final
+selection must repeat that procedure on declared calibration blocks and then be
+evaluated, without retuning, on a disjoint blocked holdout.  This prevents a
+numerically sharp optimum from being chosen on a statistically flat surface or
+mistaken for out-of-sample validation.
 
 \begin{table}[t]
 \centering
-\caption{Prototype epoch split for channels whose station environment changes
-the operating regime.  The $(\eta^*, \mathrm{Q16})$ pair is per channel, from
-the epoch-restricted rerun of the fine operating-point selection
-(\texttt{fine\_operating\_point.py}; the released
-\texttt{fine\_operating\_points.csv} is authoritative): one pair per channel,
-with feasibility required on the full archive and in each calendar half, so
-the same pair appears against both eras and the per-era residual is what
-certifies or refuses it.}
+\caption{Frozen prototype epoch split for channels whose station environment
+changes the operating regime.  The $(\eta^*, \mathrm{Q16})$ pair is the
+per-channel multiplier selected by the earlier in-sample floating-statistic
+study; it is shown against both calendar halves so the prototype's per-era
+residual can screen the same pair.  These numerical fields are copied from the
+immutable v3 summary and were not recomputed after the v1 health repair.  No
+blocked holdout was reserved, and the archived products do not retain the three
+integer fine-power terms needed for exact historical Q16 replay.  Consequently
+the rows demonstrate epoch dependence and provisional feasibility/refusal under
+the old conventions; they are not certified operating points.}
 \label{tab:calibration:epochs}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -169,19 +179,21 @@ Channel & Epoch & \shortstack{Coarse\\masked} & \shortstack{Fine\\masked $f$} & 
 \end{tabularx}
 \end{table}
 
-The rerun also reports the calendar-late residual that certifies or refuses
-each pair: $r_{\rm late} = 0.008$ on the era-stable channel 31 (pair
-$1.50$/$98304$ --- selected, feasible, and still the vacuous occupancy-wall
-point of Table~\ref{tab:bao:eta}); $0.016$ on channel 32 (more precisely
-$0.0155$ against its $0.0156$ tolerance --- feasible on the late half by a
-hair, the knife edge the coarse margin already showed); and $0.237$ on
-channel 35, the switch-on era's refusal of a pair its quiet era supports.
+The frozen prototype also reports the calendar-late residual used in its
+in-sample screen: $r_{\rm late} = 0.008$ on the era-stable channel 31 (pair
+$1.50$/$98304$ --- the vacuous occupancy-wall point of
+Table~\ref{tab:bao:eta}); $0.016$ on channel 32 (more precisely $0.0155$
+against its modelled $0.0156$ tolerance, a knife edge); and $0.237$ on channel
+35, for which the switch-on era reverses the earlier quiet-era result.  The
+verbs ``feasible'' and ``refused'' in this paragraph refer only to that
+prototype screen, not to a health-recomputed or held-out certification.
 
-Table~\ref{tab:calibration:epochs} makes the consequence concrete.  Channel 32's
-current epoch is more favorable than its archive average, while channel 35's is
-less favorable.  A single archive-wide threshold would blend physically
-different transmitters, anchors, and duty cycles.  The runtime bundle therefore
-carries an epoch validity interval and refuses to load a calibration outside it.
+Table~\ref{tab:calibration:epochs} makes the qualitative consequence concrete.
+Channel 32's later recorded epoch is more favorable than its archive average,
+while channel 35's is less favorable.  A single archive-wide threshold would
+blend physically different transmitters, anchors, and duty cycles.  A future
+runtime bundle must therefore carry an epoch validity interval and refuse to
+load a calibration outside it; the table itself is not that bundle.
 
 \section{Legacy Sensitivity Scale and the Cost of Tail Cutting}
 \label{sec:calibration:legacywidth}
@@ -214,10 +226,11 @@ power entering a reference cell depresses the ratio, so reference contamination
 can populate the far left tail.
 
 This legacy calculation explains the role of the coarse mean crossing as a
-parameter-free health diagnostic, not as the final science policy.  The present
-fine-stage rule instead calibrates its rank and multiplier on measured
-transmitter-off epochs and selects the operating point against the cosmological
-cost of Chapter~\ref{sec:bao}.  Injection retention, a pilot-free floor,
+parameter-free health diagnostic, not as the final science policy.  The
+fine-stage rule is designed to calibrate its rank and multiplier on measured
+transmitter-off epochs and to select the operating point against the
+cosmological cost of Chapter~\ref{sec:bao}; the values presently reported are
+in-sample prototypes, not blocked-holdout operating points.  Injection retention, a pilot-free floor,
 reference-cell vetoes, and per-channel occupancy priors are the measurements
 that constrain the $k\ll1$ regime.  Appendix~\ref{app:legacy} preserves the
 older derivation and its source products so this design argument can be reused

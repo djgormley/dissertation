@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/djgormley/bao-noise-tolerance/blob/main/docs/forecast-completion-release-manifest.schema.json",
+  "title": "BaoNoiseTolerance forecast-completion release manifest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "manifest_schema_sha256",
+    "wall_clock_fields_included",
+    "absolute_paths_included",
+    "artifact_count",
+    "artifacts",
+    "generators",
+    "scientific_scope",
+    "scientific_identities",
+    "figure_rendering",
+    "empirical_template_refusals",
+    "limitations"
+  ],
+  "properties": {
+    "schema": {
+      "const": "baonoise-forecast-completion-release-manifest-v2"
+    },
+    "schema_version": {"const": 2},
+    "manifest_schema_sha256": {"$ref": "#/$defs/sha256"},
+    "wall_clock_fields_included": {"const": false},
+    "absolute_paths_included": {"const": false},
+    "artifact_count": {"type": "integer", "minimum": 1},
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "size_bytes"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!/)(?![A-Za-z]:[\\\\/])"
+          },
+          "sha256": {"$ref": "#/$defs/sha256"},
+          "size_bytes": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "generators": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!/)(?![A-Za-z]:[\\\\/])"
+          },
+          "sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    },
+    "scientific_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "all_dtv_bin_indices",
+        "physical_channels",
+        "analytic_family_count",
+        "common_channel_target",
+        "new_telescope_data_used",
+        "existing_policy_status_or_ranking_changed"
+      ],
+      "properties": {
+        "all_dtv_bin_indices": {
+          "const": [5, 6, 7, 8, 9, 10, 11]
+        },
+        "physical_channels": {
+          "const": [
+            14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+            26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36
+          ]
+        },
+        "analytic_family_count": {"const": 4},
+        "common_channel_target": {"const": "fs8"},
+        "new_telescope_data_used": {"const": false},
+        "existing_policy_status_or_ranking_changed": {"const": false}
+      }
+    },
+    "scientific_identities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authoritative_identity_json_pointer",
+        "identity_schema",
+        "all_build_evaluation_pairs_verified_equal",
+        "baonoise",
+        "radiofisher",
+        "per_evidence",
+        "commit_note"
+      ],
+      "properties": {
+        "authoritative_identity_json_pointer": {
+          "const": "/bank/scientific_identity"
+        },
+        "identity_schema": {
+          "const": "baonoise-scientific-evaluation-identity-v1"
+        },
+        "all_build_evaluation_pairs_verified_equal": {"const": true},
+        "baonoise": {"$ref": "#/$defs/baonoiseIdentity"},
+        "radiofisher": {"$ref": "#/$defs/radiofisherIdentity"},
+        "per_evidence": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "baonoise_build_git_commit",
+              "baonoise_evaluation_git_commit",
+              "radiofisher_build_git_commit",
+              "radiofisher_evaluation_git_commit",
+              "verified_equal"
+            ],
+            "properties": {
+              "path": {"type": "string", "minLength": 1},
+              "baonoise_build_git_commit": {"$ref": "#/$defs/gitCommit"},
+              "baonoise_evaluation_git_commit": {"$ref": "#/$defs/gitCommit"},
+              "radiofisher_build_git_commit": {"$ref": "#/$defs/gitCommit"},
+              "radiofisher_evaluation_git_commit": {"$ref": "#/$defs/gitCommit"},
+              "verified_equal": {"const": true}
+            }
+          }
+        },
+        "commit_note": {"type": "string", "minLength": 1}
+      }
+    },
+    "figure_rendering": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "font_contract",
+        "all_fonts_embedded_type1",
+        "font_names",
+        "creation_modification_dates_included"
+      ],
+      "properties": {
+        "font_contract": {"const": "T1 Latin Modern via LaTeX"},
+        "all_fonts_embedded_type1": {"const": true},
+        "font_names": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^LM"}
+        },
+        "creation_modification_dates_included": {"const": false}
+      }
+    },
+    "empirical_template_refusals": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["family", "status", "required"],
+        "properties": {
+          "family": {
+            "enum": [
+              "empirical_frequency_localized",
+              "empirical_baseline_localized",
+              "empirical_sidereal_coherent"
+            ]
+          },
+          "status": {"const": "data_dependent_incomplete"},
+          "required": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["include", "exclude"],
+      "properties": {
+        "include": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "exclude": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "baonoiseIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clean_git_commits", "working_tree_sha256", "source_manifest"
+      ],
+      "properties": {
+        "clean_git_commits": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/gitCommit"}
+        },
+        "working_tree_sha256": {"$ref": "#/$defs/sha256"},
+        "source_manifest": {"$ref": "#/$defs/sourceManifest"}
+      }
+    },
+    "radiofisherIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clean_git_commit", "working_tree_sha256", "source_manifest"
+      ],
+      "properties": {
+        "clean_git_commit": {"$ref": "#/$defs/gitCommit"},
+        "working_tree_sha256": {"$ref": "#/$defs/sha256"},
+        "source_manifest": {"$ref": "#/$defs/sourceManifest"}
+      }
+    }
+  }
+}

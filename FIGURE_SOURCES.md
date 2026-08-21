@@ -1,19 +1,16 @@
 # Figure-source, data-interface, and style audit
 
-The dissertation contains 25 active external vector PDFs and two active TikZ
-figures. Since the August 2026 reorganization the analysis repositories own
-every data-backed figure: nine active PDFs are rendered by
-`WVURAIL/pilot-proxy` (`analysis/dissertation/`: both census-PSD plates, the
-worked example, the epoch operating points, the status matrix) and
-`WVURAIL/bao-noise-tolerance` (`scripts/dissertation/`: the four `bao_*`
-forecast figures), and are vendored here as finished, byte-reproducible
-PDFs whose generating commit is recorded in the manifest. The remaining
-sixteen active visuals -- the analytic schematics, the TikZ diagrams, the
-census map (its renderer moves to `WVURAIL/dtv-station-census` when that
-repository's map tool lands), and the pedagogical wiggle bridges -- have
-editable source inside this bundle. One additional generated PDF,
-`fig_vsb_layout.pdf`, is retained as an unused design alternative and is
-also source-backed.
+Since the August 2026 reorganization the analysis repositories own every
+data-backed result figure. `WVURAIL/pilot-proxy` supplies the health-corrected
+census plates, worked example, provisional epoch/status views, and 23
+all-channel diagnostic atlases; `WVURAIL/bao-noise-tolerance` supplies the
+forecast figures, including the all-seven-bin analytic-template comparison.
+They are vendored here as finished, byte-reproducible PDFs whose generating
+commits and evidence releases are recorded in the manifest. The analytic
+schematics, TikZ diagrams, census map, and pedagogical wiggle bridges retain
+editable source inside this bundle. `fig_vsb_layout.pdf` is retained as an
+unused source-backed alternative. The generated `FIGURE_AUDIT_REPORT.md`, not
+this prose overview, records the exact counts for each frozen release.
 
 The authoritative machine-readable figure inventory is
 `figure_src/figure_manifest.csv`. It records, for every artifact:

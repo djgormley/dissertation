@@ -51,23 +51,41 @@ with the present full-$2048$-input two-stage statistic, stationary-span waveform
 audit, empirical null, and forecast-selected rational threshold before quoting a
 current sensitivity or implementation-loss result. \\
 
-Archive-scale reproduction & measured, incompletely reported & The current
-draft reports zero mismatches between independently built processing cohorts &
-Publish joined event and frame counts, join completeness, invalid/missing record
-counts, fields compared, and the immutable comparison manifest. \\
+Archive-scale accounting and product reproduction & measured & The supplied
+enumeration, inventory, quarantine ledger, 23 per-channel products, and
+processing binary reconcile exactly: $10{,}187$ in-scope events comprise
+$10{,}184$ completed dispositions and three events frozen in the source
+inventory's pending-attempt category after two recorded attempts; their three
+unprocessed units are the released quarantines rather than an active retry
+queue.  The
+$170{,}377$ unique inventory rows comprise $170{,}374$ product units and three
+quarantines; and every product records the supplied binary's digest.  The
+versioned health release publishes joined frame denominators and an immutable
+exclusion ledger. & Retain the input, product, source-cohort, kernel, and
+release hashes.  The older prose claim of zero mismatches between independent
+builds has no surviving comparison manifest or denominator and is therefore
+not used as evidence; it must remain unavailable unless independent records
+are recovered. \\
 
-Archive input health & pending & Four all-zero frames are explicitly invalid;
-a post-completion audit additionally identifies 178 rows in eight events whose
-mean complex-\texttt{int4} power equals the representation ceiling & Inspect
-the raw source and acquisition metadata, attach a reason-coded validity rule,
-and regenerate affected spectra, distributions, thresholds, and rates before
-freezing the release. \\
+Archive input health & measured & A fail-closed v1 gate excludes four
+detector-invalid rows and 178 rows in eight events whose mean decoded
+complex-\texttt{int4} power equals the representation ceiling.  The latter
+identity proves a constant native \texttt{0x00} frame (detector-input
+\texttt{0x88}); the immutable ledger retains every physical key.  The special
+constant-frame spectrum is reconstructed exactly and removed from both
+accumulators, and health-filtered scalar, fine-diagnostic, threshold, and policy
+products are regenerated. & Preserve the gate, parent-product and binary
+hashes, exclusion ledger, and Parseval checks.  Raw-source recovery is useful
+only for optional acquisition-root-cause diagnosis; it is not required to
+re-admit these rows as sky measurements. \\
 
 Triggered archive as a representation of transmitter occupancy & conditional &
-Eight calendar years of captures with per-event provenance, but a trigger-based
-rather than uniform sampling process & Quantify coverage by time of day, season,
-sidereal time, trigger class, and operations state; evaluate policies on blocked
-holdout intervals. \\
+A 7.6-year calendar span of captures with per-event provenance, but a trigger-based
+rather than uniform sampling process.  The health-v1 release quantifies the
+retained exposure by UTC and local time of day, month and meteorological season,
+local mean sidereal time, and triggered versus scheduled provenance. & Recover or
+define the missing operations-state annotation and the corresponding selection
+model; evaluate frozen policies on blocked holdout intervals. \\
 
 Pilot-to-shelf transfer across a 6-MHz allocation & conditional & Standard
 transmitter power relation and a receiver model; existing products observe the
@@ -81,16 +99,26 @@ explicit coherence model & Measure contaminated complex visibilities before and
 after the per-sidereal-day operation, including baseline dependence and phase;
 fit separate coherent and stochastic residual terms. \\
 
-Per-redshift-bin Fisher tolerance & modelled & Reproducible perturbation of the
-same instrument specification and clean code path used by the forecast branch &
-Repeat with the published combined multi-bin estimator and report changes in
-absolute errors, tolerances, policy ranking, and selected operating points. \\
+Fisher estimator and tolerance & modelled & Reproducible per-bin perturbation
+and an explicit collaboration-style combined multi-bin implementation using
+the same instrument bank.  The versioned evidence executes all seven DTV bins
+for the per-bin noise-normalized, combined noise-normalized, and combined
+fixed-physical cases, with all lower/central/upper stability diagnostics;
+legacy per-bin output is preserved to machine precision.  The physical-channel
+mapping uses the smaller accepted value when an allocation overlaps two bins. &
+Retain the per-bin/joint difference as model sensitivity.  Apply a
+channel-policy change only after the empirical residual template and transfer
+select the relevant forecast response. \\
 
-Noise-shaped residual template & conditional & A transparent screening model
-$C_{\rm res}\propto C_N$ & Repeat with frequency-localized, low-$k_\parallel$,
-wedge-like, sidereal-coherent, and empirically measured templates. \\
+Residual-template shape & modelled + conditional & A transparent noise-shaped
+screening model $C_{\rm res}\propto C_N$ plus authenticated analytic
+low-$k_\parallel$, wedge-like, and localized-$|k|$ banks, all executed over the
+seven DTV bins with accepted and refused Fisher points published. & The
+analytic envelope is complete.  Frequency-, baseline-, sidereal-, and empirical
+visibility templates remain data-dependent because the forecast callable and
+archive proxy expose none of those coordinates. \\
 
-Channel status map (23 of 23 measured) & conditional & Archive products for
+Channel evidence map (23 of 23 product-covered) & conditional & Archive products for
 all 23 channels (trawl completed August 2026); the full proxy and forecast
 chain for channels 27--36, and survey-, epoch-, and residual-chain results
 for 14--26 including dated
