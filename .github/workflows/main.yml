@@ -39,7 +39,7 @@ jobs:
           repository: WVURAIL/bao-noise-tolerance
           # Pin the number gate and its data products so an upstream default-
           # branch change cannot alter this dissertation's CI result silently.
-          ref: 99a48ef1a0173c05bc1e3799a3b0fca26a2338f6
+          ref: ca6f74a24c10c2db24bd4bcd35f486aecd23bd0d
           path: bao
           persist-credentials: false
 
@@ -48,7 +48,7 @@ jobs:
         with:
           repository: WVURAIL/pilot-proxy
           # Keep the provenance input immutable for the same reason.
-          ref: 62ae33ba9e1b303ea7432730f2c09fb59787946c
+          ref: c76a4a8305e6dc67630ed88575a4772725b54d7f
           path: pilot-proxy
           persist-credentials: false
           sparse-checkout: |

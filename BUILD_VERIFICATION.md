@@ -29,16 +29,27 @@ under `SOURCE_DATE_EPOCH`, so the audited hashes are reproducible from source.
 The number gate was run against the immutable upstream inputs pinned by CI:
 
 ```text
-bao-noise-tolerance: 99a48ef1a0173c05bc1e3799a3b0fca26a2338f6
-pilot-proxy:         62ae33ba9e1b303ea7432730f2c09fb59787946c
+bao-noise-tolerance: ca6f74a24c10c2db24bd4bcd35f486aecd23bd0d
+pilot-proxy:         c76a4a8305e6dc67630ed88575a4772725b54d7f
 summary:             data/provenance/dissertation_summary_v3.json
 result:              67/67 checks passed; baseline 0
 ```
 
-Both candidate pin sets were tested against the merged text and both pass
-67/67. The pinned pair above was chosen because each commit is reachable from
-its upstream `master`, so neither can be lost to a deleted or rebased feature
-branch.
+Both pins are the current tip of their upstream `master`, so each is reachable
+from the default branch and cannot be lost to a deleted or rebased feature
+branch. They were advanced from `99a48ef1` and `62ae33ba` once those upstream
+branches settled, and the gate was re-run against every intermediate
+combination; all of them pass 67/67.
+
+Advancing the `bao-noise-tolerance` pin changes what CI reads but not how it
+reads it: `scripts/check_dissertation_numbers.py` is byte-identical between the
+two commits, and the newer tree simply adds the forecast-completion release
+artifacts under `out/`. It also aligns the checkout with `ca6f74a2`, the commit
+this bundle now vendors its template-tolerances assets from. Advancing the
+`pilot-proxy` pin is a no-op for the gate itself, since
+`data/provenance/dissertation_summary_v3.json` is byte-identical between
+`62ae33ba` and `c76a4a83`; it is moved so both pins track the same default
+branches that the provenance table below resolves against.
 
 Every upstream commit cited as figure provenance in
 `figure_src/figure_manifest.csv` is now reachable from its upstream `master`,
