@@ -13,7 +13,7 @@ from typing import Any, Callable
 
 BAO_DIR = Path("evidence/bao_forecast_completion")
 BAO_MANIFEST = BAO_DIR / "forecast_completion_release_manifest.json"
-BAO_MANIFEST_SHA = "862d4c35b5627486cf42399bc3f869f6c0f6dda9dd274bd1d90bcde77a3a037f"
+BAO_MANIFEST_SHA = "2410fbbce717b0239bf952c4b32b57e4f586749cc64235d4f9484fbdbf95aa0c"
 BAO_OUT_NAMES = (
     "forecast_completion_all_dtv_bins.json",
     "forecast_completion_all_dtv_bins_k_shell_localized.json",

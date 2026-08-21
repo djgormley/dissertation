@@ -46,6 +46,7 @@ FIGURE_MANIFEST_FIELDS = (
     "font",
     "conventions",
 )
+SUBSET_TAG_RE = re.compile(r"^[A-Z]{6}\+")
 
 
 def sha256(path: Path) -> str:
@@ -113,7 +114,11 @@ def font_audit(path: Path) -> tuple[list[str], list[str]]:
         if len(tokens) < 9:
             errors.append(f"could not parse pdffonts row: {line}")
             continue
-        name = tokens[0]
+        # pdffonts reports a subset font as ABCDEF+Family. The six-letter tag is
+        # an artifact of subsetting that particular file, not part of the font
+        # identity, so strip it before applying the Latin Modern family contract
+        # and before recording the name in the report.
+        name = SUBSET_TAG_RE.sub("", tokens[0], count=1)
         embedded = tokens[-5]
         fonts.append(name)
         if embedded.lower() != "yes":

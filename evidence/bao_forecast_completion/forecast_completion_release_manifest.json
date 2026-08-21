@@ -39,13 +39,13 @@
     },
     {
       "path": "out/forecast_completion_channel_tolerances.png",
-      "sha256": "573779de7c71b21554aad1acccef965f8971cfbde6688bbd41674fa74ca5a7f3",
-      "size_bytes": 109765
+      "sha256": "2fd7ce6732356a9606894c56fc5231e889e9a93933e717b0e9d9740e1b08fb2d",
+      "size_bytes": 188780
     },
     {
       "path": "out/forecast_completion_channel_tolerances.pdf",
-      "sha256": "b1c88b79460cc4d92080fe76076a49e0e087bb9972624d9fff69079d1e7c3f60",
-      "size_bytes": 768723
+      "sha256": "3fe819a4317d7a4edcc37e4664abecdabfdcf62740a216339db497965f3c9349",
+      "size_bytes": 204178
     },
     {
       "path": "out/forecast_completion_template_summary.tex",
@@ -104,7 +104,7 @@
     },
     {
       "path": "scripts/render_forecast_template_assets.py",
-      "sha256": "78a31e31ebbdce14faf44fd0fd09a58b42b99d20049e18b84a6adbc7f58a52f8"
+      "sha256": "8e06185c70c4c46de84740331123925be015e5d692962f3a8afe89867faffa49"
     }
   ],
   "limitations": [

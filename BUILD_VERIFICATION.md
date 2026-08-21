@@ -15,8 +15,8 @@ inputs, and the top-level release-manifest verifier.
 compiled output: dissertation.pdf
 pages: 171
 page size: US letter
-file size: 7,324,608 bytes
-SHA-256: 4c8bfde12530de932cbbd6a3e64be71dfcbe5000c7a05f45a73c27ed54ec2e82
+file size: 7,296,574 bytes
+SHA-256: c65076f07f548ec30681d6fc6d9b9705964d9392c33eb67f55c87820f179adb9
 number gate: 67/67 passed; baseline 0
 vendored evidence: 676 checks passed
 release manifest: 390/390 tracked bundle files verified
@@ -77,6 +77,37 @@ Page-level visual inspection was not repeated for this consolidation build. The
 contact-sheet reviews recorded in the chronology below cover the constituent
 revisions, and the merge introduces no new figure or table artwork beyond the
 Appendix C diagnostic atlases, which are generated and hash-verified.
+
+## Re-vendored template-tolerances figure (2026-08-21)
+
+`bao-noise-tolerance@ca6f74a2` made the embedded-font subset tags of the
+forecast template assets deterministic, superseding the `db89d626` rendering
+that this bundle had vendored. The three changed release artifacts
+(`forecast_completion_channel_tolerances.pdf`, its `.png`, and the release
+manifest recording them) were re-vendored from that commit; the remaining nine
+BAO artifacts are byte-identical, so the scientific content is unchanged and
+only the font-subsetting differs. The figure shrank from 768,723 to 204,178
+bytes.
+
+The re-vendored PDF subsets its fonts, so `pdffonts` reports them as
+`ABCDEF+LMRoman9-Regular`. The bundle's font contract compared that raw string
+against the Latin Modern family and rejected it. The audit now strips the
+six-letter subset tag before applying the family contract and before recording
+the font name, matching the equivalent upstream fix in
+`bao-noise-tolerance@3fb123b`. No other audited artifact carries a subset tag,
+so the only report rows that changed are this figure and the re-attribution
+below.
+
+`figs/fig_bao_the_case.pdf` was attributed to `bao-noise-tolerance@d56d3251`.
+That commit predates `485bd4f`, which revised the channel-33 policy case to a
+single acquisitions>=8 population, and the checked-in figure plots the revised
+values (keep-everything at 1,566x over and 3.4x time, pilot proxy at 3.4x time)
+rather than the superseded ones. The cited commit therefore could not have
+produced the vendored bytes. The attribution is corrected to
+`bao-noise-tolerance@a7ee77ee`, the first pinned commit on the upstream default
+branch whose inputs match the plotted values. `fig_bao_convergence.pdf` and
+`fig_bao_two_walls.pdf` keep their `d56d3251` attribution: their input tables
+are unchanged across that range, so the earlier commit remains the precise one.
 
 ## Historical verification chronology
 
