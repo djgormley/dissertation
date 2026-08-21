@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -13,6 +14,8 @@ from typing import Any, Sequence
 from .frozen_data import DATA_DIR, FrozenDataError, row_count, sha256, verify_frozen_data
 
 UPSTREAM_SCHEMA = {"name": "pilot-proxy-dissertation-export", "version": 1}
+UPSTREAM_REPOSITORY = "WVURAIL/pilot-proxy"
+IMMUTABLE_COMMIT_RE = re.compile(r"[0-9a-f]{40}")
 
 
 class ExportImportError(RuntimeError):
@@ -36,6 +39,19 @@ def verify_upstream(export_dir: Path, *, require_complete: bool = False) -> dict
     manifest = _load_json(export_dir / "export_manifest.json")
     if manifest.get("schema") != UPSTREAM_SCHEMA:
         raise ExportImportError(f"unsupported upstream export schema: {manifest.get('schema')!r}")
+    source = manifest.get("source")
+    if not isinstance(source, dict):
+        raise ExportImportError("upstream source record must be an object")
+    repository = source.get("repository")
+    if repository != UPSTREAM_REPOSITORY:
+        raise ExportImportError(
+            f"upstream source repository must use canonical slug {UPSTREAM_REPOSITORY!r}"
+        )
+    commit = source.get("commit")
+    if not isinstance(commit, str) or not IMMUTABLE_COMMIT_RE.fullmatch(commit):
+        raise ExportImportError(
+            "upstream source commit must be a full 40-character lowercase Git SHA"
+        )
     artifacts = manifest.get("artifacts")
     if not isinstance(artifacts, list):
         raise ExportImportError("upstream artifacts must be a list")
@@ -140,9 +156,15 @@ def import_export(
             encoding="utf-8",
         )
         import_record = {
-            "source_export": str(export_dir),
+            "source_export": f"{repository}@{commit}",
+            "source_export_manifest_sha256": sha256(
+                export_dir / "export_manifest.json"
+            ),
             "source_repository": repository,
             "source_commit": commit,
+            "source_summary_snapshot_id": upstream.get("source", {}).get(
+                "summary_snapshot_id", "unknown"
+            ),
             "source_complete": bool(upstream.get("complete")),
             "imported_artifacts": imported,
         }

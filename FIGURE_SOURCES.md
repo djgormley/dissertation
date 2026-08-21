@@ -73,7 +73,7 @@ counts, SHA-256 hashes, and replacement status. The plotting modules read this
 one directory; no value table has a second loose copy elsewhere in the bundle.
 
 The frozen interface now carries only the tables this bundle still renders
-from: the complete 500-mile transmitter census and its 120-mile subset
+from: the conservative 500-mile transmitter-census envelope and its 120-mile subset
 (behind the census map), and the two pedagogical wiggle bridges. Every
 other table moved to the repository that owns its figure, with its
 regeneration commands documented beside it (`analysis/dissertation/data/`
@@ -82,7 +82,7 @@ in pilot-proxy; `scripts/dissertation/data/` in bao-noise-tolerance).
 
 ### Figure 3.2: full transmitter field
 
-Figure 3.2 reads the complete `census_full_500mi.csv` PilotProxy export (499 emitter-channel records; since August 2026 the underlying census is the workbook reduction plus dtv-station-census's ISED overlay -- licensed transmitter sites, licence-status adjudication, and ERP) and the independently frozen 120-mile subset. The full panel aggregates exactly coincident source range-bearing records into 162 sites, with marker area retaining multiplicity. It uses a DRAO-centred azimuthal-equidistant projection so the supplied distance and bearing remain exact; coastlines and administrative boundaries are vector context only and do not represent terrain or propagation.
+Figure 3.2 reads the inclusive `census_full_500mi.csv` PilotProxy export (499 emitter-channel records; since August 2026 the underlying census is the workbook reduction plus dtv-station-census's ISED overlay -- licensed transmitter sites, licence-status adjudication, and ERP) and the independently frozen 120-mile subset. The rows preserve their evidence split: 421 reported-on-air/unverified, 67 reported-on-air/licence-matched, and 11 licence-only candidates. The full panel aggregates exactly coincident source range-bearing records into 162 sites, with marker area retaining multiplicity. It uses a DRAO-centred azimuthal-equidistant projection so the supplied distance and bearing remain exact; coastlines and administrative boundaries are vector context only and do not represent terrain or propagation.
 
 ## Remaining provenance limitation
 

@@ -1,9 +1,11 @@
 # Reproducible dissertation figures
 
-Every active visual in the dissertation has editable source in this bundle.
-External figures are generated as vector PDFs by the Python modules in this
-directory. The two architecture drawings that are most naturally edited as
-LaTeX graphics live in `tikz/` and are included directly by the chapters.
+Every active visual in the dissertation is source-backed and audited. This
+bundle carries editable Python source for its analytic schematics and census
+map, plus two native LaTeX drawings in `tikz/`. Data-backed figures owned by
+PilotProxy or bao-noise-tolerance are vendored as vector PDFs; their editable
+generators and scientific tables stay in the owning repository, and
+`figure_manifest.csv` records the producing commit and provenance.
 
 ## One-command regeneration
 
@@ -42,10 +44,10 @@ instead of resizing unrelated canvases to the same width after export.
 
 ## Frozen data interface
 
-All tabular inputs live in `data/frozen_export/v1/`. The dissertation does not
-import PilotProxy and does not depend on a mutable repository checkout at build
-time. Instead, it freezes small, schema-checked exports and applies its own
-plotting style.
+All tabular inputs consumed directly by bundle-owned plotting code live in
+`data/frozen_export/v1/`. The dissertation does not import PilotProxy and does
+not depend on a mutable repository checkout at build time. Instead, it freezes
+small, schema-checked exports and applies its own plotting style.
 
 `data/frozen_export/v1/frozen_data_manifest.json` records for every CSV:
 
@@ -71,26 +73,28 @@ python3 -m figure_src.import_dissertation_export \
   /path/to/pilot-proxy/exports/dissertation/v1
 ```
 
-The importer verifies the upstream schema, hashes, and row counts; copies all
-matching available tables atomically; preserves unavailable bridge tables; and
-updates the frozen manifest with the producing repository commit. Add
-`--require-complete` for a final archival import.
+The importer verifies the upstream schema, immutable commit, hashes, and row
+counts; records portable repository/commit and export-manifest-hash provenance;
+copies all matching available tables atomically; preserves unavailable bridge
+tables; and updates the frozen manifest with the producing repository commit.
+Add `--require-complete` for a final archival import.
 
-Five current tables are represented by the PilotProxy export boundary:
+The current frozen boundary contains four tables:
 
-- `census_full_500mi.csv` and `census_inner_120mi.csv`;
-- `epoch_operating_points.csv`;
-- `channel_status.csv`; and
-- `bao_policy_case.csv`.
+- `census_full_500mi.csv` and `census_inner_120mi.csv` are current PilotProxy
+  exports used by the editable census-map generator;
+- `intro_wiggle_correlation.csv` and `intro_wiggle_power.csv` are explicit
+  external-model/artwork bridges marked `replacement_required`.
 
-Seven tables remain explicit legacy-artwork or external-model bridges. They are
-fully editable and reproducible, but are marked `replacement_required` until
-direct archive or forecast exports are supplied.
+Tables for the vendored owner-repository PDFs are intentionally not duplicated
+here. To revise one of those figures, regenerate it in its owning repository,
+record the producing commit, and re-vendor the audited vector PDF.
 
 ## Editing workflow
 
 1. Find the figure in `figure_manifest.csv`.
-2. Edit its Python function or TikZ file.
+2. Edit its local Python/TikZ source, or regenerate a vendored figure in the
+   repository named by the manifest.
 3. For scientific values, replace/import the corresponding frozen data export
    rather than embedding numbers in plotting code.
 4. Run `python3 -m figure_src.generate_all`.

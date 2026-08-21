@@ -24,10 +24,11 @@ unverified coherence cap, bracket spread immaterial, ~75% of current-epoch
 frames released at the working threshold) — this extension of the
 inclusive-keep set from {36} to {14, 15, 36} is flagged for sign-off.
 
-## A. Freeze the current ten-channel release ledger
+## A. Freeze the current 23-channel release ledger
 
 - Export exact discovered, eligible, processed, skipped, failed, quarantined,
-  duplicated, and joined event/frame counts for channels 27–36.
+  duplicated, and joined event/frame counts for channels 14–36, retaining the
+  historical first-block boundary at channels 27–36 as an explicit cohort.
 - Record first/last valid UTC, gaps, trigger classes, operations states, and
   coverage by UTC, local time, season, and sidereal time.
 - Record raw bytes discovered/transferred, peak staged storage, retained-product

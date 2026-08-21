@@ -34,6 +34,18 @@ PYTHON_PALETTE = {
     "FAILURE": "8D4638",
     "PENDING": "988E8B",
 }
+FIGURE_MANIFEST_FIELDS = (
+    "artifact",
+    "kind",
+    "active",
+    "chapter",
+    "editable_source",
+    "data_dependencies",
+    "provenance",
+    "notes",
+    "font",
+    "conventions",
+)
 
 
 def sha256(path: Path) -> str:
@@ -55,7 +67,18 @@ def run(*args: str) -> str:
 
 def read_manifest() -> list[dict[str, str]]:
     with MANIFEST.open(newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+        reader = csv.DictReader(f)
+        if tuple(reader.fieldnames or ()) != FIGURE_MANIFEST_FIELDS:
+            raise RuntimeError(
+                "figure_manifest.csv header does not match the required schema"
+            )
+        rows = list(reader)
+    for line_number, row in enumerate(rows, start=2):
+        if None in row or any(value is None for value in row.values()):
+            raise RuntimeError(
+                f"figure_manifest.csv:{line_number}: wrong number of CSV fields"
+            )
+    return rows
 
 
 def tex_inventory() -> tuple[dict[str, str], set[str], list[str]]:

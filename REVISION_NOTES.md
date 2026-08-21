@@ -631,3 +631,39 @@ green. Content corrections, each per the gate's stated source of truth:
   byte-exact; the CRLF came from an autocrlf checkout), restoring the
   frozen-table hashes; the gate itself gained TeX-aware normalization
   ({,} digit-group commas, -- and --- dashes) in bao-noise-tolerance.
+
+## 2026-08-20 — suite audit cleanup
+
+- The dissertation number gate now reads PilotProxy's explicit 23-channel v3
+  summary and pins both scientific dependency checkouts to the immutable
+  commits reviewed by the suite audit.
+- The README and the first-block closeout in Chapter 9 now distinguish the
+  historical ten-channel analysis freeze from the subsequently completed
+  23-channel trawl. The census figure manifest records the current 499 rows at
+  162 source range--bearing sites. The refreshed frozen census tables preserve
+  `schema_version` and per-row `evidence_status`, keeping the 11 licence-only
+  candidates auditable as an inclusive scenario rather than observed carriers.
+- The top-level release boundary is now defined as every Git-tracked file
+  except `MANIFEST.sha256` itself. A single generator/verifier enforces both
+  inventory and SHA-256 content, `make verify` and CI run the check, and the
+  manifest is regenerated only after the final source and PDF build.
+- Frozen-data imports now require a full immutable Git SHA and record the
+  portable upstream repository/commit and export-manifest hash instead of an
+  absolute checkout path. Standard-library regression tests enforce both
+  properties. The producing PilotProxy exporter now also refuses dirty tracked
+  inputs, mismatched commit assertions, and source changes during export.
+- The legacy 132-record station summary is explicitly historical: its
+  pre-overlay distances no longer support active proximity claims in Chapters
+  3 or 9. The current discussion uses the evidence-labelled 499-row envelope
+  only for geometric plausibility and leaves propagation attribution to the
+  measured spectra. The abstract's recovery/excision partition is reconciled
+  to the 23-channel v3 status matrix with the channel-27 and channel-35 epoch
+  qualifications preserved.
+- Figure 3.2 now calls itself an inclusive census envelope, de-duplicates city
+  labels, and fans out the inner-field annotations. The figure-manifest reader
+  rejects malformed CSV row widths, and every vendored-figure producer is
+  recorded with a full 40-character commit.
+- The build-verification record now leads with the current release and marks
+  its older hashes/counts as historical. CI has read-only token permissions,
+  every checkout disables credential persistence, and routine LaTeX/Python
+  scratch is ignored and removed by `make clean`.

@@ -1,9 +1,47 @@
 # Build and figure verification
 
-This document records the checks performed for the full 500-mile Figure 3.2
-revision. The unchanged figures retain the source-backed verification recorded
-in the preceding bundle; the changed map, Chapter 3 text, and repository export
-interface were regenerated and checked again here.
+## Current suite-audit release (2026-08-20)
+
+The current release was rebuilt with three consecutive `pdflatex` passes under
+the fixed build epoch, followed by the figure/frozen-data audit, four
+standard-library regression tests, the cross-repository number gate, and the
+top-level release-manifest verifier.
+
+```text
+compiled output: dissertation.pdf
+pages: 130
+page size: US letter
+file size: 3,030,196 bytes
+SHA-256: d80b1faadd7236c5a6aeab86cb6e42cce6208d52a29fc10c0d43945a6ee5012c
+number gate: 67/67 passed
+release manifest: 239/239 tracked bundle files verified
+```
+
+The figure audit reports **PASS** for 28 manifest artifacts, 25 active external
+vector PDFs, two active named TikZ figures, four frozen CSV tables, and the
+embedded Latin Modern font contract. Figure 3.2 was regenerated from 499
+inclusive census rows (36 within 120 miles), aggregated at 162 distinct source
+range--bearing sites; the frozen data preserve 421 reported-on-air/unverified,
+67 reported-on-air/licence-matched, and 11 licence-only candidate records. Its
+one-page vector output has SHA-256
+`7a6e0e37d5c7e06edaf98e8faf0e803e8ea6c1b9c9416da53ccb35bdb8671959`.
+
+The complete PDF was reviewed as contact sheets, with the title/front matter,
+the revised Chapter 3 census discussion and map, the revised Chapter 9
+closeout, section transitions, and the final appendix pages inspected at higher
+resolution. No clipping, overlap, missing glyph, malformed table, unintended
+blank page, or broken header/footer was found.
+
+## Historical verification chronology
+
+> The records below describe earlier dissertation bundles and are retained as
+> a build chronology. Their page counts, hashes, and census counts are
+> superseded by the current release record above.
+
+The first record below documents the earlier full 500-mile Figure 3.2 revision.
+The unchanged figures retained the source-backed verification recorded in its
+preceding bundle; the changed map, Chapter 3 text, and repository export
+interface were regenerated and checked again for that historical release.
 
 ## Dissertation build
 

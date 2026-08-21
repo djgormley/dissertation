@@ -34,7 +34,7 @@ The audit uses the Poppler commands `pdffonts`, `pdfimages`, and `pdfinfo`.
 ## Recommended build
 
 ```bash
-make all
+make verify
 ```
 
 Equivalent explicit commands are:
@@ -47,12 +47,20 @@ pdflatex -interaction=nonstopmode -halt-on-error dissertation.tex
 pdflatex -interaction=nonstopmode -halt-on-error dissertation.tex
 pdflatex -interaction=nonstopmode -halt-on-error dissertation.tex
 python3 -m figure_src.audit_figures
+python3 -m unittest discover -s tests -p 'test_*.py'
+python3 scripts/release_manifest.py
 ```
 
 The bibliography is maintained as a LaTeX `thebibliography` environment, so no
 BibTeX or Biber pass is required. The fixed `SOURCE_DATE_EPOCH` and figure PDF
 metadata make repeated builds byte-for-byte reproducible when the toolchain and
 inputs are unchanged.
+
+`make all` performs the build and figure audit without consulting the top-level
+release manifest. `make verify` additionally checks that `MANIFEST.sha256`
+contains and matches every Git-tracked file except itself. After the final
+source edit and generated-PDF build, run `make manifest` to regenerate this
+frozen release boundary; routine verification is non-mutating.
 
 ## Figure-only editing cycle
 
@@ -82,7 +90,8 @@ python3 -m figure_src.import_dissertation_export \
 make all
 ```
 
-The importer verifies the upstream manifest and updates
+The importer verifies the upstream manifest and full immutable Git SHA, records
+portable repository/commit and export-manifest-hash provenance, and updates
 `figure_src/data/frozen_export/v1/frozen_data_manifest.json` atomically. Use
 `--require-complete` for a final archival import.
 

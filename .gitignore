@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+/dissertation.aux
+/dissertation.fdb_latexmk
+/dissertation.fls
+/dissertation.lof
+/dissertation.log
+/dissertation.lot
+/dissertation.out
+/dissertation.synctex.gz
+/dissertation.toc
+/chapters/*.aux

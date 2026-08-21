@@ -344,16 +344,23 @@ def fig_census_map() -> Path:
         ("BOISE", "ID"): (7, -7, "left"),
         ("BEND", "OR"): (7, -2, "left"),
         ("EUGENE", "OR"): (-7, 2, "right"),
-        ("Calgary", "AB"): (7, 2, "left"),
-        ("Edmonton", "AB"): (7, 2, "left"),
+        ("Calgary", "AB"): (7, -5, "left"),
+        ("Edmonton", "AB"): (7, 7, "left"),
         ("Prince George", "BC"): (-7, -11, "right"),
         ("Fort St James", "BC"): (7, 8, "left"),
     }
-    for site in sites:
-        key = (site["city"], site["state"])
-        if key not in label_specs:
+    # A city can contain several nearby range--bearing sites.  Label it once,
+    # at its largest site, and report the city-wide record count; otherwise the
+    # repeated city strings overwrite one another at dissertation scale.
+    for key, (dx, dy, align) in label_specs.items():
+        city_sites = [
+            site for site in sites
+            if (site["city"], site["state"]) == key
+        ]
+        if not city_sites:
             continue
-        dx, dy, align = label_specs[key]
+        site = max(city_sites, key=lambda value: value["n"])
+        city_records = sum(value["n"] for value in city_sites)
         x, y = _census_xy(
             center_x,
             center_y,
@@ -362,7 +369,7 @@ def fig_census_map() -> Path:
         )
         city = site["city"].title() if site["city"].isupper() else site["city"]
         ax.annotate(
-            city + rf" ({site['n']})",
+            city + rf" ({city_records})",
             xy=(x, y),
             xytext=(dx, dy),
             textcoords="offset points",
@@ -450,15 +457,15 @@ def fig_census_map() -> Path:
         fontweight="bold",
         zorder=7,
     )
-    inset_offsets = {
-        "CHKL-1": (3, -7),
-        "CHKL-DT+CHBC-DT": (-3, 2),
-        "CH4491-DT": (3, 4),
-        "CHKL-2": (3, 3),
-        "CHCV-DT": (3, -6),
+    inset_labels = {
+        "CHKL-1": (5, -9, "left"),
+        "CHKL-DT+CHBC-DT": (-5, 8, "right"),
+        "CH4491-DT": (5, 9, "left"),
+        "CHKL-2": (5, -8, "left"),
+        "CHCV-DT": (5, -7, "left"),
     }
     for row in inner_rows:
-        if row["callsign"] not in inset_offsets:
+        if row["callsign"] not in inset_labels:
             continue
         x, y = _census_xy(
             inner_x,
@@ -469,14 +476,22 @@ def fig_census_map() -> Path:
         label = row["callsign"].replace(
             "CHKL-DT+CHBC-DT", r"CHKL-DT+$\,$CHBC-DT"
         )
-        align = "right" if row["callsign"] == "CHKL-DT+CHBC-DT" else "left"
+        dx, dy, align = inset_labels[row["callsign"]]
         ax2.annotate(
             label,
             xy=(x, y),
-            xytext=inset_offsets[row["callsign"]],
+            xytext=(dx, dy),
             textcoords="offset points",
             fontsize=4.7,
             ha=align,
+            va="center",
+            arrowprops=dict(
+                arrowstyle="-",
+                color=style.MUTED,
+                lw=0.3,
+                shrinkA=1,
+                shrinkB=1,
+            ),
             zorder=7,
         )
     ax2.set_axis_off()
@@ -644,7 +659,7 @@ def fig_census_map() -> Path:
     )
 
     fig.suptitle(
-        r"Licensed ATSC 1.0 transmitter census within 500 miles of DRAO",
+        r"Inclusive ATSC 1.0 transmitter-census envelope within 500 miles of DRAO",
         fontsize=9.7,
         y=0.982,
     )
@@ -660,7 +675,7 @@ def fig_census_map() -> Path:
     return style.save(
         fig,
         OUT / "fig_census_map.pdf",
-        title="Full 500-mile DTV transmitter census",
+        title="Conservative 500-mile DTV transmitter-census envelope",
     )
 
 

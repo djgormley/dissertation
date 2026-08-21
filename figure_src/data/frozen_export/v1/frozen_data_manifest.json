@@ -3,28 +3,28 @@
     {
       "authoritative_for_draft": true,
       "authority": "authoritative-source-export",
-      "description": "Complete on-air ATSC 1.0 UHF emitter-channel census within 500 miles of DRAO.",
+      "description": "Conservative maximum-envelope ATSC 1.0 UHF emitter-channel census within 500 miles of DRAO; schema and per-row evidence status are preserved.",
       "owner": "pilot-proxy",
       "path": "census_full_500mi.csv",
       "replacement_required": false,
       "rows": 499,
-      "sha256": "c6174228c950078b9d1df7ae4eff0ff6a4eb84d05fee892ca8262b5cca8f67c2",
+      "sha256": "5ebc30658003233ed4550d18ed188938aeb8ac0278f0316207f3baad7d06b2be",
       "source_kind": "pilot-proxy-export",
       "status": "frozen",
-      "upstream": "WVURAIL/pilot-proxy@b533632b5d014486559f36ff5c006216e43a6b56: census_full_500mi.csv"
+      "upstream": "WVURAIL/pilot-proxy@62ae33ba9e1b303ea7432730f2c09fb59787946c: census_full_500mi.csv"
     },
     {
       "authoritative_for_draft": true,
       "authority": "authoritative-source-subset",
-      "description": "Transmitter-census rows within 120 miles of DRAO.",
+      "description": "Transmitter-census rows within 120 miles of DRAO, preserving schema and per-row evidence status.",
       "owner": "pilot-proxy",
       "path": "census_inner_120mi.csv",
       "replacement_required": false,
       "rows": 36,
-      "sha256": "180103f583a9cdaad8a6f30e097f86bc41e4fc1e3d198bfefd0c2147335f51cb",
+      "sha256": "5e7e9aa3f87178ecf3ec4b25e7f04d03ac92545ff2f7eaf699cc9fd7a1037964",
       "source_kind": "pilot-proxy-export",
       "status": "frozen",
-      "upstream": "WVURAIL/pilot-proxy@b533632b5d014486559f36ff5c006216e43a6b56: census_inner_120mi.csv"
+      "upstream": "WVURAIL/pilot-proxy@62ae33ba9e1b303ea7432730f2c09fb59787946c: census_inner_120mi.csv"
     },
     {
       "authoritative_for_draft": false,
@@ -60,14 +60,14 @@
   },
   "upstream_exports": {
     "pilot_proxy": {
-      "commit": "b533632b5d014486559f36ff5c006216e43a6b56",
+      "commit": "62ae33ba9e1b303ea7432730f2c09fb59787946c",
       "complete": false,
       "repository": "WVURAIL/pilot-proxy",
       "schema": {
         "name": "pilot-proxy-dissertation-export",
         "version": 1
       },
-      "summary_snapshot_id": "dissertation-draft-2026-08-18"
+      "summary_snapshot_id": "dissertation-draft-2026-08-19"
     }
   }
 }

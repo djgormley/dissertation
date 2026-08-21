@@ -3,8 +3,10 @@
     "census_full_500mi.csv",
     "census_inner_120mi.csv"
   ],
-  "source_commit": "b533632b5d014486559f36ff5c006216e43a6b56",
+  "source_commit": "62ae33ba9e1b303ea7432730f2c09fb59787946c",
   "source_complete": false,
-  "source_export": "/home/djg/rail/pilot-proxy/exports/dissertation/v2-ised-census",
-  "source_repository": "WVURAIL/pilot-proxy"
+  "source_export": "WVURAIL/pilot-proxy@62ae33ba9e1b303ea7432730f2c09fb59787946c",
+  "source_export_manifest_sha256": "30915e06b4305d0fe81d1490bf399761171102e53310746dcba534f93fc0b14c",
+  "source_repository": "WVURAIL/pilot-proxy",
+  "source_summary_snapshot_id": "dissertation-draft-2026-08-19"
 }
