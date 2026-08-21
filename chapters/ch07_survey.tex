@@ -35,15 +35,33 @@ carries products for all 23 ATSC allocations (channels 14--36), each complete
 against its archive holdings:
 $9{,}214$ distinct capture events probed, of which $8{,}983$ contribute at
 least one valid frame; $170{,}374$ event--channel processing units;
-$750{,}461$ detector frames; a median of three $N=16384$ detector frames per
+$750{,}461$ detector frames, of which $750{,}457$ satisfy the archived
+denominator-validity rule and four all-zero frames are explicitly invalid; a
+median of three $N=16384$ detector frames per
 acquisition; calendar coverage from December 2018 through July 2026; three
-units quarantined at the archive (two truncated, one with an unreadable
-header); and a single detector-kernel cohort
+raw objects quarantined before unit construction (two truncated, one with an unreadable
+header); and a single detector-kernel cohort, represented by two analyzer
+source builds,
 across every product.  Per-channel event counts are far from uniform ---
 $1{,}543$ to $9{,}045$ --- and the deficit is concentrated on exactly the two
 most contaminated channels, for the selection reason discussed below.  Those
 figures describe the working archive at snapshot time; the immutable release
 ledger, rather than this prose, is the authoritative denominator.
+
+A post-completion input-health audit exposed a second validity layer that the
+archived denominator rule does not test.  In 178 rows from eight source events,
+the recorded mean baseband power is exactly $128$, the maximum possible value
+of $x_r^2+x_i^2$ for signed complex \texttt{int4}.  A frame-wide mean at that
+ceiling is consistent with a constant packed \texttt{0x88} fill or a saturated
+input path, not ordinary receiver noise, but the raw-source cause has not yet
+been adjudicated.  These rows are therefore a named release blocker rather
+than silently accepted or silently discarded: the final ledger must attach a
+reason-coded input-health decision, and every affected spectrum, distribution,
+threshold, and rate must be regenerated after that decision.  The exact
+arithmetic checks on the stored rows remain valid; what is pending is whether
+the rows are measurements of the sky.  The archive hash, affected event set,
+criterion, and required disposition are frozen in
+\verb|CANFAR_PRODUCT_HEALTH_AUDIT.json|.
 
 The captures were not selected by the DTV detector.  They were initiated by the
 transient system and filtered by telescope operations, data availability,
@@ -85,7 +103,9 @@ Inventory field & Draft value/status & Required release record \\
 \midrule
 Calendar coverage & Dec 2018--Jul 2026 & First/last valid UTC and gaps by year and channel \\
 Capture events per analyzed channel & $1{,}543$--$9{,}045$ ($9{,}214$ distinct events; all 23 allocations) & Exact discovered, eligible, processed, skipped, failed, and quarantined counts \\
-Frames per acquisition & median 3 & Full distribution and valid/invalid frame counts \\
+Frames per acquisition & median 3; $750{,}457$ denominator-valid, 4 invalid;
+178 ceiling-power rows pending input-health adjudication & Full distribution,
+reason-coded validity, and post-health-gate frame counts \\
 Longest contiguous statistic used here & 1.38~s & Distribution by acquisition and reason for truncation \\
 Raw and derived storage & not supplied & Bytes discovered, transferred, cached, deleted, and retained \\
 Trawl throughput and wall time & not supplied & Frames/s, data rate, GPU time, retries, and end-to-end wall time \\

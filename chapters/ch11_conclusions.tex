@@ -86,7 +86,7 @@ Channel & Current status & Binding evidence or closing condition \\
 18 & measurement-limited & Trace, rising since 2024; refused $\tau_c$; measured $-41.3$~dB floor \\
 19 & era-split & Sign-off Dec 2024; off-epoch floor $-33.5$~dB; off-epoch coherence refused, so the row is a bound \\
 20 & era-split & Step-down Sep 2022; off-epoch $\tau_c$ measured (167 min); conservative floor basis is the cheapest refinement \\
-21 & measurement-limited & Trace; the archive's largest null population (14{,}647; floor $-43.2$~dB); cadence co-priority with 29 \\
+21 & measurement-limited & Trace; largest detection-defined null population outside a transmitter-off epoch (14{,}647; floor $-43.2$~dB); cadence co-priority with 29 \\
 22 & excision candidate & Persistent, steady; occupancy-pinned; no null population \\
 23 & measurement-limited & Trace; $\tau_c \le 5$~min bounded; floor unmeasured --- fine-stage null re-decision target \\
 24 & excision candidate & Persistent; collection-curtailed archive; $\tau_c$ measured (62 min); occupancy/cost wall \\
@@ -125,8 +125,9 @@ residual-chain rows now stand beside the first block's
 (Table~\ref{tab:bao:lowerchain}), computed by a released generator whose
 self-test reproduces the first block's published constants from raw products.
 Every screening status survives the chain unchanged; channel 21 emerges as
-the survey's best-floored coherence hostage ($14{,}647$ null frames, the
-archive's largest population) beside channel 29; channel 14 sets the
+the survey's best-floored coherence hostage ($14{,}647$ detection-defined
+null frames, the largest population not constructed from a transmitter-off
+epoch) beside channel 29; channel 14 sets the
 survey's extremes of intra-day share ($52.6\%$) and ground-filter weakness
 ($2.7$~dB); and no new-block channel
 reaches conditional recovery at the deployed basis under the coherence cap.
@@ -146,6 +147,10 @@ and merits the closing analysis.
 The near program is fixed by the evidence matrix in Appendix~\ref{app:evidence}:
 
 \begin{enumerate}[leftmargin=2em]
+  \item adjudicate the 178 ceiling-power rows identified by the
+  post-completion product-health audit, attach reason-coded validity, and regenerate every
+  affected spectrum, distribution, threshold, and rate before freezing a
+  scientific release;
   \item attach the immutable release ledger behind the now-complete
   23-channel inventory (the trawl itself finished in August 2026; the exact
   discovered/eligible/processed/quarantined denominators of checklist

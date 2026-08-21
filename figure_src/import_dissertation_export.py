@@ -16,6 +16,10 @@ from .frozen_data import DATA_DIR, FrozenDataError, row_count, sha256, verify_fr
 UPSTREAM_SCHEMA = {"name": "pilot-proxy-dissertation-export", "version": 1}
 UPSTREAM_REPOSITORY = "WVURAIL/pilot-proxy"
 IMMUTABLE_COMMIT_RE = re.compile(r"[0-9a-f]{40}")
+COMPLETE_SCOPE = (
+    "PilotProxy dissertation-export v1 tabular interface only; this flag does not "
+    "describe all-23-channel CANFAR archive coverage"
+)
 
 
 class ExportImportError(RuntimeError):
@@ -150,6 +154,7 @@ def import_export(
                 "summary_snapshot_id", "unknown"
             ),
             "complete": bool(upstream.get("complete")),
+            "complete_scope": COMPLETE_SCOPE,
         }
         (temp / "frozen_data_manifest.json").write_text(
             json.dumps(updated, indent=2, sort_keys=True) + "\n",

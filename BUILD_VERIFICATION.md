@@ -2,19 +2,35 @@
 
 ## Current suite-audit release (2026-08-20)
 
-The current release was rebuilt with three consecutive `pdflatex` passes under
-the fixed build epoch, followed by the figure/frozen-data audit, four
-standard-library regression tests, the cross-repository number gate, and the
-top-level release-manifest verifier.
+This release merges the completed-archive correctness revision into the
+suite-audit release boundary. It was rebuilt from the WSL worktree with the
+repository's fixed source epoch: the bundle-scope figures were regenerated,
+followed by three consecutive `pdflatex` passes, the figure/frozen-data audit,
+four standard-library regression tests, the cross-repository number gate
+against its pinned upstream inputs, and the top-level release-manifest
+verifier.
 
 ```text
 compiled output: dissertation.pdf
-pages: 130
+pages: 136
 page size: US letter
-file size: 3,030,196 bytes
-SHA-256: d80b1faadd7236c5a6aeab86cb6e42cce6208d52a29fc10c0d43945a6ee5012c
-number gate: 67/67 passed
-release manifest: 239/239 tracked bundle files verified
+file size: 3,053,647 bytes
+SHA-256: 8fe452ca97d2b1d97b1949c141b204bd6df8b6ab055bd74102e38501c1540425
+number gate: 67/67 passed; baseline 0
+release manifest: 240/240 tracked bundle files verified
+```
+
+The final pass reports no undefined reference or citation and no overfull or
+underfull box. The 17 bundle-scope vector PDFs regenerate byte-identically
+under `SOURCE_DATE_EPOCH`, so the audited hashes are reproducible from source.
+
+The number gate was run against the immutable upstream inputs pinned by CI:
+
+```text
+bao-noise-tolerance: 99a48ef1a0173c05bc1e3799a3b0fca26a2338f6
+pilot-proxy:         62ae33ba9e1b303ea7432730f2c09fb59787946c
+summary:             data/provenance/dissertation_summary_v3.json
+result:              67/67 checks passed; baseline 0
 ```
 
 The figure audit reports **PASS** for 28 manifest artifacts, 25 active external
@@ -26,11 +42,9 @@ range--bearing sites; the frozen data preserve 421 reported-on-air/unverified,
 one-page vector output has SHA-256
 `7a6e0e37d5c7e06edaf98e8faf0e803e8ea6c1b9c9416da53ccb35bdb8671959`.
 
-The complete PDF was reviewed as contact sheets, with the title/front matter,
-the revised Chapter 3 census discussion and map, the revised Chapter 9
-closeout, section transitions, and the final appendix pages inspected at higher
-resolution. No clipping, overlap, missing glyph, malformed table, unintended
-blank page, or broken header/footer was found.
+Page-level visual inspection was not repeated for this merge build. The
+contact-sheet reviews recorded in the chronology below cover the two
+constituent revisions, whose page-level content this merge preserves.
 
 ## Historical verification chronology
 
@@ -41,6 +55,54 @@ blank page, or broken header/footer was found.
 The first record below documents the earlier full 500-mile Figure 3.2 revision.
 The unchanged figures retained the source-backed verification recorded in its
 preceding bundle; the changed map, Chapter 3 text, and repository export
+interface were regenerated and checked again for that historical release.
+
+### Completed-archive correctness build (2026-08-20)
+
+The completed-archive integration was built from the WSL worktree with the
+repository's fixed source epoch.  All source-backed figures were regenerated
+using the declared figure requirements, followed by three consecutive
+`pdflatex` passes and a fresh figure/frozen-data audit.
+
+```text
+compiled output: dissertation.pdf
+pages: 135
+page size: US letter
+SHA-256: aed86d25f1e468ef9d6a2109af488c30d482ad37f9e6b0a8211c7bb236327ead
+```
+
+The final pass contains no unresolved references or citations, no warning
+patterns, and no overfull, underfull, or oversized-float diagnostics.  All
+fonts are embedded; the PDF is searchable and reports PDF 1.5.  The figure
+audit reports **PASS** for 28 manifest artifacts, 25 active external vector
+PDFs, two active TikZ figures, one generated unused figure, and four frozen
+CSV tables (two still explicitly marked for authoritative replacement).
+All 135 pages were rendered as whole-document contact sheets; the revised
+abstract, research-question map, survey health gate, BAO footprint, lower-band
+completion, conclusion, status matrix, and closing-program pages were also
+inspected individually at higher resolution.  No clipping, collision, missing
+glyph, malformed table, unintended blank page, or misplaced float was found.
+
+The dissertation number gate was run against immutable upstream inputs:
+
+```text
+bao-noise-tolerance: a7ee77eec63604ccf2560410887f5a86bae168d6
+pilot-proxy:        1d74e096855c4c9bef92c32a82723a3f50a2210b
+summary:            data/provenance/dissertation_summary_v3.json
+result:             67/67 checks passed; baseline 0
+```
+
+JSON parsing, frozen-data hash/row verification, Python bytecode compilation,
+CSV structure, `git diff --check`, and the comprehensive tracked-file manifest
+verification were also run on the final tree.  Generated LaTeX auxiliaries
+were removed after validation; the regenerated dissertation and changed
+footprint PDF are retained.
+
+### Full 500-mile Figure 3.2 revision
+
+The records below document the earlier full 500-mile Figure 3.2 revision.
+The unchanged figures retained the source-backed verification recorded in
+its preceding bundle; the changed map, Chapter 3 text, and repository export
 interface were regenerated and checked again for that historical release.
 
 ## Dissertation build

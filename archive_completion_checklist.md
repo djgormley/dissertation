@@ -1,19 +1,24 @@
-# Archive and analysis completion checklist — revised 2026-08-19
+# Archive and analysis completion checklist — revised 2026-08-20
 
 This checklist contains only work that requires data products, analysis code,
 or live telescope integration that was not present in the dissertation source
 bundle. It is aligned with Chapters 7–11 and Appendix A.
 
-Status update (2026-08-19): THE TRAWL IS COMPLETE. All 23 allocations
+Status update (2026-08-20): THE OFFLINE TRAWL IS COMPLETE. All 23 allocations
 (channels 14–36) carry products, each complete against its archive holdings,
-under one kernel cohort; channels 15 and 14 (the last in the scan order)
+under one detector-kernel hash; the release ledger must nevertheless preserve
+the two analyzer/source cohorts present in the products. Channels 15 and 14
+(the last in the scan order)
 finished 2026-08-19 with 8,347 and 8,788 events. Item B is closed at the
 survey, epoch, and residual-chain level (Tables 9.7/9.8 extended to the
 band-edge pair; every screening status survived the chain). What remains of
-the archive program is the release ledger (item A, now for all 23 channels),
+the archive program is the data-health and fine-designation repair plus release
+ledger (item A, for all 23 channels),
 the cadence campaigns or their permanent-bound fallback (item C), the
 transfer/visibility/estimator validations (items D–F), and the per-epoch
-bundles and holdout (item G). The sign-off epochs measured on channels 19,
+bundles and holdout (item G). The current-geometry sensitivity and numerical
+representation-loss study (item H) is also mandatory before the dissertation
+claims a measured sensitivity. The sign-off epochs measured on channels 19,
 20, 26 (and, in the first-measured block, 27 and 32) supply transmitter-off
 floors that unblock parts of items C and G. Channel 30's baseband collection
 ceased in September 2023 (operations exclusion driven by the contamination),
@@ -24,7 +29,7 @@ unverified coherence cap, bracket spread immaterial, ~75% of current-epoch
 frames released at the working threshold) — this extension of the
 inclusive-keep set from {36} to {14, 15, 36} is flagged for sign-off.
 
-## A. Freeze the current 23-channel release ledger
+## A. Repair product validity and freeze the all-23-channel release ledger
 
 - Export exact discovered, eligible, processed, skipped, failed, quarantined,
   duplicated, and joined event/frame counts for channels 14–36, retaining the
@@ -36,6 +41,33 @@ inclusive-keep set from {36} to {14, 15, 36} is flagged for sign-off.
 - Attach source, binary, CUDA/toolkit, schema, weight-bank, transform, and
   calibration hashes for every cohort.
 - Report the exact denominator behind the cross-era “zero mismatches” result.
+- Resolve the 178 frames whose recorded baseband power reaches the theoretical
+  packed-int4 maximum and whose repeated channel/event patterns are consistent
+  with all-`0x88` fill or saturation. Inspect raw code histograms, variance,
+  clipping fraction, and constant-word signatures; assign an explicit validity
+  reason and exclude these frames from science products unless the raw-data
+  audit demonstrates that they are legitimate observations.
+- Preserve the four explicit all-zero channel-17 frames as invalid records and
+  make every downstream denominator state whether invalid frames are retained
+  for accounting or removed from the scientific estimand.
+- Replace the current validity shortcut with a versioned data-health gate that
+  can distinguish zero reference power, constant/fill words, saturation,
+  malformed payloads, and other rejection reasons. Recompute distributions,
+  floors, thresholds, spectra, masked fractions, and uncertainty after that
+  gate; do not assume the small frame fraction makes every reported quantity
+  invariant.
+- Recompute the fine designated-window diagnostics from the retained 256-bin
+  arrays. The archived ancillary fields designate fine bin 0, whereas the
+  corrected PilotProxy geometry designates the predicted pilot neighborhood;
+  the stored ancillary CFAR location, scale, threshold, mode, and detection
+  lists must not be used as final calibrated results.
+- Keep the predicted acquisition neighborhood distinct from the narrow,
+  epoch-calibrated decision window. Record the estimator, sign convention,
+  circular-bin convention, uncertainty, epoch, and out-of-span sentinel for
+  every released anchor rather than silently widening or recentering a window.
+- Re-run the all-23 tables and figures from the repaired validity/designation
+  products, and archive an exclusion ledger linking every omitted frame to its
+  immutable physical key and reason.
 
 ## B. Process the remaining thirteen ATSC allocations
 ### (2026-08-19: COMPLETE — channels 14–26 all processed, chain-evaluated,
@@ -137,7 +169,42 @@ For every channel and stable station/transmitter epoch, release together:
 A bundle must never combine an anchor from one epoch with a threshold or null
 model from another.
 
-## H. Complete live integration
+## H. Complete the current-geometry synthetic sensitivity and representation-loss study
+
+This is a dissertation-completion experiment, not an optional deployment
+extension. The legacy paired injection establishes the method but uses a
+superseded detector geometry; its numerical sensitivity and loss must not be
+promoted to the current implementation.
+
+- Exercise the current full geometry ($M=2048$, $K=128$, $L=128$,
+  $L_F=256$) and all 23 channel weight profiles, including the channel-14 edge
+  wrap, measured residual-offset distribution, and half-bin worst cases.
+- Use common waveform and noise draws for paired stages: analytic ideal;
+  full-precision pure-tone plus AWGN; full-precision standards-chain 8-VSB;
+  int4 input quantization/clipping with a floating detector; quantized weights;
+  the frozen fixed-point transform; exact Q16 decision arithmetic; and the
+  complete CPU/GPU pipeline.
+- Report ideal-to-float model mismatch separately from input-quantization,
+  coefficient-quantization, transform, and decision-arithmetic losses. Do not
+  label the entire ideal-to-end-to-end difference “fixed-point loss.”
+- Sweep shelf/pilot SNR until every detection-probability crossing is bracketed;
+  evaluate multiple declared false-alarm probabilities and residual offsets.
+  Report detection probability at fixed false-alarm probability and horizontal
+  SNR loss at fixed detection probability, with exact binomial intervals and
+  paired bootstrap intervals for stage-to-stage loss.
+- Include false-alarm calibration, threshold-near disagreement rates,
+  overflow, saturation and clipping counts, CPU/GPU bit equality, an offset
+  sensitivity map, and per-channel as well as band-summary losses.
+- Use the sufficient-statistic simulator for large statistical sweeps only if a
+  stratified subset also traverses the actual packed, full-frame implementation.
+  Audit generator startup/transients and analyze only the declared stationary
+  span.
+- Release configuration, seeds or paired trial identifiers, trial counts,
+  crossing tables, source/binary/toolchain/weight/transform hashes, and the
+  generated figures. Replace the legacy numerical sensitivity in the main
+  argument only after this release is reproducible.
+
+## I. Complete live integration
 
 - Implement the Chapter 10 stage on the actual `kotekan` buffer path.
 - Verify frame identity, span, channel geometry, calibration hash, CUDA stream
@@ -149,10 +216,13 @@ model from another.
 - Demonstrate monitoring, drift-triggered re-localization, and a reproducible
   incident-capture path.
 
-## I. Final dissertation updates after the campaigns
+## J. Final dissertation updates after the campaigns
 
 - Replace all pending/bounded cells with measurements only where supported.
 - Regenerate the 23-channel status matrix and channel tables.
+- Incorporate the repaired archive products and the current-geometry synthetic
+  sensitivity/representation-loss result; retain the legacy study only as
+  explicitly labelled historical geometry.
 - Update the abstract and conclusions only after all transfer and estimator gates
   have passed.
 - Attach the immutable release manifest and archived analysis/code DOI.

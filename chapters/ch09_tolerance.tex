@@ -14,7 +14,7 @@ The hyperfine line redshifts as
 \label{eq:bao:zmap}
 z(\nu) = \frac{\nu_{21}}{\nu} - 1, \qquad \nu_{21} = 1420.406~\text{MHz},
 \end{equation}
-so the post-repack ATSC core allocation, channels 14--36 spanning $470$--$608$~MHz, occupies $1.34 \le z \le 2.02$ --- not an edge of CHIME's band but the middle of its high-redshift BAO range.  Matter still dominates the expansion over this interval; the scientific value is the long cosmological lever arm and the complementary tracer, volume, and systematics of 21\,cm intensity mapping.  Modern spectroscopic surveys, including DESI galaxy, quasar, and Ly$\alpha$ samples, overlap substantial parts of the range rather than leaving it without competition \cite{desi2024iii,desi2024lya}. The trawl completed in August 2026: all 23 allocations carry archive products (channels 14--36, $z = 1.336$--$2.022$).  The block with the complete residual-chain analysis (Section~\ref{sec:bao:verdicts}) remains the first-measured ten contiguous allocations, channels 27--36, covering $z = 1.336$--$1.592$; the thirteen lower-band channels are summarized at the survey and epoch level, and carried through the same residual chain, in Section~\ref{sec:bao:lowerband}. This is what is at stake: roughly a third of the survey's usable redshift depth lies under licensed megawatt transmitters, and the question ``mask, excise, or integrate through'' must be answered channel by channel with numbers rather than policy.
+so the post-repack ATSC core allocation, channels 14--36 spanning $470$--$608$~MHz, occupies $1.34 \le z \le 2.02$ --- not an edge of CHIME's band but the middle of its high-redshift BAO range.  Matter still dominates the expansion over this interval; the scientific value is the long cosmological lever arm and the complementary tracer, volume, and systematics of 21\,cm intensity mapping.  Modern spectroscopic surveys, including DESI galaxy, quasar, and Ly$\alpha$ samples, overlap substantial parts of the range rather than leaving it without competition \cite{desi2024iii,desi2024lya}. The trawl completed in August 2026: all 23 allocations carry archive products (channels 14--36, $z = 1.336$--$2.022$).  The block with the complete residual-chain analysis (Section~\ref{sec:bao:verdicts}) remains the first-measured ten contiguous allocations, channels 27--36, covering $z = 1.336$--$1.592$; the thirteen lower-band channels are summarized at the survey and epoch level, and carried through the same residual chain, in Section~\ref{sec:bao:lowerband}.  Unless a result is explicitly analytic or historical, the product-derived numbers in this chapter describe the pre-health-adjudication snapshot: the 178 ceiling-power rows identified in Chapter~\ref{sec:survey} must be dispositioned and every affected table, spectrum, threshold, and rate regenerated before the scientific values are frozen.  This is what is at stake: roughly a third of the survey's usable redshift depth lies under licensed megawatt transmitters, and the question ``mask, excise, or integrate through'' must be answered channel by channel with numbers rather than policy.
 
 The forecast engine is the Fisher-matrix framework of Bull et al.\ \cite{bull2015} (\emph{RadioFisher}), evaluated on CHIME's instrument specification, with the BAO significance defined through the amplitude of the extracted acoustic feature and distance errors $(\sigma_{D_A}, \sigma_H)$ through the standard $(\alpha_\perp, \alpha_\parallel)$ dilation parameters. It is configured to the convention of the Overview paper's own BAO forecast \cite{amiri2022chime}: sensitivity set by the system temperature and the as-built array, with no foreground residual, no wedge excision, and BAO-shift-only parameter flags. That convention is adopted deliberately and it fixes the scope of everything below. \emph{The only two things this section models are the system temperature and the DTV contamination.} Every other stage is assumed to do its job perfectly --- which means, precisely, that its cost is not charged and \emph{its benefit is not claimed}. The consequence that matters is the second half: the delay filter suppresses the DTV shelf as well as the foregrounds, and Section~\ref{sec:bao:chain} declines to take that suppression, because a budget cannot bank a discount from a stage it does not carry. Absolute forecast times inherit the customary optimism of Fisher forecasting --- smooth foreground residuals, no calibration systematics --- and are quoted in on-sky hours. The robust currency, used for every verdict in this section, is the \emph{time penalty relative to the clean survey}: the ratio of integration times to reach the same target with and without contamination. Ratios cancel the shared optimism; absolute times do not.
 
@@ -44,12 +44,12 @@ The fourth ingredient is the estimator, and it genuinely differs. The published 
 
 Everything priced in this section is a decision taken in one CHIME coarse channel and applied across roughly fifteen. That asymmetry is not incidental plumbing --- it is where the method's leverage comes from, and it is also where its one untested premise sits --- so it is worth stating in the geometry the forecast actually uses before any cost is computed.
 
-An ATSC allocation is $6$~MHz wide against CHIME's coarse raster of $f_s = 390.625$~kHz, so one allocation covers $6/f_s = 15.36$ coarse channels, of which the RRC payload occupies $B_N/f_s \approx 13.8$ (Section~\ref{sec:dtv:pilot}) and the remainder is allocation guard. The pilot is nominally described as 309~kHz above the lower allocation edge in ATSC~A/53 and is generated here from the standard's exact frequency relation, Eq.~\eqref{eq:pilotfreq}, giving 309.440559~kHz.  It falls inside one coarse channel rather than straddling a boundary for every configured allocation. At band scale the same picture repeats 23 times: $470$--$608$~MHz is 23 contiguous allocations spanning $353$ coarse channels, and the detector reads $23$ of them. \emph{The monitored bins are $6.5\%$ of the contaminated band, and the decisions they carry cover the other $93.5\%$.} Figure~\ref{fig:bao:footprint} draws the geometry at both scales.
+An ATSC allocation is $6$~MHz wide against CHIME's coarse raster of $f_s = 390.625$~kHz, so one allocation covers $6/f_s = 15.36$ coarse-channel widths, of which the RRC payload occupies $B_N/f_s \approx 13.8$ (Section~\ref{sec:dtv:pilot}) and the remainder is allocation guard. The pilot is nominally described as 309~kHz above the lower allocation edge in ATSC~A/53 and is generated here from the standard's exact frequency relation, Eq.~\eqref{eq:pilotfreq}, giving 309.440559~kHz.  It falls inside one coarse channel rather than straddling a boundary for every configured allocation. At band scale the same picture repeats 23 times.  The continuous bandwidth ratio is $138~\mathrm{MHz}/f_s=353.28$ channel widths; it is not an integer channel count.  The operational handover uses one declared discrete convention instead: the inclusive edge-bin index range \texttt{freq\_id}=492--845, the same range used by the disposition below, contains 354 CHIME coarse channels.  The detector reads one pilot bin in each of the 23 allocations. \emph{The monitored bins are therefore $23/354=6.50\%$ of that discrete footprint, and their decisions are transferred to the other $93.50\%$.} Figure~\ref{fig:bao:footprint} draws the geometry at both scales.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\linewidth]{figs/fig_bao_footprint.pdf}
-\caption{The footprint geometry. (a) One ATSC allocation at CHIME's coarse raster: the pilot-containing bin read by the detector against the remaining bins covered by the same decision. The different heights distinguish the monitored bin from the shelf-covered bins and are schematic, not measured power. Flatness across the received allocation is a transfer assumption to be tested, not a consequence of monitoring one pilot bin. (b) The same geometry across the DTV band: 23 monitored bins carrying decisions for 353.}
+\caption{The footprint geometry. (a) One ATSC allocation at CHIME's coarse raster: the pilot-containing bin read by the detector against the remaining bins covered by the same decision. The different heights distinguish the monitored bin from the shelf-covered bins and are schematic, not measured power. Flatness across the received allocation is a transfer assumption to be tested, not a consequence of monitoring one pilot bin. (b) The same geometry across the DTV band under the disposition's inclusive edge-bin convention: 23 monitored bins carrying decisions for 354 CHIME coarse channels.}
 \label{fig:bao:footprint}
 \end{figure}
 
@@ -81,15 +81,15 @@ Within a forecast redshift bin the per-channel weights $w_c = (1 - f_c)/(1 + r_{
 \end{equation}
 where $\langle\cdot\rangle_B$ is the bandwidth-weighted mean over the bin. The inverse-variance form $\bar{w}_{\text{inv}}$ holds when kept frames are distributed so that every mode sees the average depth --- the correct convention for masking that is uncorrelated with sidereal time. The harmonic form $\bar{w}_{\text{four}}$ holds when radial Fourier modes require simultaneous coverage across the bin, so the thinnest slice throttles every mode that crosses it; it is the pessimistic convention, and a single near-fully-masked channel drags the entire bin ($w \to 0$ forces $\bar{w}_{\text{four}} \to 0$ while $\bar{w}_{\text{inv}}$ barely moves). Both are implemented; the measured-masking forecasts below move by under $0.3\%$ between them, because the measured masking is either mild (most channels) or so severe that the channel is excised outright and leaves the average entirely. Excision is priced separately and differently: an excised channel is removed from the bin's \emph{volume} (Fisher information scales linearly with surviving bandwidth), never from its noise, because no integration time recovers a band that is not observed.
 
-Exposure-weighted across the survey's quarterly rate record, the measured masking costs the survey $3.2\%$ additional integration time to any fixed BAO-amplitude target --- the full-survey figure is benign because $400$--$470$ and $608$--$800$~MHz carry no DTV allocation and dominate the mapping speed. The binding numbers are per-bin. In $z = 1.40$--$1.50$, the bin most affected, the measured masking multiplies the time to a bin-level $5\sigma$ BAO extraction by $1.35$ ($0.177 \to 0.238$ on-sky years); Fig.~\ref{fig:bao:time} traces the same cost as a function of a uniform masked fraction across the DTV band. One channel makes the excision logic concrete: channel 30 ($566$--$572$~MHz, $z = 1.48$--$1.51$) is masked ${\approx}97\%$ of the time in the quarterly rate record --- $98.4\%$ in its own survey product, the one channel where the two records of Section~\ref{sec:bao:cost} agree --- so integrating through it to clean-equivalent depth costs $\times 33$ in time on that slice --- ten years of integration buys 3.6 clean-equivalent months --- while excising it costs $22\%$ of one bin's volume and $0.8\%$ at survey level. Excision wins by an enormous margin, and the general lesson generalizes: \emph{a channel is either cheap to keep or cheaper to cut; it is never worth outwaiting}.
+The first forecast iteration applied Eq.~\eqref{eq:bao:teff} to a quarterly rate record that was later shown to come from an $f_s/2$-mistuned detector.  Its numerical result is retained below only to preserve the provenance of the already generated cost figure and to show how that detector epoch was diagnosed; it is not current occupancy evidence and it is not the cost result used for the completed archive.  In that superseded calculation, the quarterly record implied a $3.2\%$ survey-level penalty and a $1.35\times$ penalty in the most affected $z=1.40$--$1.50$ bin.  Channel 30 illustrated the algebra: its historical rate was ${\approx}97\%$ and its correctly tuned survey product was $98.4\%$, so either record made waiting to clean-equivalent depth far more expensive than frequency excision.  The complete all-23, current/latest-observed product calculation is reported in Section~\ref{sec:bao:lowerband}; those later numbers, not this legacy illustration, govern the present cost statement.
 
-\subsection*{Which masking rate, and the gap between two of them}
+\subsection*{A superseded masking record and why it is retained}
 
 Those figures require a provenance statement, because two masked-fraction records exist for these channels and they do not agree. The quarterly rate table from which the forecast above is built reports exposure-weighted fractions of $0.023$, $0.138$, and $0.012$ on channels 34, 35, and 36; the survey products, evaluated under the rule carried in their own detector contract, give $0.991$, $0.837$, and $0.999$ on the same channels and very nearly the same frames --- disagreements of $43\times$, $6.1\times$, and $87\times$. The gap is not coverage: joined quarter by quarter, the two records agree on frame counts to within a few percent and place channel 35's transmitter switch-on in the same quarter (2021.75, at $0.145$ against $0.151$). The gap is the detector epoch, and it is now fully identified: the quarterly table was produced by the survey-composition reduction of 2026-07-18 under the coarse rule $F > \hat{\mu} + 0.012\,\mu_0$ --- about five null widths above each channel's empirical zero point --- from the \emph{first} production trawl, whose weight bank (SHA-256 \texttt{b0dce17a}, retained as the \texttt{legacy\_halfband} bank) assumed the coarse-channel center at Nyquist and was therefore mistuned by $f_s/2$ relative to the verified center-at-DC frame convention. At the line, that mistuning suppresses every pilot by $39$--$47$~dB --- except channel 30's, whose pilot sits $847$~Hz from $f_s/4$, where the error self-cancels, which is why channel 30 is the one channel on which the two records agree. The quarterly table is therefore a record of the legacy detector epoch, not a DTV occupancy measurement; the ingestion path now carries that rule and epoch explicitly, so the limitation is visible rather than implied, and it is kept only because the published forecast figures were built from it.
 
 \begin{table}[t]
 \centering
-\caption{The forecast under each available masking record. The published figures use the quarterly rate table, generated in the legacy $f_s/2$-mistuned detector epoch (its rule and weight bank are identified in the text); the bootstrap rule is the positive-excess rule of Section~\ref{sec:pipeline:decision}, evaluated on the survey products. The last row assumes all 23 channels behave like the three measured, which is a bound rather than a measurement --- but it is the bound that matters, because at that rate every DTV channel crosses the excision threshold and the $z = 1.40$--$1.50$ bin lies entirely inside the allocation.}
+\caption[Historical forecast under the superseded masking record]{Historical provenance for the first forecast iteration. The quarterly rate table was generated in the legacy $f_s/2$-mistuned detector epoch (its rule and weight bank are identified in the text); the bootstrap rule is the positive-excess rule of Section~\ref{sec:pipeline:decision}, evaluated on the three products then available. The band-wide row was an extrapolation from those three channels, not a measurement.  Both that extrapolation and the mistuned quarterly record are superseded by the completed all-23 product analysis of Section~\ref{sec:bao:lowerband}.}
 \label{tab:bao:rates}
 \begin{tabular}{lcccc}
 \toprule
@@ -105,12 +105,12 @@ bootstrap rule band-wide ($f = 0.942$) & $0.0299$ & $1.238$ & never & $\infty$ \
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:bao:rates} brackets what this costs. Substituting the three measured products into the published record moves the affected bin from $1.35\times$ to $1.48\times$ --- tolerable, and the honest current statement. Extending the bootstrap rule across the band is not tolerable: at $f = 0.942$ every DTV channel crosses the excision threshold, and since $z = 1.40$--$1.50$ maps to $568$--$592$~MHz, entirely inside the allocation, that bin is not made expensive but \emph{lost}. The three measured channels are the only evidence available on which of these the bootstrap rule actually produces band-wide, and all three sit above $0.83$. This is the sharpest available argument that the operating point cannot be left at the detection floor: at the floor, on the evidence in hand, the band does not survive. It is the same conclusion Section~\ref{sec:bao:policy} reaches for channel 34 from the residual side, arrived at independently from the rate side, and it is why Eq.~\eqref{eq:bao:rtol} is a prerequisite for selecting a runtime operating point rather than a refinement of one.
+Table~\ref{tab:bao:rates} no longer brackets the present cost.  It records the sequence by which a legacy detector record was challenged: substituting the three correctly tuned products moved the affected-bin penalty from $1.35\times$ to $1.48\times$, and extrapolating their mean bootstrap fraction would have erased that bin.  The completed trawl later removed the need for that extrapolation and showed directly that archive-average, current-epoch, and threshold-dependent fractions must not be interchanged.  Section~\ref{sec:bao:lowerband} therefore performs the current calculation from all measured allocations and explicitly separates the occupancy-cost screen from the residual-bias screen.  The durable lesson from this historical table is methodological rather than numerical: an operating point cannot be selected from a mistuned reduction or from a three-channel extrapolation, and a detection-floor threshold is not a science-safe threshold merely because its masking cost has been computed.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\linewidth]{figs/fig_bao_time_vs_masking.pdf}
-\caption{Integration time to fixed BAO targets versus masked fraction in the DTV band, at $r = 0$ (masking cost only, Eq.~\eqref{eq:bao:teff} with the band averaging of Eq.~\eqref{eq:bao:wbar}). The measured pilot-proxy operating point sits at the left of the curve at survey level ($3.2\%$ penalty) but at $1.35\times$ in the worst-affected redshift bin. This figure prices what the mask \emph{costs}; what it \emph{buys} requires the residual chain of Section~\ref{sec:bao:chain}.}
+\caption[Historical masking-cost curve]{Integration time to fixed BAO targets versus masked fraction in the DTV band, at $r = 0$ (masking cost only, Eq.~\eqref{eq:bao:teff} with the band averaging of Eq.~\eqref{eq:bao:wbar}). The annotated $3.2\%$ and $1.35\times$ points belong to the superseded quarterly record and are retained as historical provenance, not as the completed archive's operating point.  The curve itself remains the algebraic cost map; the all-23 inputs are evaluated in Section~\ref{sec:bao:lowerband}, and what a mask \emph{buys} still requires the residual chain of Section~\ref{sec:bao:chain}.}
 \label{fig:bao:time}
 \end{figure}
 
@@ -213,7 +213,7 @@ not by itself prove the scalar attenuation used here.
 
 Thermal-noise variance in an integrated estimate falls approximately as $1/N_{\text{frames}}$.  In the scalar screening model, a component correlated for $\tau_c$ supplies fewer independent realizations and is amplified relative to the fast component by $n_{\text{coh,intra}}$ of Eq.~\eqref{eq:bao:chain}; the explicitly defined fast factor is $n_{\text{coh,fast}}=1$.  The sidereal-day cap prevents the scalar model from assigning unlimited coherence to structure that the per-day operator is intended to remove.  It is a bookkeeping convention, not proof that every longer-lived visibility contaminant is exactly removed.  Keeping the slow and fast terms separate avoids applying the slow component's amplification to the noise-like sub-acquisition fluctuations.
 
-$\tau_c$ is measured, not assumed, from the same-day structure function of the shelf: variance between same-day acquisition pairs as a function of lag, with the correlation time read from the lag at which the structure function reaches its plateau, and uncertainties from a bootstrap over whole sidereal-day blocks (resampling frames would fabricate independence the data does not have). The estimator refuses rather than extrapolates: a channel whose apparent $\tau_c$ moves by more than a factor-of-stability threshold across trim percentiles is declared \emph{episodic} --- the shelf is not a stationary process with one correlation time --- and the chain falls back to the sidereal-day cap, reported as a bound rather than a measurement. The screening model treats surviving intra-day proxy fluctuations as independent across days.  Civil-time transmitter schedules precess through sidereal time by about 3.93~min per solar day, and meteorological propagation is not naturally locked to the sky; these facts motivate the assumption but do not guarantee it.  A sidereal-coherent component is therefore one of the alternative residual templates and direct visibility tests required below.
+The archive supplies a same-day structure-function timescale for the shelf: the variance between same-day acquisition pairs is evaluated as a function of lag, the characteristic decorrelation lag is read from the approach to the plateau, and uncertainties come from a bootstrap over whole sidereal-day blocks (resampling frames would fabricate independence the data does not have).  That plateau lag is not, in general, identical to the integrated autocorrelation time that determines an effective sample count.  The present scalar chain uses it as a screening proxy for that integral timescale and therefore reports measured values or bounds with this modelling qualification; contiguous data are required to integrate the autocorrelation function directly. The estimator refuses rather than extrapolates: a channel whose apparent $\tau_c$ moves by more than a factor-of-stability threshold across trim percentiles is declared \emph{episodic} --- the shelf is not a stationary process with one correlation time --- and the chain falls back to the sidereal-day cap, reported as a bound rather than a measurement. The screening model treats surviving intra-day proxy fluctuations as independent across days.  Civil-time transmitter schedules precess through sidereal time by about 3.93~min per solar day, and meteorological propagation is not naturally locked to the sky; these facts motivate the assumption but do not guarantee it.  A sidereal-coherent component is therefore one of the alternative residual templates and direct visibility tests required below.
 
 \section{The Decision: Four Policies, One Ordering}
 \label{sec:bao:policy}
@@ -256,17 +256,22 @@ The deeper asymmetry, however, is not the dB column. Every quantity in Eq.~\eqre
 \section{Propagation to Cosmological Parameters}
 \label{sec:bao:fisher}
 
-The statistical and systematic residuals enter different parts of the forecast.  Masking scales the thermal covariance through $\bar w^{-1}$ (Eq.~\eqref{eq:bao:wbar}), and a calibrated stochastic residual adds $r_{\rm var}C_N$ to that covariance.  A coherent residual instead enters through a signed template
+The statistical and systematic residuals enter different parts of the forecast.  Masking scales the thermal covariance through $\bar w^{-1}$ (Eq.~\eqref{eq:bao:wbar}), and a calibrated stochastic residual adds $r_{\rm var}C_N$ to that covariance.  A coherent residual instead enters through a unit noise-shaped template whose signed amplitude is $A$:
 \begin{equation}
-  C_{\rm res}(k,\mu;z)=A\,r_{\rm sys}\,C_N(k,\mu;z;T^\ast),
+  C_{\rm tot}(k,\mu;z;A)
+  = C_{\rm base}(k,\mu;z) + A\,C_N(k,\mu;z;T^\ast),
   \label{eq:bao:template}
 \end{equation}
-where $C_N(T^\ast)$ is frozen at the target integration used to define the tolerance.  This is a \emph{noise-shaped screening template}, not a claim that DTV residuals physically share the full $k$, $\mu$, redshift, baseline, or sidereal structure of thermal noise.  The amplitude $A$ is appended to the Fisher matrix through $\partial\ln C_{\rm tot}/\partial A=C_{\rm res}/C_{\rm tot}$.  Marginalizing over $A$ propagates uncertainty in that declared template; fixing it and evaluating
+where $C_N(T^\ast)$ is frozen at the target integration used to define the tolerance and $C_{\rm base}$ contains the otherwise modelled covariance.  This is a \emph{noise-shaped screening template}, not a claim that DTV residuals physically share the full $k$, $\mu$, redshift, baseline, or sidereal structure of thermal noise.  The amplitude $A$ is appended to the Fisher matrix through $\partial\ln C_{\rm tot}/\partial A=C_N/C_{\rm tot}$.  Let $\boldsymbol\theta$ denote the fitted cosmological and nuisance parameters other than $A$, let $A_{\rm fixed}$ be the amplitude imposed in the fit, and define the signed mismatch $\Delta A\equiv A_{\rm true}-A_{\rm fixed}$.  Under the present scalar closure, $|\Delta A|=r_{\rm sys}$; the residual is not multiplied by $r_{\rm sys}$ a second time inside the unit template.  To first order, fixing the wrong amplitude gives
 \begin{equation}
 \label{eq:bao:bias}
-\Delta\theta_i = \Delta A \sum_j \left(F^{-1}\right)_{ij} F_{jA}
+\Delta\boldsymbol\theta
+ = F_{\theta\theta}^{-1}\,\boldsymbol F_{\theta A}\,\Delta A,
+\qquad
+\Delta\boldsymbol\theta\equiv
+\boldsymbol\theta_{\rm fit}-\boldsymbol\theta_{\rm true},
 \end{equation}
-propagates an unmodelled coherent component into a first-order parameter shift.  The statistical cost and coherent bias therefore remain distinct even when the present screening closure sets their scalar normalizations equal.
+where $F_{\theta\theta}$ is the block for the parameters that remain free in the fit and $\boldsymbol F_{\theta A}$ is its cross block with the omitted amplitude.  Thus the inverse is not the inverse of the augmented Fisher matrix in which $A$ is allowed to float: that marginalization answers a different question.  Reversing the definition of $\Delta A$ reverses the displayed sign, while every tolerance below uses $|\Delta\boldsymbol\theta|$ and is sign-invariant.  The statistical cost and coherent bias therefore remain distinct even when the present screening closure sets their scalar normalizations equal.
 
 \subsection*{Residual-shape and time-scaling gates}
 
@@ -283,7 +288,7 @@ r_{\text{tol}}(T^\ast) = \max \left\{ r_{\rm sys} : \left| \Delta\alpha(r_{\rm s
 
 \subsection*{The tolerance, evaluated}
 
-Equation~\eqref{eq:bao:rtol} is not blocked on channel coverage: $r_{\text{tol}}$ is a property of the survey and the forecast, and only its conversion into per-channel thresholds needs the channels. Evaluating it on a Fisher bank carrying the \texttt{\_Pres} row --- built with $P_{\text{res}}=1$, so the template amplitude is in units of the reference-time noise power and $\Delta A$ is $r_{\rm sys}$ --- gives the result in Table~\ref{tab:bao:rtol}. Two features of it are worth more than the number.
+Equation~\eqref{eq:bao:rtol} is not blocked on channel coverage: $r_{\text{tol}}$ is a property of the survey and the forecast, and only its conversion into per-channel thresholds needs the channels. Evaluating it on a Fisher bank carrying the \texttt{\_Pres} row --- built with $P_{\text{res}}=1$, so the unit template is the reference-time noise power and $|\Delta A|=r_{\rm sys}$ supplies its physical amplitude --- gives the result in Table~\ref{tab:bao:rtol}. Two features of it are worth more than the number.
 
 First, \emph{the growth rate binds, not the acoustic dilations}. At $\zeta = 1$, $f\sigma_8$ tolerates $r \approx 1.5 \times 10^{-3}$ while $\alpha_\perp$ and $\alpha_\parallel$ tolerate roughly ten times more, and the ordering holds in every DTV redshift bin at every integration time. This is what should be expected on reflection: the acoustic scale is a feature \emph{position}, protected by the oscillatory signature that defines it, and a smooth additive residual displaces it only weakly; the growth rate is read off an \emph{amplitude}, which is precisely what an additive residual counterfeits. A framework that had priced only the BAO dilations would have concluded the band was ten times safer than it is.
 
@@ -300,7 +305,7 @@ What survives the gate is usable, and it is the second tier of the tolerance sto
 
 \begin{table}[t]
 \centering
-\caption{The residual tolerance $r_{\text{tol}}$ of Eq.~\eqref{eq:bao:rtol} at the published criterion $\zeta = 1$ \cite{amara2008}, per DTV redshift bin, taken over the entries that survive the stability refusal described in the text. $\alpha_\perp$ and $\alpha_\parallel$ are omitted: both are refused at several integration times in every bin, and where they survive they tolerate about ten times more than $f\sigma_8$, so they never bind. Within the current reference-time, noise-shaped template family, the tightest accepted value occurs near one on-sky year; the table reports that minimum without promoting its time dependence to a universal physical scaling law. The $f\sigma_8$ entry survives the gate at every grid point in every bin; the dilations' surviving entries are the second tier taken up in the text and in Section~\ref{sec:bao:thresholds}.}
+\caption{The residual tolerance $r_{\text{tol}}$ of Eq.~\eqref{eq:bao:rtol} at this work's adopted $\zeta = 1$ systematic-budget convention, following the form of Ref.~\cite{amara2008}, per DTV redshift bin, taken over the entries that survive the stability refusal described in the text. $\alpha_\perp$ and $\alpha_\parallel$ are omitted: both are refused at several integration times in every bin, and where they survive they tolerate about ten times more than $f\sigma_8$, so they never bind. Within the current reference-time, noise-shaped template family, the tightest accepted value occurs near one on-sky year; the table reports that minimum without promoting its time dependence to a universal physical scaling law. The $f\sigma_8$ entry survives the gate at every grid point in every bin; the dilations' surviving entries are the second tier taken up in the text and in Section~\ref{sec:bao:thresholds}.}
 \label{tab:bao:rtol}
 \begin{tabular}{lccccccc}
 \toprule
@@ -320,14 +325,14 @@ Two things survive that verdict and both matter. The first is the ordering. The 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\linewidth]{figs/fig_bao_the_case.pdf}
-\caption{Every policy on the axis that decides between them, for channel 33 --- the one channel whose kept-frame floor and correlation time are both constrained by data. The rule is the bias tolerance of Eq.~\eqref{eq:bao:rtol} at the published criterion. Integration time rides as an annotation rather than a second axis, because every failing policy fails on residual whatever its time cost. Excision sits at the left edge with no residual and no measurement: it wins the axis shown and loses the one that cannot be drawn. The pilot proxy is the best of the four by a factor of sixteen and still lands $24\times$ outside.}
+\caption{Every policy on the axis that decides between them, for channel 33 --- the one channel whose kept-frame floor and correlation time are both constrained by data. The rule is the bias tolerance of Eq.~\eqref{eq:bao:rtol} at the adopted $\zeta=1$ convention. Integration time rides as an annotation rather than a second axis, because every failing policy fails on residual whatever its time cost. Excision sits at the left edge with no residual and no measurement: it wins the axis shown and loses the one that cannot be drawn. The pilot proxy is the best of the four by a factor of sixteen and still lands $24\times$ outside.}
 \label{fig:bao:case}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.98\linewidth]{figs/fig_bao_convergence.pdf}
-\caption[Time scaling under the current residual normalization]{Time scaling under the current noise-normalized residual family.  At each plotted integration time the template amplitude is defined relative to that time's thermal-noise covariance, so the induced bias and $\sigma(f\sigma_8)$ fall at similar rates and their ratio is nearly flat.  This figure does not describe a fixed physical contaminant, whose significance can grow as the statistical error shrinks.  The tolerance used for the channel decisions is therefore defined at the fixed target time $T^\ast$ rather than inferred from this curve as a universal convergence law.}
+\caption[Time scaling under the current residual normalization]{Time scaling under the current noise-normalized residual family.  At each plotted integration time the template amplitude is defined relative to that time's thermal-noise covariance, so the induced bias and $\sigma(f\sigma_8)$ fall at similar rates and their ratio is nearly flat.  This figure does not describe a fixed physical contaminant, whose significance can grow as the statistical error shrinks.  The tolerance used for the channel decisions is therefore defined at the fixed target time $T^\ast$ rather than inferred from this curve as a universal convergence law.  The artwork's ``published criterion'' label is retained legacy shorthand for the adopted $\zeta=1$ convention; it is not a claim of universal status.}
 \label{fig:bao:convergence}
 \end{figure}
 
@@ -367,13 +372,13 @@ The form of Eq.~\eqref{eq:bao:rtol} is standard. Requiring that a systematic shi
 \label{eq:bao:arcrit}
 b[\hat{p}_i] \;\le\; \sigma[\hat{p}_i]
 \end{equation}
-for the parameters of interest, and use the ratio $b/\sigma$ as the metric throughout \cite{amara2008}. Equation~\eqref{eq:bao:rtol} is that criterion with an explicit slack factor, and \emph{this work adopts $\zeta = 1$}, which recovers it exactly. The threshold is therefore the community's rather than this work's, and the only question a reader has to weigh is whether the measurement clears it.
+for the parameters of interest, and use the ratio $b/\sigma$ as the metric throughout \cite{amara2008}. Equation~\eqref{eq:bao:rtol} is that criterion with an explicit slack factor, and \emph{this work adopts $\zeta = 1$} as a conventional, deliberately permissive systematic-budget criterion inspired by that literature.  It is neither a universal community threshold nor a frequentist coverage guarantee.  A collaboration must set $\zeta$ from its complete error budget; the question answered here is whether the measurement clears the stated choice.
 
-It is still worth saying what $\zeta$ means, because a survey may want to set its own. A bias $\Delta$ against a statistical error $\sigma$ inflates the effective error to $\sqrt{\sigma^2+\Delta^2} = \sigma\sqrt{1+\zeta^2}$, so $\zeta$ states how much precision the systematic may cost: $41\%$ at the published $\zeta = 1$, $11.8\%$ at $0.5$, $4.4\%$ at $0.3$, $0.5\%$ at $0.1$. A second reading bounds it from the other side, since DTV is one line in a budget: a survey holding its total systematic below $0.5\sigma$ across $N$ independent terms of comparable size allots each $0.5/\sqrt{N}$ --- $0.289$ at $N = 3$, $0.158$ at $N = 10$. A collaboration with a long systematics list should therefore run tighter than the published criterion, and the framework computes $r_{\text{tol}}(\zeta)$ for whatever value is set; it does not presume to set it. Tightening to $\zeta = 0.3$, three times stricter, moves the binding tolerance from $1.5 \times 10^{-3}$ to $4.5 \times 10^{-4}$.
+It is still worth saying what $\zeta$ means, because a survey may want to set its own. If $\Delta$ is treated as a deterministic bias and $\sigma$ as the standard deviation of the statistical error, their quadratic combination $\sqrt{\sigma^2+\Delta^2}=\sigma\sqrt{1+\zeta^2}$ is the root-mean-square error (RMSE), not a larger statistical uncertainty.  Relative to $\sigma$, that RMSE is larger by $41\%$ at the adopted $\zeta = 1$, $11.8\%$ at $0.5$, $4.4\%$ at $0.3$, and $0.5\%$ at $0.1$. A second reading bounds it from the other side, since DTV is one line in a budget: a survey holding its total systematic below $0.5\sigma$ across $N$ independent terms of comparable size allots each $0.5/\sqrt{N}$ --- $0.289$ at $N = 3$, $0.158$ at $N = 10$. A collaboration with a long systematics list should therefore run tighter than the permissive convention used for this screen, and the framework computes $r_{\text{tol}}(\zeta)$ for whatever value is set; it does not presume to set it. Tightening to $\zeta = 0.3$, three times stricter, moves the binding tolerance from $1.5 \times 10^{-3}$ to $4.5 \times 10^{-4}$.
 
-Neither choice is load-bearing, which is the more useful point. $r_{\text{tol}}$ scales linearly in $\zeta$, and the ordering of policies does not depend on it at all: on channel 33 the pilot proxy leaves $0.0359$ and the best alternative leaves $0.573$, a factor of $16$ apart, so no value of $\zeta$ reorders them. The absolute verdict is likewise robust over a wide range --- the proxy would need $\zeta \ge 24$ to pass and the best alternative $\zeta \ge 382$, so declaring the mask adequate on present evidence requires accepting a bias twenty-four times the statistical error, which no reading of Eq.~\eqref{eq:bao:arcrit} supports. What the choice of $\zeta$ cannot do is change the sign of the answer, in either direction.
+The policy ordering is not load-bearing on this choice. $r_{\text{tol}}$ scales linearly in $\zeta$, while on channel 33 the pilot proxy leaves $0.0359$ and the best alternative leaves $0.573$, a factor of $16$ apart, so no value of $\zeta$ reorders them.  Absolute pass/fail is mathematically different: the proxy would pass only at $\zeta \ge 24$ and the best alternative only at $\zeta \ge 382$.  Thus the failing verdict is unchanged throughout any defensible systematic budget of order unity or smaller, but it is not claimed to be invariant under arbitrarily large $\zeta$.
 
-\textit{A note on two thresholds that are easy to confuse.} This section's $\zeta$ and the detector's $\mu_0$ are unrelated, and only $\mu_0$ is derived. $\mu_0$ is the null center of the coarse statistic, fixed exactly by the quantized weight-bank norms (Section~\ref{sec:param:refs}); it is arithmetic on compile-time constants, carries no free parameter, and answers a question about the instrument --- \emph{is a pilot present in this frame?} $\zeta$ is a requirement a collaboration sets, lives in the Fisher forecast, and answers a question about the science --- \emph{how much bias can the measurement absorb?} The two meet only through the loop this section constructs, in which $\zeta$ fixes $r_{\text{tol}}$, which would fix a per-channel $\eta$, which scales $\mu_0$. Of every threshold in this dissertation, $\mu_0$ is the only one that is not a judgement call.
+\textit{A note on two dimensionless factors that are easy to confuse.} This section's $\zeta$ and the detector's $\mu_0$ are unrelated, and only $\mu_0$ is derived.  The manifest value $\mu_0=2\lVert\mathbf w_0\rVert^2/(\lVert\mathbf w_1\rVert^2+\lVert\mathbf w_2\rVert^2)$ is an exact rational consequence of the quantized weight-bank norms (Section~\ref{sec:param:refs}); under the declared white, isotropic null it is the ratio of expected target and reference powers.  Arithmetic exactness does not make it the exact finite-sample mean of $F$, nor does it establish the empirical null distribution.  $\zeta$, by contrast, is a requirement a collaboration sets in the Fisher forecast and answers a science question --- \emph{how much bias can the measurement absorb?} The two meet only through the loop this section constructs: $\zeta$ fixes $r_{\text{tol}}$, the calibration converts that tolerance into a per-channel multiplier $\eta$, and the implemented decision compares $F$ with $\eta\mu_0$.  Thus $\mu_0$ is a derived scale factor, while $\eta$ and $\zeta$ encode calibrated operating and science-budget choices.
 
 \section{The Forecast-Selected Operating Point}
 \label{sec:bao:thresholds}
@@ -383,7 +388,7 @@ Section~\ref{sec:pipeline:decision} promised that the bootstrap placeholder --- 
 \min_\eta \; \frac{1 + r_{\rm var}(\eta)}{1 - f(\eta)}
 \quad\text{s.t.}\quad r_{\rm sys}(\eta) \le r_{\rm tol}(\alpha_\perp),\ \zeta = 1,
 \]
-with the constraint on the \emph{operable} tier --- the stable dilation tolerance of the channel's own redshift bin --- since that is the requirement a no-delay-filter analysis can meet. The conventions are fixed and few: the fine-stage credit is booked at its measured value ($9.4$--$10.0$~dB across channels, booked as $10$; independently confirmed by the archived row-sum-level Monte Carlo at the deployed geometry, $9.32$--$9.77$~dB at the two fixed false-alarm points --- \verb|tools/measure_fine_gain.py|, evidence under \verb|docs/evidence/fine_gain_mc_2026-08-19|); the kept-frame bound is computed on both floor bases (the product's own null floor, and the stricter $\sigma$-null level a threshold at the null center can actually resolve) and both are reported, a basis disagreement being a finding rather than a nuisance; among near-optimal thresholds within $2\%$ of the minimum cost the \emph{smallest} $\eta$ is selected (equal cost, more margin); and on channels whose $\tau_c$ is refused the result inherits the sidereal-cap bound, which is conservative in one direction only --- a feasible $\eta$ is truly feasible, but the reported optimum may be pessimistic, since a measured $\tau_c$ can only enlarge the feasible set.
+with the constraint on the \emph{operable} tier --- the stable dilation tolerance of the channel's own redshift bin --- since that is the requirement a no-delay-filter analysis can meet. The conventions are fixed and few: the fine-stage credit is booked at its measured channel-analysis value ($9.4$--$10.0$~dB, booked as $10$); separately, the current-geometry row-sum Monte Carlo gives $9.32$--$9.77$~dB at two fixed false-alarm points.  That simulation and its evidence live in \texttt{WVURAIL/pilot-proxy} at commit \texttt{1d74e096}, in \path{tools/measure_fine_gain.py} and \path{docs/evidence/fine_gain_mc_2026-08-19}; it corroborates the scale without being relabelled as the per-channel measurement.  The kept-frame bound is computed on both floor bases (the product's own null floor, and the stricter $\sigma$-null level a threshold at the null center can actually resolve) and both are reported, a basis disagreement being a finding rather than a nuisance; among near-optimal thresholds within $2\%$ of the minimum cost the \emph{smallest} $\eta$ is selected (equal cost, more margin); and on channels whose $\tau_c$ is refused the result inherits the sidereal-cap bound, which is conservative in one direction only --- a feasible $\eta$ is truly feasible, but the reported optimum may be pessimistic, since a measured $\tau_c$ can only enlarge the feasible set.
 
 \begin{table}[t]
 \centering
@@ -451,7 +456,7 @@ The consequence is that several of this section's verdicts are \emph{era} statem
 
 \begin{table}[t]
 \centering
-\caption{The scalar residual chain, term by term, on the first-measured ten channels --- the contiguous ATSC allocations 27--36 spanning $z = 1.336$--$1.592$.  The reported levels are pilot-derived per-coarse-channel screening values transferred across the $15.36$-bin allocation by the model of Section~\ref{sec:bao:footprint}; they are not direct measurements in every protected bin. No delay-filter credit is claimed (Section~\ref{sec:bao:chain}). ``cap'' marks channels where the correlation-time estimator refused and the chain is evaluated at the sidereal-day bound, so their residuals are upper bounds rather than measurements; $\le$ marks every quantity inheriting such a bound. \emph{Null frames} is the population from which the kept-frame floor is measured: channels 27, 30, 35, and 36 have none, and channels 28 and 31 have too few to stand on (6 and 2), so their floors are shown parenthesized as indicative and their masked-policy residuals are bounded or blank rather than substituted (channel 28's parenthesized entries inherit the 6-frame floor). $r_{\text{tol}} = 1.5 \times 10^{-3}$ at the published criterion.}
+\caption{The scalar residual chain, term by term, on the first-measured ten channels --- the contiguous ATSC allocations 27--36 spanning $z = 1.336$--$1.592$.  The reported levels are pilot-derived per-coarse-channel screening values transferred across the $15.36$-bin allocation by the model of Section~\ref{sec:bao:footprint}; they are not direct measurements in every protected bin. No delay-filter credit is claimed (Section~\ref{sec:bao:chain}). ``cap'' marks channels where the correlation-time estimator refused and the chain is evaluated at the sidereal-day bound, so their residuals are upper bounds rather than measurements; $\le$ marks every quantity inheriting such a bound. \emph{Null frames} is the population from which the kept-frame floor is measured: channels 27, 30, 35, and 36 have none, and channels 28 and 31 have too few to stand on (6 and 2), so their floors are shown parenthesized as indicative and their masked-policy residuals are bounded or blank rather than substituted (channel 28's parenthesized entries inherit the 6-frame floor). $r_{\text{tol}} = 1.5 \times 10^{-3}$ at the adopted $\zeta=1$ convention.}
 \label{tab:bao:channels}
 \scriptsize
 \setlength{\tabcolsep}{1.85pt}
@@ -495,7 +500,7 @@ Channel 36 is the exception and should be said plainly: it would need a floor be
 
 Five limits of the trawl archive are structural, and stating them fixes the requirements of the closing campaign. First, \emph{cadence}: its snapshots cap block statistics at $1.38$~s, so the incumbent comparison at its native few-second cadence, and any $\tau_c$ between seconds and the acquisition spacing, are unmeasurable here. Second, \emph{null populations}: four of ten channels have none and two more have too few frames to stand on, and without a transmitter-off epoch --- or the fine stage's per-frame null, which the coarse rule does not provide --- their masked residual cannot be measured at all. Third, \emph{refusals are load-bearing}: seven of ten correlation times are refused, and on channels 29 and 34 those refusals are worth three orders of magnitude in the verdict; a framework that extrapolated $\tau_c$ would have produced confident answers the data cannot support. Fourth, \emph{footprint}: the products record only the monitored bin, so the proxy's transfer across the allocation is assumed rather than verified (Section~\ref{sec:bao:footprint}). Fifth, \emph{coverage}: at the time this analysis was frozen, ten of 23 channels were measured, and the spread already visible --- on-air shelves from $-43.6$~dB to $+0.2$~dB, ground filters from $4.6$ to $22.8$~dB, intra-day shares from $0.2\%$ to $31.9\%$, null populations from zero to $8119$ frames, correlation times from $34$ minutes to unmeasurable --- said the thirteen still unmeasured at the freeze would not be interpolations of these ten.  The August 2026 completion of the thirteen lower-band allocations (Section~\ref{sec:bao:lowerband}) confirms that prediction directly, with two dated sign-offs, an epoch-split persistent carrier, a collection-curtailed archive, and a band-edge pair of episodic faint carriers among them.
 
-The section closes where it began.  Under the present scalar-transfer and per-bin forecast model, the archive supports a two-tier screening result.  With the bootstrap decision rule and no delay-filter credit, no evaluated policy clears the binding growth-rate tolerance on a channel with a defensible floor, although the pilot proxy gives the smallest residual of the compared policies.  Under the looser dilation tier, channels 32, 33, and the early epoch of 35 are forecast-feasible candidates; the $110$~ns world also places the growth-rate screen inside tolerance on those candidates.  Five channels are excision candidates, and channels 29 and 34 remain controlled by cadence measurements.  At the freeze underlying this first-block result, thirteen allocations had no archive products; Section~\ref{sec:bao:lowerband} reports their subsequent August 2026 completion.  None of the positive classes becomes a final recovery verdict until the across-allocation, visibility-transfer, residual-template, combined-estimator, and blocked-holdout gates pass.  What is complete here is the auditable machinery: the tolerance is computable, policy costs and residual screens are reported separately, refusal states remain visible, and every remaining measurement is tied to a channel, epoch, and decision it can change.
+The first-block analysis closes where it began.  Under the present scalar-transfer and per-bin forecast model, the ten channels then available support a two-tier \emph{screening} result.  With the bootstrap decision rule and no delay-filter credit, no evaluated policy clears the binding growth-rate tolerance on a channel with a defensible floor, although the pilot proxy gives the smallest residual of the compared policies.  Under the looser dilation tier, channels 32, 33, and the early epoch of 35 are forecast-feasible candidates; the $110$~ns world also places the growth-rate screen inside tolerance on those candidates.  Within that ten-channel freeze, five channels were science-side excision candidates and channels 29 and 34 remained cadence-controlled.  Those science statuses are not the operational keep/discard policy: the latter adds reversibility and monitoring considerations and is stated only after the completed band is evaluated below.  At the time of this intermediate freeze the lower thirteen products were pending; they are now complete and are reported in Section~\ref{sec:bao:lowerband}, so ``unmeasured lower band'' is historical provenance rather than the present state of the archive.  None of the positive screening classes becomes a final recovery verdict until the across-allocation, visibility-transfer, residual-template, combined-estimator, and blocked-holdout gates pass.  What is complete here is the auditable machinery: the tolerance is computable, policy costs and residual screens are reported separately, refusal states remain visible, and every remaining measurement is tied to a channel, epoch, and decision it can change.
 
 
 \section{The Lower Band, Measured: the August 2026 Completion}
@@ -542,7 +547,7 @@ ch\,19 & $500.391$ & $5{,}447$ & $91.8\%$ & sign-off December 2024 & cap \\
 ch\,20 & $506.250$ & $8{,}781$ & $99.8\%$ & step down September 2022 & $167$~min \\
 ch\,21 & $512.500$ & $8{,}959$ & $59.7\%$ & trace & cap \\
 ch\,22 & $518.359$ & $8{,}711$ & $100.0\%$ & persistent, steady ($\approx$$5.4$~dB excess) & cap \\
-ch\,23 & $524.219$ & $8{,}585$ & $88.7\%$ & trace & $5$~min \\
+ch\,23 & $524.219$ & $8{,}585$ & $88.7\%$ & trace & $\le 5$~min \\
 ch\,24 & $530.469$ & $1{,}767$ & $100.0\%$ & persistent; collection-curtailed archive & $62$~min \\
 ch\,25 & $536.328$ & $8{,}762$ & $88.9\%$ & trace & cap \\
 ch\,26 & $542.188$ & $5{,}754$ & $95.3\%$ & sign-off April 2023 & cap \\
@@ -564,28 +569,31 @@ faint carriers at the synthesized pilot (the completed channel-14 carrier
 lands exactly at synthesis) that pin the survey rule ($94.8\%$ and $99.9\%$
 masked) while releasing three-quarters of current-epoch frames at the
 working threshold --- an episodic, propagation-modulated occupancy that is
-neither the trace family nor the live-carrier family.  Three structure
-functions return measured or bounded correlation times
-($62$, $167$, and $5$ minutes on channels 24, 20, and 23); the rest refuse.
+neither the trace family nor the live-carrier family.  Two structure
+functions return measured correlation times ($62$ and $167$ minutes on
+channels 24 and 20), while channel 23 returns the upper bound
+$\tau_c\le5$ minutes; the rest refuse.
 Figure~\ref{fig:bao:lowerpsd} shows the block's spectral face in the same
 construction as Figure~\ref{fig:census:psd}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[height=0.78\textheight,width=0.98\linewidth,keepaspectratio]{figs/fig_census_psd_lower.pdf}
+\includegraphics[height=0.73\textheight,width=0.98\linewidth,keepaspectratio]{figs/fig_census_psd_lower.pdf}
 \caption[Archive-averaged spectra around the lower-band pilots]{The lower
 band's spectral face at the August 2026 snapshot: archive-averaged spectrum
 within $\pm 15$~kHz of each synthesized pilot, from the products' stored
 integrated spectra, in the same construction as
 Figure~\ref{fig:census:psd} (dB relative to the channel median; shaded fine
-span $\pm 1.526$~kHz; dashed references $\pm 6.1$~kHz).  Every dominant
-carrier in the block sits inside the fine span,
-within $0.6$~kHz of synthesis --- no lower-band channel repeats channel 33's
+span $\pm 1.526$~kHz; dashed references $\pm 6.1$~kHz).  The dominant peak in
+each \emph{archive-averaged integrated spectrum} sits inside the fine span and
+within $0.6$~kHz of synthesis --- no lower-band average repeats channel 33's
 off-nominal displacement --- with archive-average lobes from $5$~dB (channel
 21) to $37$~dB (channel 24) over the channel median.  The sign-off channels
 (19, 20, 26) retain strong average lobes because the archive average is
-dominated by their transmitter-on epochs.  The references sit in clean
-territory on every channel.}
+dominated by their transmitter-on epochs.  This peak location is not the same
+estimand as a channel--epoch on-minus-off anchor; those calibrated anchors can
+lie farther from synthesis and are reported only from their authoritative
+export.  The references sit in clean territory on every channel.}
 \label{fig:bao:lowerpsd}
 \end{figure}
 
@@ -609,15 +617,20 @@ masked-policy anchor now carry a measured one.
 \emph{The archive-average masked fraction is an era artifact on most of the
 band.}  Because the products store the decision statistic rather than a mask
 bit (Section~\ref{sec:survey:products}), any threshold can be re-evaluated
-exactly, post hoc, on any epoch.  Restricting to the current epoch --- every
-month after the last detected transition, January 2025 onward --- and
-rethresholding at $F > 1.4\,\mu_0$ collapses the masked fractions of every
-channel without a live carrier to between $1.4\%$ and $14.8\%$ (the
+exactly, post hoc, on any observed epoch.  The most recent comparison is a
+\emph{current/latest-observed composite}: it uses every month from January
+2025 onward where those captures exist, but channel 30 has no captures after
+September 2023 and therefore contributes only its latest observed,
+high-occupancy state.  It is not evidence about channel 30's post-2023
+transmitter state.  On that declared basis, rethresholding at
+$F > 1.4\,\mu_0$ collapses the masked fractions of every channel without a
+live carrier to between $1.4\%$ and $14.8\%$ (the
 propagation-fed exceptions --- the burst-type channel 36 and the band-edge
 pair 14--15, whose faint carriers ride episodic enhancements --- settle at
 $33.7\%$, $24.8\%$, and $26.9\%$), while the live carriers (17, 22, 24, and
-the first-measured
-block's 30, 31, 35) remain at $98$--$100\%$: across the seventeen
+the first-measured block's 31 and 35) remain at $98$--$100\%$; channel 30's
+latest observed state also remains in that range, but its present state is
+unknown.  Across the seventeen
 no-live-carrier channels of the complete 23-channel set, the surviving
 fraction
 of current-epoch valid frames rises from $10.7\%$ under the survey rule to
@@ -625,7 +638,7 @@ $89.6\%$ at $\eta = 1.4$, with the retained frames carrying at most
 $+1.46$~dB of per-frame pilot excess by construction.  Priced
 through the released per-bin forecast bank under the cost convention of
 Section~\ref{sec:bao:cost} --- masking plus the stochastic folding only, no
-bias constraint, no delay credit, unity transfer --- the current-epoch survey
+bias constraint, no delay credit, unity transfer --- the current/latest-observed survey
 rule costs $\times 1.22$ at survey level and $\times 5.4$ in the $z =
 1.40$--$1.50$ bin, while the $\eta = 1.4$ rethreshold costs $\times 1.10$ and
 $\times 1.59$; extended over the full archive the survey rule again prices the
@@ -692,8 +705,9 @@ channels are the channel-29 family made plural: intra-day-heavy shares
 hostage to refused correlation times, and thermal-end residuals that pass
 tolerance trivially --- the bracket, not the shelf, is their entire verdict.
 Channel 21 is the family's superlative case and the survey's new tantalizing
-channel: the \emph{largest null population in the entire archive} ($14{,}647$
-frames, surpassing channel 29's $8{,}119$), a well-measured $-43.2$~dB floor,
+channel: the largest detection-defined null population among channels that do
+not use a transmitter-off epoch ($14{,}647$ frames, surpassing channel 29's
+$8{,}119$), a well-measured $-43.2$~dB floor,
 and $\le 22{,}100\times$ at the cap that a minutes-scale $\tau_c$ would
 collapse by three orders of magnitude; it joins channel 29 at the head of the
 cadence priority.  The band-edge pair splits across the same taxonomy:
@@ -739,13 +753,16 @@ its head.
 
 The threshold this section evaluates is the third step of a four-step
 development, and stating the ladder fixes what each step required.  Step one
-is the idealized rule $F > 1$, which takes the ratio statistic's null mean as
-unity.  Step two is the deployed conservative rule $F > \mu_0$, where $\mu_0$
-is each channel's \emph{exact} null mean under its calibrated configuration
---- exact in its integer arithmetic, but calibrated per channel from the
-survey's own results, which is why the measured values straddle unity by up
-to $\pm 1.1\%$ ($0.98533$--$1.01111$ across the 23 channels).  That
-calibration is not cosmetic: at the current-epoch operating point the
+is the idealized rule $F > 1$, which uses unity as the equal-norm
+ratio-of-expected-powers null scale.  It does not assert that the random
+finite-sample ratio has mean exactly one.  Step two is the deployed
+conservative rule $F > \mu_0$, where $\mu_0$
+is each channel's \emph{exact rational weight-norm correction}, computed from
+the integer norms in the fixed-point weight-bank manifest rather than fitted
+to the survey results.  Across the 23 configured channels it ranges from
+$0.98533$ to $1.01111$ (a $-1.47\%$ to $+1.11\%$ displacement from unity).
+The correction is exact in the integer comparison even though its decimal
+rendering is rounded here.  That correction is not cosmetic: at the current-epoch operating point the
 step-one and step-two masked fractions differ by tens of percentage points on
 quiet channels (channel 23: $68.7\%$ versus $92.6\%$; channel 21: $97.8\%$
 versus $69.6\%$), because $\eta = 1$ thresholds sit in the bulk of the null
@@ -754,7 +771,7 @@ materially --- the same property that prices the step-two rule at nearly
 half of verified-quiet time (Section~\ref{sec:pipeline:decision}).  Step three is the working threshold $F > \eta\,\mu_0$ with the
 band-wide $\eta = 1.4$, selected from the threshold sweeps priced through the
 forecast bank; it caps kept-frame pilot excess at
-$\hat{\rho} = F/\mu_0 - 1 < 0.4$ ($+1.46$~dB) by construction.  Step four ---
+$\hat{\rho} = F/\mu_0 - 1 \le 0.4$ ($+1.46$~dB) by construction.  Step four ---
 a per-channel excess threshold $\hat{\rho}$ selected from each channel's own
 residual chain against the tolerance --- is the per-epoch evaluation this
 chapter leaves pending.
@@ -779,16 +796,21 @@ evaluated on; the blocked-holdout gate is what converts it from an in-sample
 choice into a defensible operating point.  \emph{Fifth}, it is a coarse-rule
 threshold; the fine designated-window stage's measured $9.4$--$10.0$~dB
 advantage would move every operating point if adopted.  \emph{Sixth}, its
-validity is epoch-scoped: $\mu_0$ and the anchors behind it are calibration
-products of a transmitter era, the window rule (every month after the last
-detected transition) is part of the threshold's definition, and a new
-transition anywhere in the band resets it --- which is one more reason the
-monitoring taps below stay on.
+empirical validation is epoch-scoped.  The norm correction $\mu_0$ itself is
+fixed by the weight bank and does not move when a transmitter changes.  What
+must be re-estimated after an epoch transition are the fine-axis carrier
+anchor, the null/bulk population, and the evidence supporting a chosen
+$\eta$; the window rule (every observed month after the last detected
+transition) is part of that validation definition.  A new transition anywhere
+in the band therefore resets the empirical operating-point evidence, not the
+weight-norm arithmetic --- which is one more reason the monitoring taps below
+stay on.
 
 \subsection*{The per-channel disposition}
 
 The survey's operational deliverable to the collaboration is a disposition
-for each of the 354 CHIME frequency channels spanning the ATSC~1.0 range
+for each of the 354 CHIME coarse channels in the declared inclusive edge-bin
+range \texttt{freq\_id}=492--845 associated with the ATSC~1.0 allocation
 ($470$--$608$~MHz).  This is a \emph{policy recommendation at screening
 level}, layered on the evidence of this chapter without altering it, under
 two rules adopted for the handover: allocations without a live carrier keep
@@ -813,7 +835,14 @@ DTV ch & CHIME channels & DTV ch & CHIME channels \\
 \end{center}
 
 \noindent with the six pilot taps (freq\_ids 521, 583, 598, 690, 721, 798)
-excluded from the discard ranges.  Channel 36 is kept-and-masked at the
+excluded from the discard ranges.  The handover's \emph{policy status} and
+the residual chain's \emph{science status} are intentionally separate
+columns of judgment.  For example, channel 30 remains a science-side excision
+candidate on its latest observed, near-fully-occupied archive, and the policy
+discards its interior conservatively; neither statement asserts that a live
+carrier has been measured there after collection ended in September 2023.
+Resumed monitoring is required before that policy can be called
+current-state evidence.  Channel 36 is kept-and-masked at the
 working threshold under an inclusive-for-now rule --- its excision case rests
 on the unverified coherence cap rather than a live carrier, two-thirds of its
 current-epoch frames survive the threshold, and keeping them costs $0.55\%$

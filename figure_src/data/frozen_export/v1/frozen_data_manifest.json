@@ -62,6 +62,7 @@
     "pilot_proxy": {
       "commit": "62ae33ba9e1b303ea7432730f2c09fb59787946c",
       "complete": false,
+      "complete_scope": "PilotProxy dissertation-export v1 tabular interface only; this flag does not describe all-23-channel CANFAR archive coverage",
       "repository": "WVURAIL/pilot-proxy",
       "schema": {
         "name": "pilot-proxy-dissertation-export",

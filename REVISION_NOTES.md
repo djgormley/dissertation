@@ -1,5 +1,55 @@
 # Revision notes
 
+## 2026-08-20 — completed-archive integration and correctness cleanup (v13)
+
+The attached CANFAR bundle was independently inventoried before its results
+were promoted in the dissertation.  All 23 allocation products load and pass
+their declared structural and exact-arithmetic checks: 9,214 distinct source
+events were probed, 8,983 contribute valid frames, and the products contain
+750,461 frames (750,457 denominator-valid and four explicit all-zero invalid
+frames) plus three quarantined raw objects.  The audit also found 178
+denominator-valid rows in eight events whose mean packed-int4 power is exactly
+128, the representation ceiling.  Those rows are now a named release blocker,
+not silently treated as sky data; their immutable identifiers and the required
+reason-coded disposition are recorded in
+`CANFAR_PRODUCT_HEALTH_AUDIT.json`.
+
+- Chapters 1, 2, 3, 7, 8, 9, and 11 now describe the completed all-23 archive
+  consistently, distinguish archive-average spectral peaks from per-epoch
+  anchors, and separate historical ten-channel evidence from the current
+  screening result.  Chapter 1 adds five explicit research questions and an
+  evidence map.
+- The obsolete $f_s/2$ quarterly cost record is retained only as historical
+  provenance; the all-23 current/latest-observed calculation governs the
+  current Chapter 9 cost claims.  Channel 30 is explicitly latest-observed,
+  not measured after collection ended in September 2023.
+- Mathematical corrections include the coarse integer cross-product's removed
+  factor of two, the conditional assumptions behind the central/noncentral
+  $F$ models, a bounded-influence statement for the order statistic, the
+  zero-dB reference-count asymptote, the Fisher-bias block inverse and sign
+  convention, and the distinction between RMSE and statistical uncertainty.
+  The norm ratio $\mu_0$ is now consistently a static, exact rational scale
+  under the declared white/isotropic null model, not an empirically calibrated
+  finite-sample mean.
+- The $K=128$ window claim is limited to configured in-span targets.  The
+  stronger out-of-span channel-33 carrier is now a configuration sentinel,
+  requiring an alternate target/weight bank or an unsupported-channel status.
+  Pilot-to-shelf contrast is quoted only in a declared finite bandwidth.
+- The operational footprint now distinguishes the continuous 353.28-channel
+  bandwidth ratio from the inclusive 354-bin `freq_id=492--845` handover.
+  The corresponding vector figure was regenerated.
+- The archive checklist now makes the current-geometry paired synthetic study
+  mandatory.  It separates ideal-to-float model mismatch from input,
+  coefficient, transform, and decision-arithmetic losses and requires
+  fixed-$P_{\rm fa}$ detection curves, paired uncertainty, offset sweeps,
+  clipping/overflow accounting, and full-pipeline bit checks.
+- CI now pins both upstream repositories and consumes PilotProxy's current
+  `dissertation_summary_v3.json`; the older v2 snapshot is intentionally
+  historical and contains the superseded channel-33 population comparison.
+- The release manifest now covers every tracked repository path plus the new
+  product-health audit (excluding only the manifest itself), so source,
+  workflow, frozen-data, figure, and compiled-PDF changes are checked together.
+
 ## 2026-08-19 — worked-example bridge retired (v12)
 
 The two worked-example frames were never lost: ch05's own prose identifies
@@ -41,7 +91,8 @@ basis ("when in doubt, rebuild").
   floor parenthesized per the ch28 convention.
 - Headline: every one of the eleven screening statuses survives the chain
   unchanged. Channel 21 emerges as the survey's best-floored coherence
-  hostage (14,647 null frames, the archive's largest population; −43.2 dB
+  hostage (14,647 detection-defined null frames, the largest population not
+  constructed from a transmitter-off epoch; −43.2 dB
   floor; ≤22,100× at the cap) and joins channel 29 at the head of the
   cadence priority (ch11 near program and checklist item C updated).
   Channel 23 is the inverse case (τ ≤ 5 min bounded, floor unmeasured; its

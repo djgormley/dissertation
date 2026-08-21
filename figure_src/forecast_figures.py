@@ -42,7 +42,7 @@ def fig_bao_footprint() -> Path:
         p=chleft+177/572
         ax.add_patch(Rectangle((p-bw/2,0),bw,.66,facecolor=style.MODEL,edgecolor="none"))
     for x in ch_edges: ax.axvline(x,color="white",lw=.6)
-    ax.text(470,.91,r"23 monitored bins $\longrightarrow$ 353 covered (6.5\% monitored)",fontsize=8.0)
+    ax.text(470,.91,r"23 monitored bins $\longrightarrow$ 354 covered (6.5\% monitored)",fontsize=8.0)
     ax.set_xlim(468,610); ax.set_ylim(-.05,1.05); ax.set_yticks([]); ax.set_xlabel(r"Frequency [MHz]")
     style.clean_axes(ax,grid=None); style.panel_label(ax,"b"); ax.set_title(r"the same geometry across the DTV band",loc="left",pad=4)
     handles=[Rectangle((0,0),1,1,facecolor=style.MODEL,label=r"monitored pilot-containing bin"),

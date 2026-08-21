@@ -82,6 +82,8 @@ bridges rather than being silently synthesized.
 - `figure_src/tikz/figure_styles.tikz` — matching TikZ conventions
 - `figure_src/README.md` — figure editing and export-import workflow
 - `requirements-figures.txt` — Python dependencies
+- `CANFAR_PRODUCT_HEALTH_AUDIT.json` — machine-readable all-23 product-health
+  audit, including validity, saturation/fill, and fine-designation findings
 - `MANIFEST.sha256` — hashes for the complete tracked release boundary
 - `scripts/release_manifest.py` — release-manifest generator and verifier
 - `evidence/legacy_projects/pilot_informed_detector_article/provenance/` — the
@@ -96,11 +98,13 @@ same inputs and toolchain produce byte-for-byte reproducible PDFs.
 
 Four CSV tables remain in the dissertation's frozen interface. The two census
 tables are current PilotProxy exports; the two introductory wiggle tables are
-explicit external-model/artwork bridges marked `replacement_required`. Other
-data-backed active figures are vendored as vector PDFs generated in the
-repository that owns their scientific inputs, with the producing commit and
-provenance recorded in `figure_src/figure_manifest.csv`. Their larger source
-tables are intentionally not duplicated in this bundle.
+explicit external-model/artwork bridges marked `replacement_required`. The
+reference PDF, recovery provenance, checksums, and limitation statement are
+retained so that either bridge can later be replaced without redesigning its
+figure. Other data-backed active figures are vendored as vector PDFs generated
+in the repository that owns their scientific inputs, with the producing commit
+and provenance recorded in `figure_src/figure_manifest.csv`. Their larger
+source tables are intentionally not duplicated in this bundle.
 
 The two frozen census tables preserve the upstream
 `dtv_transmitter_census_v1` schema and each row's `evidence_status`. The
@@ -124,12 +128,20 @@ than observed carriers.
 ## Evidence status
 
 The exact-arithmetic detector and its exercised implementation contracts are the
-strongest completed part of the work. All 23 ATSC allocations (channels 14--36)
-now have survey-, epoch-, and residual-chain products; the first-measured
-ten-channel block retains the deepest calibration analysis. These remain
-screening results until the pilot-to-allocation transfer, visibility-domain
-transfer, combined-bin Fisher estimator, residual-template bank, and per-epoch
-holdout tests are completed.
+strongest completed part of the work. The offline CANFAR trawl now covers all
+23 ATSC allocations (channels 14--36), including channels 14 and 15, and the
+dissertation carries an all-band archive and residual-chain screening result;
+the first-measured ten-channel block retains the deepest calibration analysis.
+Coverage is not the same as a final science release: the release must first
+resolve the fill/saturation-like and all-zero frames identified by the product
+audit, rebuild science products under the corrected data-health gate, and
+recompute the fine designated-window diagnostics from the retained 256-bin
+arrays rather than using the archived bin-0 ancillary CFAR fields. The
+all-23-channel results remain screening results until the current-geometry
+synthetic sensitivity/fixed-point-loss study, pilot-to-allocation transfer,
+visibility-domain transfer, combined-bin Fisher estimator, residual-template
+bank, and per-epoch holdout tests are completed or the affected claims are
+explicitly kept conditional.
 
 ## Release-bundle boundary
 
