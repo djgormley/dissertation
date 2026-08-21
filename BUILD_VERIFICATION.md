@@ -38,9 +38,27 @@ result:              67/67 checks passed; baseline 0
 Both candidate pin sets were tested against the merged text and both pass
 67/67. The pinned pair above was chosen because each commit is reachable from
 its upstream `master`, so neither can be lost to a deleted or rebased feature
-branch. The newer `bao-noise-tolerance@db89d626` and `pilot-proxy@2cf4d8cd`
-still appear as figure provenance in `figure_src/figure_manifest.csv`; those
-commits are not yet on their upstream default branches.
+branch.
+
+Every upstream commit cited as figure provenance in
+`figure_src/figure_manifest.csv` is now reachable from its upstream `master`,
+so each provenance reference resolves against the default branch:
+
+```text
+bao-noise-tolerance@d56d3251  on master
+bao-noise-tolerance@99a48ef1  on master
+bao-noise-tolerance@db89d626  on master (merged as part of codex/forecast-completion)
+pilot-proxy@b533632b          on master
+pilot-proxy@639d03ff          on master
+pilot-proxy@2cf4d8cd          on master (merged as pull request #5)
+```
+
+`pilot-proxy@2cf4d8cd` is the commit behind `evidence/canfar_archive_health_v1/`.
+Its branch had been closed unmerged and deleted during an unrelated cleanup,
+which left the citation resolvable only through the pull request head. The pull
+request was reopened and merged with a merge commit, preserving the cited SHA
+rather than rewriting it, so the archive-health evidence is now attributed to
+work that is on the upstream default branch.
 
 The vendored-evidence audit passes 676 checks across 12 BAO artifacts, four
 CANFAR core files, ten dissertation data products, three archive result PDFs,
