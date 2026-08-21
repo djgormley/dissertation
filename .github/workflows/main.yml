@@ -3,9 +3,10 @@
 # Drop this file at .github/workflows/number-gate.yml in the dissertation
 # repository. On every push/PR it checks out bao-noise-tolerance (for the
 # gate script and out/*.csv) and the pilot-proxy provenance snapshot, then
-# runs the gate against dissertation.tex + chapters/, scanning the frozen
-# figure data for figure-borne numbers. The checker is stdlib-only, so no
-# pip install step is needed.
+# runs the historical 67/67 number gate against dissertation.tex + chapters/,
+# scanning the frozen figure data for figure-borne numbers. It also verifies
+# the immutable vendored evidence releases. Both checkers are stdlib-only, so
+# no pip install step is needed.
 #
 # If WVURAIL/bao-noise-tolerance or WVURAIL/pilot-proxy are private, add
 #   token: ${{ secrets.GH_PAT }}
@@ -25,7 +26,7 @@ permissions:
 
 jobs:
   gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out dissertation
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -73,3 +74,6 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_*.py'
           python scripts/release_manifest.py
+
+      - name: Verify vendored evidence releases
+        run: python -B scripts/verify_vendored_evidence.py

@@ -1,0 +1,1962 @@
+{
+  "bao_policy_case": {
+    "channel": 33,
+    "correlation_time_limit_minutes": 5.0,
+    "policies": [
+      {
+        "evidence_state": "measured+modeled",
+        "label": "keep everything",
+        "note": "Incurs no masking penalty but leaves a large residual; evaluated on the same acquisitions>=8 population as the other policies.",
+        "policy_key": "keep_everything",
+        "residual_multiple": 1566,
+        "time_multiple": 3.35
+      },
+      {
+        "evidence_state": "measured+modeled",
+        "label": "MAD 1.8x (incumbent)",
+        "note": "Incumbent time-domain policy under the current comparison.",
+        "policy_key": "mad_1p8",
+        "residual_multiple": 1587,
+        "time_multiple": 3.6
+      },
+      {
+        "evidence_state": "measured+modeled",
+        "label": "spectral kurtosis (incumbent)",
+        "note": "Incumbent higher-order-statistic policy under the current comparison.",
+        "policy_key": "spectral_kurtosis",
+        "residual_multiple": 382,
+        "time_multiple": 1.9
+      },
+      {
+        "evidence_state": "measured+modeled",
+        "label": "pilot proxy",
+        "note": "Best of the compared keep-and-mask policies, but still above the stated bias tolerance.",
+        "policy_key": "pilot_proxy",
+        "residual_multiple": 24,
+        "time_multiple": 3.4
+      }
+    ],
+    "residual_tolerance": 0.0015
+  },
+  "channel_statuses": [
+    {
+      "chain_rows": [
+        {
+          "channel": "14",
+          "epoch": "full",
+          "floor_db": "-48.81",
+          "floor_thin": "False",
+          "ground_filter_db": "2.7",
+          "health_excluded_frames": "7",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "35023",
+          "intra_share_pct": "52.75",
+          "masked_pct": "94.76",
+          "n_null": "1151",
+          "on_shelf_db": "-38.38",
+          "r_keep": "157.5",
+          "r_proxy": "14.25",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "9500.0"
+        }
+      ],
+      "channel": 14,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 4,
+          "measured_narrow_line_anchor": 29
+        },
+        "health_included_frames_falling_back_to_predicted": 1232,
+        "health_included_frames_using_measured_anchor": 33791,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 0,
+          "candidate_minus_predicted_circular_bins": -1,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 3
+        }
+      },
+      "health": {
+        "excluded_frames": 7,
+        "included_frames": 35023,
+        "stored_frames": 35030
+      },
+      "note": "Band-edge pair completed 2026-08-19: faint episodic carriers at the synthesized pilot (94.8%/99.9% masked at the survey rule, 25%/27% at the working threshold); chain evaluated: verdicts controlled by refused correlation times; channel 14 carries a measured -48.8 dB floor from 1,151 null frames, channel 15's floor is unmeasured; kept-and-masked under the channel-36 inclusive-for-now rule, flagged pending the coherence measurement. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "keep and mask (coherence unverified)",
+        "chosen": [
+          "kept",
+          0.2482,
+          372.1
+        ],
+        "why": "inclusive-for-now: the excision case here is the unverified coherence cap, not a live carrier - kept and masked at the working threshold, priced at the cap, pending the burst-resolved tau_c measurement"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "15",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "10.1",
+          "health_excluded_frames": "7",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "34213",
+          "intra_share_pct": "9.52",
+          "masked_pct": "99.92",
+          "n_null": "0",
+          "on_shelf_db": "-27.64",
+          "r_keep": "336.5",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 15,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 1,
+          "measured_narrow_line_anchor": 31
+        },
+        "health_included_frames_falling_back_to_predicted": 105,
+        "health_included_frames_using_measured_anchor": 34108,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 254,
+          "candidate_minus_predicted_circular_bins": 18,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1
+        }
+      },
+      "health": {
+        "excluded_frames": 7,
+        "included_frames": 34213,
+        "stored_frames": 34220
+      },
+      "note": "Band-edge pair completed 2026-08-19: faint episodic carriers at the synthesized pilot (94.8%/99.9% masked at the survey rule, 25%/27% at the working threshold); chain evaluated: verdicts controlled by refused correlation times; channel 14 carries a measured -48.8 dB floor from 1,151 null frames, channel 15's floor is unmeasured; kept-and-masked under the channel-36 inclusive-for-now rule, flagged pending the coherence measurement. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "keep and mask (coherence unverified)",
+        "chosen": [
+          "kept",
+          0.2688,
+          306.8
+        ],
+        "why": "inclusive-for-now: the excision case here is the unverified coherence cap, not a live carrier - kept and masked at the working threshold, priced at the cap, pending the burst-resolved tau_c measurement"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "16",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "3.4",
+          "health_excluded_frames": "18",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "36367",
+          "intra_share_pct": "44.29",
+          "masked_pct": "91.59",
+          "n_null": "0",
+          "on_shelf_db": "-41.2",
+          "r_keep": "69.09",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 16,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 7,
+          "measured_narrow_line_anchor": 26
+        },
+        "health_included_frames_falling_back_to_predicted": 3349,
+        "health_included_frames_using_measured_anchor": 33018,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 215,
+          "candidate_minus_predicted_circular_bins": -1,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 3,
+          "persistence_below_minimum": 6
+        }
+      },
+      "health": {
+        "excluded_frames": 18,
+        "included_frames": 36367,
+        "stored_frames": 36385
+      },
+      "note": "Trace-level occupancy with warm-season propagation; chain evaluated: kept-frame floor and correlation time both pending measurement. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0656,
+          0.0
+        ],
+        "why": "at eta=1.4 only 6.6% of current-epoch frames mask (vs 93.9% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "17",
+          "epoch": "full",
+          "floor_db": "-50.12",
+          "floor_thin": "True",
+          "ground_filter_db": "19.9",
+          "health_excluded_frames": "9",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "33190",
+          "intra_share_pct": "0.99",
+          "masked_pct": "99.9",
+          "n_null": "20",
+          "on_shelf_db": "-5.63",
+          "r_keep": "5548.0",
+          "r_proxy": "0.1973",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "131.5"
+        }
+      ],
+      "channel": 17,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 26,
+          "measured_narrow_line_anchor": 2
+        },
+        "health_included_frames_falling_back_to_predicted": 30955,
+        "health_included_frames_using_measured_anchor": 2235,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 215,
+          "candidate_minus_predicted_circular_bins": 20,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [
+            "peak_not_separated_from_off_window_competitor"
+          ],
+          "status": "fallback_predicted_acquisition"
+        },
+        "refusal_reason_counts": {
+          "fewer_than_minimum_usable_health_frames": 1,
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 25
+        }
+      },
+      "health": {
+        "excluded_frames": 9,
+        "included_frames": 33190,
+        "stored_frames": 33199
+      },
+      "note": "Near-continuous occupancy at the survey rule; chain confirms occupancy-pinned excision. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "excise",
+        "chosen": [
+          "excised",
+          1.0,
+          0.0
+        ],
+        "why": "cheapest option at the coherence cap: excise (x1.006); thermal end picks keep dirty (x1.000); bracket disagrees but spread is 0.6% of survey time \u2014 immaterial"
+      },
+      "secondary_status": "",
+      "status": "excision_candidate"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "18",
+          "epoch": "full",
+          "floor_db": "-41.3",
+          "floor_thin": "False",
+          "ground_filter_db": "3.8",
+          "health_excluded_frames": "6",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "38067",
+          "intra_share_pct": "40.57",
+          "masked_pct": "92.36",
+          "n_null": "2789",
+          "on_shelf_db": "-35.56",
+          "r_keep": "231.4",
+          "r_proxy": "61.8",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "41200.0"
+        }
+      ],
+      "channel": 18,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 1,
+          "measured_narrow_line_anchor": 32
+        },
+        "health_included_frames_falling_back_to_predicted": 117,
+        "health_included_frames_using_measured_anchor": 37950,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 175,
+          "candidate_minus_predicted_circular_bins": 0,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1
+        }
+      },
+      "health": {
+        "excluded_frames": 6,
+        "included_frames": 38067,
+        "stored_frames": 38073
+      },
+      "note": "Trace-occupancy classification remains provisional. The v1 chain has full-archive kept/null floors for channels 18 and 21, but not for 23 or 25; correlation/floor limitations remain explicit. Channel 21 has the largest health-filtered full-archive null population (14,647 frames). Channel 20 off-epoch is the largest epoch-specific null population (23,666 frames), so the old unqualified 'channel 21 is largest' wording is withdrawn.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.148,
+          0.0
+        ],
+        "why": "at eta=1.4 only 14.8% of current-epoch frames mask (vs 96.9% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "19",
+          "epoch": "off-epoch",
+          "floor_db": "-33.54",
+          "floor_thin": "False",
+          "ground_filter_db": "21.9",
+          "health_excluded_frames": "10",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "21362",
+          "intra_share_pct": "0.63",
+          "masked_pct": "91.8",
+          "n_null": "12742",
+          "on_shelf_db": "-6.82",
+          "r_keep": "2678.0",
+          "r_proxy": "5.704",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "3803.0"
+        },
+        {
+          "channel": "19",
+          "epoch": "full",
+          "floor_db": "-43.69",
+          "floor_thin": "False",
+          "ground_filter_db": "23.1",
+          "health_excluded_frames": "10",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "21362",
+          "intra_share_pct": "0.48",
+          "masked_pct": "91.8",
+          "n_null": "1649",
+          "on_shelf_db": "-36.69",
+          "r_keep": "0.02791",
+          "r_proxy": "0.005559",
+          "tau_capped": "False",
+          "tau_minutes": "19.1",
+          "tau_quality": "measured",
+          "x_over_binding": "3.706"
+        }
+      ],
+      "channel": 19,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "off-epoch|on-epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 9,
+          "measured_narrow_line_anchor": 7
+        },
+        "health_included_frames_falling_back_to_predicted": 14270,
+        "health_included_frames_using_measured_anchor": 7092,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 155,
+          "candidate_minus_predicted_circular_bins": 1,
+          "epoch_key": "2026Q2",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "peak_not_separated_from_off_window_competitor": 6,
+          "persistence_below_minimum": 3
+        }
+      },
+      "health": {
+        "excluded_frames": 10,
+        "included_frames": 21362,
+        "stored_frames": 21372
+      },
+      "note": "Transmitter sign-off measured to the month; off-epoch chain rows evaluated at conservative era floors; verdicts controlled by off-epoch coherence (19, 26) or the kept-frame floor basis (20). Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0142,
+          0.0
+        ],
+        "why": "at eta=1.4 only 1.4% of current-epoch frames mask (vs 86.8% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "excision_candidate",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "20",
+          "epoch": "off-epoch",
+          "floor_db": "-26.05",
+          "floor_thin": "False",
+          "ground_filter_db": "18.4",
+          "health_excluded_frames": "9",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "36727",
+          "intra_share_pct": "1.42",
+          "masked_pct": "99.81",
+          "n_null": "23666",
+          "on_shelf_db": "-18.63",
+          "r_keep": "46.18",
+          "r_proxy": "8.359",
+          "tau_capped": "False",
+          "tau_minutes": "165.2",
+          "tau_quality": "measured",
+          "x_over_binding": "5573.0"
+        },
+        {
+          "channel": "20",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "16.3",
+          "health_excluded_frames": "9",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "36727",
+          "intra_share_pct": "2.26",
+          "masked_pct": "99.81",
+          "n_null": "0",
+          "on_shelf_db": "-29.79",
+          "r_keep": "0.1698",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "5.0",
+          "tau_quality": "bounded_above",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 20,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "off-epoch|on-epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 16,
+          "measured_narrow_line_anchor": 16
+        },
+        "health_included_frames_falling_back_to_predicted": 12469,
+        "health_included_frames_using_measured_anchor": 24258,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 145,
+          "candidate_minus_predicted_circular_bins": 11,
+          "epoch_key": "2026Q2",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 15
+        }
+      },
+      "health": {
+        "excluded_frames": 9,
+        "included_frames": 36727,
+        "stored_frames": 36736
+      },
+      "note": "Transmitter sign-off measured to the month; off-epoch chain rows evaluated at conservative era floors; verdicts controlled by off-epoch coherence (19, 26) or the kept-frame floor basis (20). Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0841,
+          0.0
+        ],
+        "why": "at eta=1.4 only 8.4% of current-epoch frames mask (vs 99.7% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "excision_candidate",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "21",
+          "epoch": "full",
+          "floor_db": "-43.18",
+          "floor_thin": "False",
+          "ground_filter_db": "4.6",
+          "health_excluded_frames": "8",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "38614",
+          "intra_share_pct": "33.37",
+          "masked_pct": "59.66",
+          "n_null": "14647",
+          "on_shelf_db": "-39.11",
+          "r_keep": "84.17",
+          "r_proxy": "32.94",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "21960.0"
+        }
+      ],
+      "channel": 21,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 16,
+          "measured_narrow_line_anchor": 17
+        },
+        "health_included_frames_falling_back_to_predicted": 13473,
+        "health_included_frames_using_measured_anchor": 25141,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 112,
+          "candidate_minus_predicted_circular_bins": -1,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 12,
+          "persistence_below_minimum": 12
+        }
+      },
+      "health": {
+        "excluded_frames": 8,
+        "included_frames": 38614,
+        "stored_frames": 38622
+      },
+      "note": "Trace-occupancy classification remains provisional. The v1 chain has full-archive kept/null floors for channels 18 and 21, but not for 23 or 25; correlation/floor limitations remain explicit. Channel 21 has the largest health-filtered full-archive null population (14,647 frames). Channel 20 off-epoch is the largest epoch-specific null population (23,666 frames), so the old unqualified 'channel 21 is largest' wording is withdrawn.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0453,
+          0.0
+        ],
+        "why": "at eta=1.4 only 4.5% of current-epoch frames mask (vs 69.6% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "22",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "18.8",
+          "health_excluded_frames": "7",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "37959",
+          "intra_share_pct": "1.31",
+          "masked_pct": "100.0",
+          "n_null": "0",
+          "on_shelf_db": "-17.7",
+          "r_keep": "455.9",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 22,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 30,
+          "measured_narrow_line_anchor": 2
+        },
+        "health_included_frames_falling_back_to_predicted": 32489,
+        "health_included_frames_using_measured_anchor": 5470,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 104,
+          "candidate_minus_predicted_circular_bins": 11,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [
+            "peak_not_separated_from_off_window_competitor"
+          ],
+          "status": "fallback_predicted_acquisition"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 29
+        }
+      },
+      "health": {
+        "excluded_frames": 7,
+        "included_frames": 37959,
+        "stored_frames": 37966
+      },
+      "note": "Under the v1 gate, no health-included frame survives the stored mask as a kept/null calibration row. The conservative policy is excision pending new clean/off data or an independently justified synthetic floor; old language implying an empirical chain floor is withdrawn.",
+      "policy": {
+        "action": "excise",
+        "chosen": [
+          "excised",
+          1.0,
+          0.0
+        ],
+        "why": "conservative health-gate decision: every frame kept by the stored coarse rule was a v1-excluded full-scale artifact, so no health-included kept/null frame remains to calibrate a residual floor or threshold sweep; excise pending new clean or transmitter-off calibration data"
+      },
+      "secondary_status": "",
+      "status": "excision_candidate"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "23",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "3.5",
+          "health_excluded_frames": "7",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "37675",
+          "intra_share_pct": "43.25",
+          "masked_pct": "88.71",
+          "n_null": "0",
+          "on_shelf_db": "-37.07",
+          "r_keep": "0.6081",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "5.0",
+          "tau_quality": "bounded_above",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 23,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 22,
+          "measured_narrow_line_anchor": 9
+        },
+        "health_included_frames_falling_back_to_predicted": 27892,
+        "health_included_frames_using_measured_anchor": 9783,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 102,
+          "candidate_minus_predicted_circular_bins": 30,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [
+            "candidate_at_acquisition_edge_with_stronger_external_sentinel"
+          ],
+          "status": "fallback_predicted_acquisition"
+        },
+        "refusal_reason_counts": {
+          "candidate_at_acquisition_edge_with_stronger_external_sentinel": 5,
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 14,
+          "persistence_below_minimum": 16
+        }
+      },
+      "health": {
+        "excluded_frames": 7,
+        "included_frames": 37675,
+        "stored_frames": 37682
+      },
+      "note": "Trace-occupancy classification remains provisional. The v1 chain has full-archive kept/null floors for channels 18 and 21, but not for 23 or 25; correlation/floor limitations remain explicit. Channel 21 has the largest health-filtered full-archive null population (14,647 frames). Channel 20 off-epoch is the largest epoch-specific null population (23,666 frames), so the old unqualified 'channel 21 is largest' wording is withdrawn.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.1009,
+          0.0
+        ],
+        "why": "at eta=1.4 only 10.1% of current-epoch frames mask (vs 92.6% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "24",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "23.5",
+          "health_excluded_frames": "2",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "10152",
+          "intra_share_pct": "0.33",
+          "masked_pct": "100.0",
+          "n_null": "0",
+          "on_shelf_db": "-1.73",
+          "r_keep": "196.7",
+          "r_proxy": "",
+          "tau_capped": "False",
+          "tau_minutes": "62.2",
+          "tau_quality": "measured",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 24,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 13
+        },
+        "health_included_frames_falling_back_to_predicted": 10152,
+        "health_included_frames_using_measured_anchor": 0,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 66,
+          "candidate_minus_predicted_circular_bins": 14,
+          "epoch_key": "2026Q2",
+          "refusal_reasons": [
+            "peak_not_separated_from_off_window_competitor"
+          ],
+          "status": "fallback_predicted_acquisition"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 12
+        }
+      },
+      "health": {
+        "excluded_frames": 2,
+        "included_frames": 10152,
+        "stored_frames": 10154
+      },
+      "note": "Under the v1 gate, no health-included frame survives the stored mask as a kept/null calibration row. The conservative policy is excision pending new clean/off data or an independently justified synthetic floor; old language implying an empirical chain floor is withdrawn.",
+      "policy": {
+        "action": "excise",
+        "chosen": [
+          "excised",
+          1.0,
+          0.0
+        ],
+        "why": "conservative health-gate decision: every frame kept by the stored coarse rule was a v1-excluded full-scale artifact, so no health-included kept/null frame remains to calibrate a residual floor or threshold sweep; excise pending new clean or transmitter-off calibration data"
+      },
+      "secondary_status": "",
+      "status": "excision_candidate"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "25",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "3.5",
+          "health_excluded_frames": "24",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "38257",
+          "intra_share_pct": "42.63",
+          "masked_pct": "88.95",
+          "n_null": "0",
+          "on_shelf_db": "-40.46",
+          "r_keep": "78.72",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 25,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 12,
+          "measured_narrow_line_anchor": 21
+        },
+        "health_included_frames_falling_back_to_predicted": 15716,
+        "health_included_frames_using_measured_anchor": 22541,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 41,
+          "candidate_minus_predicted_circular_bins": 10,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 11,
+          "persistence_below_minimum": 3
+        }
+      },
+      "health": {
+        "excluded_frames": 24,
+        "included_frames": 38257,
+        "stored_frames": 38281
+      },
+      "note": "Trace-occupancy classification remains provisional. The v1 chain has full-archive kept/null floors for channels 18 and 21, but not for 23 or 25; correlation/floor limitations remain explicit. Channel 21 has the largest health-filtered full-archive null population (14,647 frames). Channel 20 off-epoch is the largest epoch-specific null population (23,666 frames), so the old unqualified 'channel 21 is largest' wording is withdrawn.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0542,
+          0.0
+        ],
+        "why": "at eta=1.4 only 5.4% of current-epoch frames mask (vs 92.3% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "26",
+          "epoch": "off-epoch",
+          "floor_db": "-32.34",
+          "floor_thin": "False",
+          "ground_filter_db": "17.5",
+          "health_excluded_frames": "4",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "26348",
+          "intra_share_pct": "1.77",
+          "masked_pct": "95.32",
+          "n_null": "16674",
+          "on_shelf_db": "-8.02",
+          "r_keep": "5729.0",
+          "r_proxy": "21.18",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "14120.0"
+        },
+        {
+          "channel": "26",
+          "epoch": "full",
+          "floor_db": "-42.43",
+          "floor_thin": "False",
+          "ground_filter_db": "17.9",
+          "health_excluded_frames": "4",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "26348",
+          "intra_share_pct": "1.59",
+          "masked_pct": "95.32",
+          "n_null": "1046",
+          "on_shelf_db": "-36.4",
+          "r_keep": "0.02607",
+          "r_proxy": "0.006501",
+          "tau_capped": "True",
+          "tau_minutes": "5.0",
+          "tau_quality": "bounded_above",
+          "x_over_binding": "4.334"
+        }
+      ],
+      "channel": 26,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "off-epoch|on-epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 13,
+          "measured_narrow_line_anchor": 11
+        },
+        "health_included_frames_falling_back_to_predicted": 10816,
+        "health_included_frames_using_measured_anchor": 15532,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 13,
+          "candidate_minus_predicted_circular_bins": 2,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 11,
+          "persistence_below_minimum": 1
+        }
+      },
+      "health": {
+        "excluded_frames": 4,
+        "included_frames": 26348,
+        "stored_frames": 26352
+      },
+      "note": "Transmitter sign-off measured to the month; off-epoch chain rows evaluated at conservative era floors; verdicts controlled by off-epoch coherence (19, 26) or the kept-frame floor basis (20). Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0309,
+          0.0
+        ],
+        "why": "at eta=1.4 only 3.1% of current-epoch frames mask (vs 93.1% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "excision_candidate",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "27",
+          "epoch": "off-epoch",
+          "floor_db": "-24.44",
+          "floor_thin": "False",
+          "ground_filter_db": "23.4",
+          "health_excluded_frames": "7",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "34542",
+          "intra_share_pct": "0.32",
+          "masked_pct": "98.07",
+          "n_null": "21437",
+          "on_shelf_db": "-1.35",
+          "r_keep": "4774.0",
+          "r_proxy": "23.42",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "15610.0"
+        },
+        {
+          "channel": "27",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "22.4",
+          "health_excluded_frames": "7",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "34542",
+          "intra_share_pct": "0.4",
+          "masked_pct": "98.07",
+          "n_null": "0",
+          "on_shelf_db": "-33.13",
+          "r_keep": "4.046",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 27,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "post-2022|station era",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 10,
+          "measured_narrow_line_anchor": 16
+        },
+        "health_included_frames_falling_back_to_predicted": 8288,
+        "health_included_frames_using_measured_anchor": 26254,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 246,
+          "candidate_minus_predicted_circular_bins": 0,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 9
+        }
+      },
+      "health": {
+        "excluded_frames": 7,
+        "included_frames": 34542,
+        "stored_frames": 34549
+      },
+      "note": "Sign-off remains bounded inside the 2021-22 collection gap. The v1 health-filtered off-epoch chain is now evaluated: n_null=21,437, p90 floor -24.44 dB, and correlation quality refused; the former 'chain pending' wording is withdrawn. The full-era kept/null floor remains unavailable and the verdict remains measurement-bound.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.1024,
+          0.0
+        ],
+        "why": "at eta=1.4 only 10.2% of current-epoch frames mask (vs 97.8% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "excision_candidate",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "28",
+          "epoch": "full",
+          "floor_db": "-47.09",
+          "floor_thin": "True",
+          "ground_filter_db": "10.4",
+          "health_excluded_frames": "13",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "32816",
+          "intra_share_pct": "8.76",
+          "masked_pct": "99.78",
+          "n_null": "6",
+          "on_shelf_db": "-30.76",
+          "r_keep": "151.0",
+          "r_proxy": "3.513",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "2342.0"
+        }
+      ],
+      "channel": 28,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 1,
+          "measured_narrow_line_anchor": 26
+        },
+        "health_included_frames_falling_back_to_predicted": 107,
+        "health_included_frames_using_measured_anchor": 32709,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 226,
+          "candidate_minus_predicted_circular_bins": 0,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1
+        }
+      },
+      "health": {
+        "excluded_frames": 13,
+        "included_frames": 32816,
+        "stored_frames": 32829
+      },
+      "note": "Always-on or occupancy-pinned in the current screening result. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0921,
+          0.0
+        ],
+        "why": "at eta=1.4 only 9.2% of current-epoch frames mask (vs 99.7% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "excision_candidate"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "29",
+          "epoch": "full",
+          "floor_db": "-48.19",
+          "floor_thin": "False",
+          "ground_filter_db": "4.6",
+          "health_excluded_frames": "7",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "39350",
+          "intra_share_pct": "31.73",
+          "masked_pct": "63.73",
+          "n_null": "8119",
+          "on_shelf_db": "-43.63",
+          "r_keep": "28.24",
+          "r_proxy": "9.889",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "6592.0"
+        }
+      ],
+      "channel": 29,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 33
+        },
+        "health_included_frames_falling_back_to_predicted": 39350,
+        "health_included_frames_using_measured_anchor": 0,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 232,
+          "candidate_minus_predicted_circular_bins": 27,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [
+            "persistence_below_minimum",
+            "peak_not_separated_from_off_window_competitor"
+          ],
+          "status": "fallback_predicted_acquisition"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 27,
+          "persistence_below_minimum": 31
+        }
+      },
+      "health": {
+        "excluded_frames": 7,
+        "included_frames": 39350,
+        "stored_frames": 39357
+      },
+      "note": "Verdict is limited by the currently available floor or coherence measurement. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0173,
+          0.0
+        ],
+        "why": "at eta=1.4 only 1.7% of current-epoch frames mask (vs 66.5% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "30",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "22.3",
+          "health_excluded_frames": "0",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "9289",
+          "intra_share_pct": "0.35",
+          "masked_pct": "98.41",
+          "n_null": "0",
+          "on_shelf_db": "0.17",
+          "r_keep": "7546.0",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 30,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "through September 2023",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 14
+        },
+        "health_included_frames_falling_back_to_predicted": 9289,
+        "health_included_frames_using_measured_anchor": 0,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 201,
+          "candidate_minus_predicted_circular_bins": 16,
+          "epoch_key": "2023Q3",
+          "refusal_reasons": [
+            "peak_not_separated_from_off_window_competitor"
+          ],
+          "status": "fallback_predicted_acquisition"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 13
+        }
+      },
+      "health": {
+        "excluded_frames": 0,
+        "included_frames": 9289,
+        "stored_frames": 9289
+      },
+      "note": "Shelf at system noise in the screening result; baseband collection ceased September 2023, so the later state is unmonitored. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "excise",
+        "chosen": [
+          "excised",
+          1.0,
+          0.0
+        ],
+        "why": "no current-epoch frames because CHIME ceased baseband collection on this channel in September 2023 due to the contamination itself; the archive record decides \u2014 shelf at system noise, the strongest carrier measured, transmitter in Penticton \u2014 and the operational exclusion corroborates excision; revisit only via periodic spot-collection"
+      },
+      "secondary_status": "",
+      "status": "excision_candidate"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "31",
+          "epoch": "full",
+          "floor_db": "-54.78",
+          "floor_thin": "True",
+          "ground_filter_db": "21.7",
+          "health_excluded_frames": "7",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "30985",
+          "intra_share_pct": "0.66",
+          "masked_pct": "99.98",
+          "n_null": "2",
+          "on_shelf_db": "-7.9",
+          "r_keep": "52.41",
+          "r_proxy": "0.001075",
+          "tau_capped": "False",
+          "tau_minutes": "34.2",
+          "tau_quality": "measured",
+          "x_over_binding": "0.7169"
+        }
+      ],
+      "channel": 31,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 23,
+          "measured_narrow_line_anchor": 4
+        },
+        "health_included_frames_falling_back_to_predicted": 27768,
+        "health_included_frames_using_measured_anchor": 3217,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 180,
+          "candidate_minus_predicted_circular_bins": 16,
+          "epoch_key": "2026Q2",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 22
+        }
+      },
+      "health": {
+        "excluded_frames": 7,
+        "included_frames": 30985,
+        "stored_frames": 30992
+      },
+      "note": "Always-on or occupancy-pinned in the current screening result. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "excise",
+        "chosen": [
+          "excised",
+          1.0,
+          0.0
+        ],
+        "why": "cheapest option at the coherence cap: excise (x1.009); thermal end picks keep dirty (x1.000); bracket disagrees but spread is 0.9% of survey time \u2014 immaterial"
+      },
+      "secondary_status": "",
+      "status": "excision_candidate"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "32",
+          "epoch": "full",
+          "floor_db": "-48.54",
+          "floor_thin": "False",
+          "ground_filter_db": "22.8",
+          "health_excluded_frames": "6",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "28209",
+          "intra_share_pct": "0.23",
+          "masked_pct": "71.09",
+          "n_null": "2818",
+          "on_shelf_db": "-35.25",
+          "r_keep": "1.392",
+          "r_proxy": "0.06523",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "43.49"
+        }
+      ],
+      "channel": 32,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 16,
+          "measured_narrow_line_anchor": 7
+        },
+        "health_included_frames_falling_back_to_predicted": 18766,
+        "health_included_frames_using_measured_anchor": 9443,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 143,
+          "candidate_minus_predicted_circular_bins": -1,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 12,
+          "persistence_below_minimum": 4
+        }
+      },
+      "health": {
+        "excluded_frames": 6,
+        "included_frames": 28209,
+        "stored_frames": 28215
+      },
+      "note": "Conditionally recoverable under the current residual model. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0282,
+          0.0
+        ],
+        "why": "at eta=1.4 only 2.8% of current-epoch frames mask (vs 61.9% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "conditional_recovery"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "33",
+          "epoch": "full",
+          "floor_db": "-44.95",
+          "floor_thin": "False",
+          "ground_filter_db": "7.6",
+          "health_excluded_frames": "6",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "34200",
+          "intra_share_pct": "15.7",
+          "masked_pct": "80.55",
+          "n_null": "1388",
+          "on_shelf_db": "-33.75",
+          "r_keep": "0.4741",
+          "r_proxy": "0.03591",
+          "tau_capped": "True",
+          "tau_minutes": "5.0",
+          "tau_quality": "bounded_above",
+          "x_over_binding": "23.94"
+        }
+      ],
+      "channel": 33,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 7,
+          "measured_narrow_line_anchor": 19
+        },
+        "health_included_frames_falling_back_to_predicted": 5333,
+        "health_included_frames_using_measured_anchor": 28867,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 125,
+          "candidate_minus_predicted_circular_bins": 2,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "candidate_at_acquisition_edge_with_stronger_external_sentinel": 1,
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 5,
+          "persistence_below_minimum": 2
+        }
+      },
+      "health": {
+        "excluded_frames": 6,
+        "included_frames": 34200,
+        "stored_frames": 34206
+      },
+      "note": "Conditionally recoverable under the current residual model. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0276,
+          0.0
+        ],
+        "why": "at eta=1.4 only 2.8% of current-epoch frames mask (vs 66.5% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "conditional_recovery"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "34",
+          "epoch": "full",
+          "floor_db": "-45.59",
+          "floor_thin": "False",
+          "ground_filter_db": "13.3",
+          "health_excluded_frames": "5",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "39012",
+          "intra_share_pct": "4.23",
+          "masked_pct": "99.09",
+          "n_null": "168",
+          "on_shelf_db": "-34.12",
+          "r_keep": "33.66",
+          "r_proxy": "2.4",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": "1600.0"
+        }
+      ],
+      "channel": 34,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 3,
+          "measured_narrow_line_anchor": 30
+        },
+        "health_included_frames_falling_back_to_predicted": 1207,
+        "health_included_frames_using_measured_anchor": 37805,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 102,
+          "candidate_minus_predicted_circular_bins": -1,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 1,
+          "persistence_below_minimum": 1
+        }
+      },
+      "health": {
+        "excluded_frames": 5,
+        "included_frames": 39012,
+        "stored_frames": 39017
+      },
+      "note": "Verdict is limited by the currently available floor or coherence measurement. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "clean",
+        "chosen": [
+          "kept",
+          0.0279,
+          0.0
+        ],
+        "why": "at eta=1.4 only 2.8% of current-epoch frames mask (vs 99.5% at the deployed rule); no transmitter to fight \u2014 the channel is effectively clean"
+      },
+      "secondary_status": "",
+      "status": "measurement_bound"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "35",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "20.0",
+          "health_excluded_frames": "8",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "39767",
+          "intra_share_pct": "0.99",
+          "masked_pct": "83.72",
+          "n_null": "0",
+          "on_shelf_db": "-10.69",
+          "r_keep": "54.79",
+          "r_proxy": "",
+          "tau_capped": "False",
+          "tau_minutes": "45.4",
+          "tau_quality": "measured",
+          "x_over_binding": ""
+        },
+        {
+          "channel": "35",
+          "epoch": "on-epoch",
+          "floor_db": "-24.98",
+          "floor_thin": "False",
+          "ground_filter_db": "20.7",
+          "health_excluded_frames": "8",
+          "health_floor_status": "available",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "39767",
+          "intra_share_pct": "0.84",
+          "masked_pct": "83.72",
+          "n_null": "3359",
+          "on_shelf_db": "-10.61",
+          "r_keep": "48.04",
+          "r_proxy": "1.753",
+          "tau_capped": "False",
+          "tau_minutes": "46.1",
+          "tau_quality": "measured",
+          "x_over_binding": "1169.0"
+        }
+      ],
+      "channel": 35,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "pre-2021|post-2021",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 17,
+          "measured_narrow_line_anchor": 16
+        },
+        "health_included_frames_falling_back_to_predicted": 21938,
+        "health_included_frames_using_measured_anchor": 17829,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 112,
+          "candidate_minus_predicted_circular_bins": 29,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1,
+          "peak_not_separated_from_off_window_competitor": 14,
+          "persistence_below_minimum": 7
+        }
+      },
+      "health": {
+        "excluded_frames": 8,
+        "included_frames": 39767,
+        "stored_frames": 39775
+      },
+      "note": "Epoch split: conditional recovery before switch-on and occupancy-pinned afterward. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "excise",
+        "chosen": [
+          "excised",
+          1.0,
+          0.0
+        ],
+        "why": "cheapest option at the coherence cap: excise (x1.010); thermal end picks keep dirty (x1.000); bracket disagrees but spread is 1.0% of survey time \u2014 immaterial"
+      },
+      "secondary_status": "excision_candidate",
+      "status": "conditional_recovery"
+    },
+    {
+      "chain_rows": [
+        {
+          "channel": "36",
+          "epoch": "full",
+          "floor_db": "",
+          "floor_thin": "False",
+          "ground_filter_db": "5.3",
+          "health_excluded_frames": "5",
+          "health_floor_status": "unavailable_no_health_included_stored_mask_kept_frames",
+          "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+          "health_included_frames": "38155",
+          "intra_share_pct": "28.66",
+          "masked_pct": "99.92",
+          "n_null": "0",
+          "on_shelf_db": "-28.74",
+          "r_keep": "787.4",
+          "r_proxy": "",
+          "tau_capped": "True",
+          "tau_minutes": "1436.1",
+          "tau_quality": "refused",
+          "x_over_binding": ""
+        }
+      ],
+      "channel": 36,
+      "classification_status": "provisional_not_blinded_verdict",
+      "epoch_scope": "current measured epoch",
+      "evidence_state": "v1_health_repaired_inputs+legacy_classification",
+      "fine_anchor": {
+        "epoch_partition": "retrospective provisional UTC calendar quarter at frame start; not an authoritative station epoch",
+        "epoch_status_counts": {
+          "fallback_predicted_acquisition": 1,
+          "measured_narrow_line_anchor": 29
+        },
+        "health_included_frames_falling_back_to_predicted": 134,
+        "health_included_frames_using_measured_anchor": 38021,
+        "latest_provisional_epoch": {
+          "candidate_anchor_bin": 62,
+          "candidate_minus_predicted_circular_bins": 0,
+          "epoch_key": "2026Q3",
+          "refusal_reasons": [],
+          "status": "measured_narrow_line_anchor"
+        },
+        "refusal_reason_counts": {
+          "frame_timestamp_unavailable": 1
+        }
+      },
+      "health": {
+        "excluded_frames": 5,
+        "included_frames": 38155,
+        "stored_frames": 38160
+      },
+      "note": "Always-on or occupancy-pinned in the current screening result. Legacy classification retained provisionally; v4 attaches health-filtered counts, policy action, chain status, and fine-anchor evidence without claiming a new blinded science verdict.",
+      "policy": {
+        "action": "keep and mask (coherence unverified)",
+        "chosen": [
+          "kept",
+          0.3373,
+          696.9
+        ],
+        "why": "inclusive-for-now: the excision case here is the unverified coherence cap, not a live carrier - kept and masked at the working threshold, priced at the cap, pending the burst-resolved tau_c measurement"
+      },
+      "secondary_status": "",
+      "status": "excision_candidate"
+    }
+  ],
+  "claim_corrections": [
+    "The old unqualified claim that channel 21 has the largest null population is withdrawn; the full-archive and epoch-specific extrema are derived and reported separately.",
+    "Channel 27's v1 off-epoch chain is evaluated; it is no longer chain-pending.",
+    "Channels 22 and 24 have no health-included stored-mask kept/null calibration frame.",
+    "Legacy v3 epoch operating-point numbers and their figures are not health-recomputed."
+  ],
+  "classification_scope": "provisional dissertation status integration; not a new blinded BAO verdict and not a rewrite of the immutable v3 snapshot",
+  "epoch_operating_points": [
+    {
+      "channel": 32,
+      "epoch_group": 0,
+      "epoch_key": "ch32_pre_2021",
+      "epoch_label": "station era",
+      "evidence_state": "measured",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Fine calibration retains seven frames; no defensible operating point.",
+      "residual_ratio": null,
+      "retained_frames": 7,
+      "status": "failure",
+      "survey_mask_fraction": 0.998,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 32,
+      "epoch_group": 1,
+      "epoch_key": "ch32_post_2021",
+      "epoch_label": "modern era",
+      "evidence_state": "measured+modeled",
+      "fine_mask_fraction": 0.433,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Fine operating point remains conditional on transfer and estimator validation.",
+      "residual_ratio": 0.0155,
+      "retained_frames": null,
+      "status": "conditional",
+      "survey_mask_fraction": 0.59,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 35,
+      "epoch_group": 0,
+      "epoch_key": "ch35_pre_2021",
+      "epoch_label": "early era",
+      "evidence_state": "measured+modeled",
+      "fine_mask_fraction": 0.181,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Early epoch has a feasible fine-mask fraction under the current model.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "conditional",
+      "survey_mask_fraction": 0.461,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 35,
+      "epoch_group": 1,
+      "epoch_key": "ch35_post_2021",
+      "epoch_label": "switch-on era",
+      "evidence_state": "measured+modeled",
+      "fine_mask_fraction": 0.988,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Post-switch-on epoch is occupancy-pinned under the current policy.",
+      "residual_ratio": 0.237,
+      "retained_frames": null,
+      "status": "failure",
+      "survey_mask_fraction": 0.942,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 19,
+      "epoch_group": 0,
+      "epoch_key": "ch19_on_through_2024_11",
+      "epoch_label": "on epoch",
+      "evidence_state": "measured",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Transmitter on through November 2024; occupancy-pinned at the survey rule.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "failure",
+      "survey_mask_fraction": 0.997,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 19,
+      "epoch_group": 1,
+      "epoch_key": "ch19_off_from_2024_12",
+      "epoch_label": "off epoch",
+      "evidence_state": "measured",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Sign-off December 2024; the survey rule still fires on faint residual excess. Off-epoch shelf floor -33.5 dB (p90); fine calibration pending.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "conditional",
+      "survey_mask_fraction": 0.865,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 20,
+      "epoch_group": 0,
+      "epoch_key": "ch20_on_through_2022_08",
+      "epoch_label": "on epoch",
+      "evidence_state": "measured",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Transmitter on through August 2022; occupancy-pinned at the survey rule.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "failure",
+      "survey_mask_fraction": 1.0,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 20,
+      "epoch_group": 1,
+      "epoch_key": "ch20_off_from_2022_09",
+      "epoch_label": "off epoch",
+      "evidence_state": "measured",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Two-stage step-down September 2022; the survey rule still fires on faint residual excess. Off-epoch shelf floor -26.1 dB (p90); fine calibration pending.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "conditional",
+      "survey_mask_fraction": 0.997,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 26,
+      "epoch_group": 0,
+      "epoch_key": "ch26_on_through_2023_03",
+      "epoch_label": "on epoch",
+      "evidence_state": "measured",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Transmitter on through March 2023; occupancy-pinned at the survey rule.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "failure",
+      "survey_mask_fraction": 0.999,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 26,
+      "epoch_group": 1,
+      "epoch_key": "ch26_off_from_2023_04",
+      "epoch_label": "off epoch",
+      "evidence_state": "measured",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Sign-off April 2023; the survey rule still fires on faint residual excess. Off-epoch shelf floor -32.3 dB (p90); fine calibration pending.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "conditional",
+      "survey_mask_fraction": 0.927,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 27,
+      "epoch_group": 0,
+      "epoch_key": "ch27_on_through_2020_11",
+      "epoch_label": "station era",
+      "evidence_state": "measured",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Strong through November 2020; the transition is bounded inside the 2021-22 collection gap.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "failure",
+      "survey_mask_fraction": 1.0,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command.",
+      "v4_status": "provisional_legacy_operating_point"
+    },
+    {
+      "channel": 27,
+      "epoch_group": 1,
+      "epoch_key": "ch27_off_from_2022_10",
+      "epoch_label": "post-station era",
+      "evidence_state": "measured+v1_health_repaired_chain",
+      "fine_mask_fraction": null,
+      "legacy_numeric_fields_health_recomputed": false,
+      "note": "Trace-level from October 2022 onward. The v1 off-epoch chain is evaluated with n_null=21,437, p90 floor -24.44 dB, and correlation quality refused; the classification remains conditional and measurement-bound.",
+      "residual_ratio": null,
+      "retained_frames": null,
+      "status": "conditional",
+      "survey_mask_fraction": 0.974,
+      "v4_note": "The survey/fine/residual numeric fields are copied from immutable v3 and were not regenerated by the archive-health command. The former 'chain re-evaluation pending' claim is withdrawn.",
+      "v4_status": "provisional_legacy_operating_point"
+    }
+  ],
+  "health_gate_schema_version": "pilotproxy_archive_frame_health_gate_v1",
+  "health_totals": {
+    "distinct_events_with_health_included_frames": 8980,
+    "distinct_events_with_stored_frames": 8983,
+    "distinct_product_unit_events": 9214,
+    "excluded_unique_frames": 182,
+    "exclusion_ledger_rows": 182,
+    "health_exclusion_rate": {
+      "count": 182,
+      "fraction": 0.00024251759918236923,
+      "standard_error": 1.797442051405155e-05,
+      "total": 750461,
+      "wilson_95": {
+        "high": 0.0002803976278165833,
+        "low": 0.00020975386030063615
+      }
+    },
+    "included_frames": 750279,
+    "product_units": 170374,
+    "products": 23,
+    "reason_counts": {
+      "baseband_power_at_negative_full_scale_ceiling": 178,
+      "detector_invalid": 4,
+      "detector_powers_all_zero": 4
+    },
+    "stored_frames": 750461,
+    "zero_frame_units": 4692
+  },
+  "legacy_artifacts_not_regenerated": [
+    "data/provenance/dissertation_summary_v3.json",
+    "analysis/dissertation/data/channel_status.csv",
+    "analysis/dissertation/data/epoch_operating_points.csv",
+    "status and epoch figures derived from those legacy CSV files"
+  ],
+  "null_population_extrema": {
+    "interpretation": "The two domains are reported separately. Channel 21 has the largest full-archive null population; channel 20 off-epoch has the largest epoch-specific null population. The old unqualified channel-21 superlative is withdrawn.",
+    "largest_epoch_specific": {
+      "channel": 20,
+      "epoch": "off-epoch",
+      "n_null": 23666
+    },
+    "largest_full_archive": {
+      "channel": 21,
+      "epoch": "full",
+      "n_null": 14647
+    }
+  },
+  "provenance": {
+    "base_summary": {
+      "basename": "dissertation_summary_v3.json",
+      "sha256": "68bae6bd76d88ea8ee1545866ffe3803ff8a3f77b34443a2630fa1c925eb9d93",
+      "size_bytes": 11904
+    },
+    "chain_table": {
+      "basename": "bao_channel_chain_v4.csv",
+      "sha256": "254d57ad289a0417966a397987733507032b65fc6e5f3ca9b6b6b28b898bf99d",
+      "size_bytes": 4656
+    },
+    "generator_source": {
+      "basename": "make_dissertation_status_v4.py",
+      "sha256": "1d2e7d2a1f79933a1f6b334ba074276c5cd1a6d361e03a2c3dba2e4aed95cb1a"
+    },
+    "health_summary": {
+      "basename": "archive_health_summary.json",
+      "sha256": "7ce08b84ddbdf05cdce5010abc27ec092e062b7656def1599704b58846f62389",
+      "size_bytes": 5787343
+    },
+    "policy_data": {
+      "basename": "policy_data.json",
+      "sha256": "df416866df5d1e0f2a07e3a736e10edaf642d637ccf052b3aff92ed2a3d1fe24",
+      "size_bytes": 56207
+    },
+    "source_commit": "2cf4d8cdc94a2beb2299f2b7ece0dcfe2662c6ee"
+  },
+  "schema_version": "pilotproxy_dissertation_status_v4",
+  "snapshot_id": "dissertation-status-v4-health-repair"
+}

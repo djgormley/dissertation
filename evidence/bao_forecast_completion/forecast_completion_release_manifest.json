@@ -1,0 +1,227 @@
+{
+  "absolute_paths_included": false,
+  "artifact_count": 12,
+  "artifacts": [
+    {
+      "path": "out/forecast_completion_all_dtv_bins.json",
+      "sha256": "d958db9f2be82dc31e43e057cde636e46b67dfb8c6df0ce36bbbec0b0edc8e2a",
+      "size_bytes": 1084099
+    },
+    {
+      "path": "out/forecast_completion_all_dtv_bins_k_shell_localized.json",
+      "sha256": "230d81760c86f8924012b9910d1eb03f3b536bed1fb863caff0ec7545b9088f3",
+      "size_bytes": 1087017
+    },
+    {
+      "path": "out/forecast_completion_all_dtv_bins_low_kparallel.json",
+      "sha256": "6ac870c6c1eb12dfa4221686f994d594d8734b56643dede6032dce22f5dd7a42",
+      "size_bytes": 1086128
+    },
+    {
+      "path": "out/forecast_completion_all_dtv_bins_wedge_like.json",
+      "sha256": "78af89f887a41486a872ce09d6d6d72dab8ef2cb30320ba85b7b83eeed41ce1d",
+      "size_bytes": 1087125
+    },
+    {
+      "path": "out/forecast_completion_template_comparison.csv",
+      "sha256": "2d5c1969d5b5da940f89f57e84298bb7d3c0e4ad43f745957d0240b7e22a2319",
+      "size_bytes": 17536
+    },
+    {
+      "path": "out/forecast_completion_channel_mapping.csv",
+      "sha256": "8f1da9a8678bf331842c65613992208d4cd5e32c03bc3c4360816136ee7a01d2",
+      "size_bytes": 28632
+    },
+    {
+      "path": "out/forecast_completion_template_status.csv",
+      "sha256": "d0bb27558f96acb40bafcc8ce6bc22392a8a3a00fc10f07ec09be7e3b1114753",
+      "size_bytes": 2899
+    },
+    {
+      "path": "out/forecast_completion_channel_tolerances.png",
+      "sha256": "573779de7c71b21554aad1acccef965f8971cfbde6688bbd41674fa74ca5a7f3",
+      "size_bytes": 109765
+    },
+    {
+      "path": "out/forecast_completion_channel_tolerances.pdf",
+      "sha256": "b1c88b79460cc4d92080fe76076a49e0e087bb9972624d9fff69079d1e7c3f60",
+      "size_bytes": 768723
+    },
+    {
+      "path": "out/forecast_completion_template_summary.tex",
+      "sha256": "f554e8a58c698b09435fd19fc86c4ba49e0915c44b344994adeb8a79ad26eff1",
+      "size_bytes": 1155
+    },
+    {
+      "path": "out/forecast_completion_channel_tolerances_caption.txt",
+      "sha256": "fb5d550fd957ae51befb31349df425ef8834264bfa4e801260709b3059f039a1",
+      "size_bytes": 820
+    },
+    {
+      "path": "docs/forecast-completion-release-manifest.schema.json",
+      "sha256": "9c69efa62543e2e1f6f6cd0d29ccfeca3ec52f83b463f6dec1dc5b4b4893a24c",
+      "size_bytes": 7519
+    }
+  ],
+  "empirical_template_refusals": [
+    {
+      "family": "empirical_frequency_localized",
+      "required": "pilot-proxy residual spectra with authenticated physical-frequency coordinates, plus a Fisher response interface exposing frequency",
+      "status": "data_dependent_incomplete"
+    },
+    {
+      "family": "empirical_baseline_localized",
+      "required": "baseline-resolved residual power/covariance, plus a Fisher response interface exposing baseline coordinates",
+      "status": "data_dependent_incomplete"
+    },
+    {
+      "family": "empirical_sidereal_coherent",
+      "required": "sidereal-time-resolved residual covariance/coherence and the window coupling needed to propagate it into the Fisher integrand",
+      "status": "data_dependent_incomplete"
+    }
+  ],
+  "figure_rendering": {
+    "all_fonts_embedded_type1": true,
+    "creation_modification_dates_included": false,
+    "font_contract": "T1 Latin Modern via LaTeX",
+    "font_names": [
+      "LMMathItalic12-Regular",
+      "LMMathItalic8-Regular",
+      "LMMathItalic9-Regular",
+      "LMMathSymbols6-Regular",
+      "LMMathSymbols9-Regular",
+      "LMRoman10-Regular",
+      "LMRoman12-Regular",
+      "LMRoman6-Regular",
+      "LMRoman8-Regular",
+      "LMRoman9-Regular"
+    ]
+  },
+  "generators": [
+    {
+      "path": "scripts/forecast_template_comparison.py",
+      "sha256": "477e87557d2f71940f41c0e5a24d4f1a906c075fe14a6473fea565dd68eaeae4"
+    },
+    {
+      "path": "scripts/render_forecast_template_assets.py",
+      "sha256": "78a31e31ebbdce14faf44fd0fd09a58b42b99d20049e18b84a6adbc7f58a52f8"
+    }
+  ],
+  "limitations": [
+    "analytic unit-response shapes are sensitivity hypotheses, not measured template probabilities",
+    "boundary-channel propagation takes the minimum accepted tolerance across every non-zero-overlap bin",
+    "rejected dilation values are retained for diagnosis and are not eligible for channel-policy propagation"
+  ],
+  "manifest_schema_sha256": "9c69efa62543e2e1f6f6cd0d29ccfeca3ec52f83b463f6dec1dc5b4b4893a24c",
+  "schema": "baonoise-forecast-completion-release-manifest-v2",
+  "schema_version": 2,
+  "scientific_identities": {
+    "all_build_evaluation_pairs_verified_equal": true,
+    "authoritative_identity_json_pointer": "/bank/scientific_identity",
+    "baonoise": {
+      "clean_git_commits": [
+        "816e28faf21f53022620a1cd3a3519ac3fb9e45e",
+        "970f6ae8160eb1b0a8218737821f1c067261f33e"
+      ],
+      "source_manifest": {
+        "exclude": [
+          "src/baonoise/data/fisher_bank*.npz"
+        ],
+        "include": [
+          "pyproject.toml",
+          "src/baonoise/*.py"
+        ]
+      },
+      "working_tree_sha256": "ae448067c9eaf60d2dde3e0d7a57110db41759a62f2ee89e7ac4c9072e13e1a3"
+    },
+    "commit_note": "The scalar baseline and named-template banks were evaluated at different clean Bao commits, but the canonical scientific source manifest and content digest are identical. Release-only scripts, tests, documentation, and outputs are outside that scientific source manifest. The Git commit containing this manifest is reported externally to avoid a self-reference.",
+    "identity_schema": "baonoise-scientific-evaluation-identity-v1",
+    "per_evidence": [
+      {
+        "baonoise_build_git_commit": "970f6ae8160eb1b0a8218737821f1c067261f33e",
+        "baonoise_evaluation_git_commit": "970f6ae8160eb1b0a8218737821f1c067261f33e",
+        "path": "out/forecast_completion_all_dtv_bins.json",
+        "radiofisher_build_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+        "radiofisher_evaluation_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+        "verified_equal": true
+      },
+      {
+        "baonoise_build_git_commit": "816e28faf21f53022620a1cd3a3519ac3fb9e45e",
+        "baonoise_evaluation_git_commit": "816e28faf21f53022620a1cd3a3519ac3fb9e45e",
+        "path": "out/forecast_completion_all_dtv_bins_k_shell_localized.json",
+        "radiofisher_build_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+        "radiofisher_evaluation_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+        "verified_equal": true
+      },
+      {
+        "baonoise_build_git_commit": "816e28faf21f53022620a1cd3a3519ac3fb9e45e",
+        "baonoise_evaluation_git_commit": "816e28faf21f53022620a1cd3a3519ac3fb9e45e",
+        "path": "out/forecast_completion_all_dtv_bins_low_kparallel.json",
+        "radiofisher_build_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+        "radiofisher_evaluation_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+        "verified_equal": true
+      },
+      {
+        "baonoise_build_git_commit": "816e28faf21f53022620a1cd3a3519ac3fb9e45e",
+        "baonoise_evaluation_git_commit": "816e28faf21f53022620a1cd3a3519ac3fb9e45e",
+        "path": "out/forecast_completion_all_dtv_bins_wedge_like.json",
+        "radiofisher_build_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+        "radiofisher_evaluation_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+        "verified_equal": true
+      }
+    ],
+    "radiofisher": {
+      "clean_git_commit": "3cc9f34e183db9e04820c8a2e7932395ec3a0441",
+      "source_manifest": {
+        "exclude": [],
+        "include": [
+          "pyproject.toml",
+          "radiofisher/*.py",
+          "chime2021/experiments_CHIME.py"
+        ]
+      },
+      "working_tree_sha256": "864980e9658c475093fc34c7da02e456bf2849d1fd239ef6152fe6508b9a68d7"
+    }
+  },
+  "scientific_scope": {
+    "all_dtv_bin_indices": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "analytic_family_count": 4,
+    "common_channel_target": "fs8",
+    "existing_policy_status_or_ranking_changed": false,
+    "new_telescope_data_used": false,
+    "physical_channels": [
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36
+    ]
+  },
+  "wall_clock_fields_included": false
+}

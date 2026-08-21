@@ -104,7 +104,22 @@ Verification is layered so that each property is established by the cheapest gat
     \item \emph{Concurrency emulation.} Before any GPU execution, the device source is compiled unmodified into a threaded CPU harness: one POSIX thread per GPU thread, a barrier for each \texttt{\_\_syncthreads}, mutexed atomics, the scalar dot path substituted for DP4A. This executes the kernel's true concurrent structure --- including the cooperative transform and the last-block epilogue --- under real thread interleaving, and its outputs are required to match the reference chain bit-for-bit across noise, injected-pilot, wrap-anchor, degenerate-bulk, and tap-unbound scenarios, stably across repeated concurrent runs.
     \item \emph{On-hardware gates.} On the benchmark GPU, the fused kernel must reproduce the composed staged path and the reference bit-for-bit; an injected pilot must fire the mask; the production (tap-unbound) form must equal the debug form; and twenty repeated launches must produce identical bits --- the one property the CPU emulation cannot probe, since it exercises the completion-counter epilogue under genuine grid scheduling.
     \item \emph{Production tripwire.} The exact marginal identity is the acceptance tripwire for a live integration: the coarse power sums are computed twice, through independent code paths, and compared as integers every frame. Any fault in memory layout, accumulation, scheduling, or a future regression breaks an exact equality on the frame where it occurs.
-    \item \emph{Cross-era reproduction.} Two processing cohorts, built independently with different library binaries and CUDA toolkits, processed overlapping archived events; joined on event identity, the compared statistics agreed with zero mismatches.  For the final reproducibility record, ``zero'' is reported together with the joined event and frame counts, join completeness, invalid and missing records, exact fields compared, and immutable cohort manifests.  Those counts live in the immutable processing ledger rather than in this document, so the mismatch count is not turned into an undocumented denominator here.  Under a tolerance regime the comparison would require a distributional judgment; under the exactness contract each joined field reduces to equality.
+    \item \emph{Cross-era reproduction.} Earlier development notes state that
+    independently built processing cohorts agreed with zero mismatches on an
+    overlapping archive subset.  The supplied release cannot reproduce that
+    statement: its two source cohorts occupy disjoint channel sets, and no
+    joined comparison manifest, event/frame denominator, field list, or build
+    pair survives.  The historical statement is therefore not evidence used
+    by this dissertation.  What the release does establish is narrower and
+    fully auditable: all 23 products record the same supplied kernel digest and
+    geometry, each passes its product-contract checks, and source-history
+    reconstruction matches the recorded source hash for the 21-product modern
+    cohort while explicitly refusing a match for the two-product legacy
+    cohort.  A future cross-build equality claim must publish the joined keys,
+    completeness, invalid and missing records, exact fields compared, and both
+    immutable build manifests.  Under a tolerance regime that comparison would
+    require a distributional judgment; under the exactness contract each
+    actually joined field reduces to equality.
     \item \emph{The build is not the artifact.} One further finding completes the procedure: compiled binaries are \emph{not} byte-deterministic --- clean rebuilds of identical sources differ in embedded compiler artifacts. The verified binary itself, content-addressed by cryptographic hash and recorded in the processing ledger, therefore serves as the reference artifact; a rebuild is a new artifact that must re-pass the verification gates before use.
 \end{enumerate}
 

@@ -4,15 +4,22 @@
 
 The attached CANFAR bundle was independently inventoried before its results
 were promoted in the dissertation.  All 23 allocation products load and pass
-their declared structural and exact-arithmetic checks: 9,214 distinct source
-events were probed, 8,983 contribute valid frames, and the products contain
+their declared structural and exact-arithmetic checks.  The denominator ladder
+is 16,327 enumerated events, 6,140 recorded-outrigger exclusions, 10,187 survey
+targets, 10,184 completed dispositions, and three events in the pending-attempt
+category after two recorded attempts.  Of the completed events, 9,214 are
+represented in the inventory and 8,983 contribute originally valid frames.
+The 23 per-channel products contain
 750,461 frames (750,457 denominator-valid and four explicit all-zero invalid
 frames) plus three quarantined raw objects.  The audit also found 178
-denominator-valid rows in eight events whose mean packed-int4 power is exactly
-128, the representation ceiling.  Those rows are now a named release blocker,
-not silently treated as sky data; their immutable identifiers and the required
-reason-coded disposition are recorded in
-`CANFAR_PRODUCT_HEALTH_AUDIT.json`.
+denominator-valid rows in eight events whose mean decoded complex-int4 power is
+exactly 128, the representation ceiling.  The v1 health gate now excludes
+those provably constant native-`0x00` rows and the four detector-invalid rows,
+leaving 750,279 science frames from 8,980 events.  Their immutable identifiers
+and reason-coded disposition are recorded in
+`CANFAR_PRODUCT_HEALTH_AUDIT.json`; because the constant input has a DC-only
+spectrum, the before/after aggregate spectra are repaired exactly and checked
+against the health-included frame-power sums.
 
 - Chapters 1, 2, 3, 7, 8, 9, and 11 now describe the completed all-23 archive
   consistently, distinguish archive-average spectral peaks from per-epoch
@@ -43,9 +50,13 @@ reason-coded disposition are recorded in
   coefficient, transform, and decision-arithmetic losses and requires
   fixed-$P_{\rm fa}$ detection curves, paired uncertainty, offset sweeps,
   clipping/overflow accounting, and full-pipeline bit checks.
-- CI now pins both upstream repositories and consumes PilotProxy's current
-  `dissertation_summary_v3.json`; the older v2 snapshot is intentionally
-  historical and contains the superseded channel-33 population comparison.
+- CI now pins the immutable archive-health and forecast-completion producer
+  commits.  It retains the 67-check historical-number gate against
+  `dissertation_summary_v3.json`, and adds a repository-local verifier for the
+  12 forecast artifacts, four archive-health core products, 92 diagnostic
+  figures, 182 exclusion-ledger rows, and their principal reconciliation
+  invariants.  The older v2 snapshot is intentionally historical and contains
+  the superseded channel-33 population comparison.
 - The release manifest now covers every tracked repository path plus the new
   product-health audit (excluding only the manifest itself), so source,
   workflow, frozen-data, figure, and compiled-PDF changes are checked together.
@@ -89,15 +100,18 @@ basis ("when in doubt, rebuild").
   their transmitter-off eras (conservative all-frame p90 floors, so their r
   values are bounds even where τ is measured), and channel 17's 20-frame
   floor parenthesized per the ch28 convention.
-- Headline: every one of the eleven screening statuses survives the chain
-  unchanged. Channel 21 emerges as the survey's best-floored coherence
+- Historical v11 headline: every one of the eleven legacy screening labels was
+  carried through the then-current chain. The later health-filtered v4 release
+  retains those classifications only provisionally rather than claiming a new
+  blinded verdict. Channel 21 emerges as the survey's best-constrained
+  full-archive coherence
   hostage (14,647 detection-defined null frames, the largest population not
   constructed from a transmitter-off epoch; −43.2 dB
   floor; ≤22,100× at the cap) and joins channel 29 at the head of the
   cadence priority (ch11 near program and checklist item C updated).
   Channel 23 is the inverse case (τ ≤ 5 min bounded, floor unmeasured; its
   unlock is the fine-stage null re-decision). Channel 20's off-era row is
-  the cheapest refinement: τ already measured at 167 min, only the floor
+  the cheapest refinement: health-filtered τ is measured at 165 min, only the floor
   basis conservative.
 - The era-mixture trap demonstrated on data, reported as a demonstration and
   not a verdict: evaluated era-blind, channels 19 and 26 land near 4× and
@@ -580,7 +594,10 @@ freezes the exact export it uses together with the producing commit.
   2026-08-19): the trawl now covers all 23 ATSC allocations. The 21
   previously published products are byte-identical to the prior snapshot;
   only the two new products and the aggregate numbers changed. New inventory:
-  9,214 events probed / 8,983 usable / 170,374 units / 750,461 frames; a
+  16,327 events enumerated / 6,140 outrigger-labelled exclusions / 10,187
+  survey targets / 10,184 completed dispositions / 9,214 completed events
+  represented in inventory / 8,983 with valid frames / 170,374 processed
+  event--channel units / 750,461 frames; a
   third quarantined unit (one 844 capture with an unreadable header) joins
   the two truncated ones.
 - Chapter 7 inventory, Chapter 9 snapshot framing (products now span
@@ -611,7 +628,7 @@ freezes the exact export it uses together with the producing commit.
   working threshold x1.1013 / x1.5854; kept-set current-epoch survival
   10.7% -> 89.6% over 265,152 frames (seventeen no-live-carrier channels).
 - Figures regenerated: fig_census_psd_lower now renders channels 14-26
-  (13 panels, 5-row grid), fig_channel_status_matrix shows all 23 measured
+  (13 panels, 5-row grid), fig_channel_status_matrix shows all 23 product-covered
   (summary snapshot v3: 14/15 measurement-bound), fig_census_psd re-exported
   from the 23-product census_psd.csv, fig_intro_band drops the hatched
   queued-pair marking.

@@ -3,10 +3,11 @@
 ## Included output
 
 `dissertation.pdf` is the compiled dissertation. Bundle-scope figure PDFs
-are regenerated and audited from source by the normal build; the nine
-repository-owned figures (see FIGURE_SOURCES.md) are vendored as finished
-PDFs and are audited -- fonts, page count, vector format -- but not
-regenerated here.
+are regenerated and audited from source by the normal build. Repository-owned
+result figures and all-channel diagnostic atlases (see `FIGURE_SOURCES.md`)
+are vendored as finished PDFs and audited for provenance, fonts, page count,
+format, and any explicitly declared raster content, but are not regenerated
+here.
 
 ## Requirements
 
@@ -48,6 +49,7 @@ pdflatex -interaction=nonstopmode -halt-on-error dissertation.tex
 pdflatex -interaction=nonstopmode -halt-on-error dissertation.tex
 python3 -m figure_src.audit_figures
 python3 -m unittest discover -s tests -p 'test_*.py'
+python3 -B scripts/verify_vendored_evidence.py
 python3 scripts/release_manifest.py
 ```
 

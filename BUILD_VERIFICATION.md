@@ -1,23 +1,25 @@
 # Build and figure verification
 
-## Current suite-audit release (2026-08-20)
+## Current consolidated release (2026-08-21)
 
-This release merges the completed-archive correctness revision into the
-suite-audit release boundary. It was rebuilt from the WSL worktree with the
-repository's fixed source epoch: the bundle-scope figures were regenerated,
-followed by three consecutive `pdflatex` passes, the figure/frozen-data audit,
-four standard-library regression tests, the cross-repository number gate
-against its pinned upstream inputs, and the top-level release-manifest
-verifier.
+This release consolidates three lines of work onto one branch: the suite-audit
+release boundary, the completed-archive correctness revision, and the vendored
+archive-health and forecast-completion evidence releases. It was rebuilt from
+the WSL worktree with the repository's fixed source epoch: the bundle-scope
+figures were regenerated, followed by three consecutive `pdflatex` passes, the
+figure/frozen-data audit, the vendored-evidence audit, four standard-library
+regression tests, the cross-repository number gate against its pinned upstream
+inputs, and the top-level release-manifest verifier.
 
 ```text
 compiled output: dissertation.pdf
-pages: 136
+pages: 171
 page size: US letter
-file size: 3,053,647 bytes
-SHA-256: 8fe452ca97d2b1d97b1949c141b204bd6df8b6ab055bd74102e38501c1540425
+file size: 7,324,608 bytes
+SHA-256: 4c8bfde12530de932cbbd6a3e64be71dfcbe5000c7a05f45a73c27ed54ec2e82
 number gate: 67/67 passed; baseline 0
-release manifest: 240/240 tracked bundle files verified
+vendored evidence: 676 checks passed
+release manifest: 390/390 tracked bundle files verified
 ```
 
 The final pass reports no undefined reference or citation and no overfull or
@@ -33,8 +35,19 @@ summary:             data/provenance/dissertation_summary_v3.json
 result:              67/67 checks passed; baseline 0
 ```
 
-The figure audit reports **PASS** for 28 manifest artifacts, 25 active external
-vector PDFs, two active named TikZ figures, four frozen CSV tables, and the
+Both candidate pin sets were tested against the merged text and both pass
+67/67. The pinned pair above was chosen because each commit is reachable from
+its upstream `master`, so neither can be lost to a deleted or rebased feature
+branch. The newer `bao-noise-tolerance@db89d626` and `pilot-proxy@2cf4d8cd`
+still appear as figure provenance in `figure_src/figure_manifest.csv`; those
+commits are not yet on their upstream default branches.
+
+The vendored-evidence audit passes 676 checks across 12 BAO artifacts, four
+CANFAR core files, ten dissertation data products, three archive result PDFs,
+92 diagnostic figures, 27 active figure copies, and 182 ledger rows.
+
+The figure audit reports **PASS** for every manifest artifact, the active
+external vector PDFs and named TikZ figures, the frozen CSV tables, and the
 embedded Latin Modern font contract. Figure 3.2 was regenerated from 499
 inclusive census rows (36 within 120 miles), aggregated at 162 distinct source
 range--bearing sites; the frozen data preserve 421 reported-on-air/unverified,
@@ -42,9 +55,10 @@ range--bearing sites; the frozen data preserve 421 reported-on-air/unverified,
 one-page vector output has SHA-256
 `7a6e0e37d5c7e06edaf98e8faf0e803e8ea6c1b9c9416da53ccb35bdb8671959`.
 
-Page-level visual inspection was not repeated for this merge build. The
-contact-sheet reviews recorded in the chronology below cover the two
-constituent revisions, whose page-level content this merge preserves.
+Page-level visual inspection was not repeated for this consolidation build. The
+contact-sheet reviews recorded in the chronology below cover the constituent
+revisions, and the merge introduces no new figure or table artwork beyond the
+Appendix C diagnostic atlases, which are generated and hash-verified.
 
 ## Historical verification chronology
 

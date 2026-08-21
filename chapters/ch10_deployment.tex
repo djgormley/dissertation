@@ -95,8 +95,9 @@ content-addressed artifacts rather than editable files:
   GPU capability, free device memory, bundle epoch, all hashes, and the signed
   pilot-injection convention.  Reject mixed or expired artifacts.
   \item \textbf{Acceptance burst.} Process a deterministic quiet vector, a
-  signed-offset injected pilot, a constant packed-\texttt{0x88} input-health
-  failure, a zero-denominator case, and a nonzero-prefilled mask-word case.
+  signed-offset injected pilot, a constant detector-input packed-\texttt{0x88}
+  input-health failure (native excess-8 \texttt{0x00} before repacking), a
+  zero-denominator case, and a nonzero-prefilled mask-word case.
   Require equality with the independent reference and the staged kernel path.
   \item \textbf{Science mode.} Enable the stage only after the acceptance burst;
   record per-frame validity, mask, coarse/fine tripwire status, kernel duration,
