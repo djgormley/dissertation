@@ -237,6 +237,17 @@ holdout therefore requires either a genuinely unopened retained interval whose
 boundary is approved before examination or a future epoch collected after the
 bundle is frozen.
 
+Fixed forward (2026-08-21): the retention gap that made exact Q16 fine replay
+impossible is closed in per-pilot product schema v2.  Products now carry
+`fine_power_u64`, the three exact uint64 fine-power terms per bin taken from
+the frozen fixed-point transform, alongside the unsummed lower/upper reference
+powers.  The v1 products retained only a float32 ratio formed with a floating
+FFT, which is neither the deployed statistic nor invertible to it, so the frozen
+fine decision could not be evaluated on them at any threshold.  This does not
+retroactively unblock the item: the existing archive must be reprocessed for
+the terms to exist, and the blinding requirement above is unchanged.  It does
+mean the next scan can support the exact per-epoch Q16 bundle.
+
 For every channel and stable station/transmitter epoch, release together:
 
 - anchor and designated window;

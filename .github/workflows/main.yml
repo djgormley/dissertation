@@ -75,5 +75,11 @@ jobs:
           python -m unittest discover -s tests -p 'test_*.py'
           python scripts/release_manifest.py
 
+      # The manifest alone cannot catch a PDF rebuilt from older sources:
+      # refreshing it against a stale PDF is self-consistent. This binds
+      # dissertation.pdf to the digest of the sources it was built from.
+      - name: Verify dissertation.pdf is not stale
+        run: python scripts/check_pdf_freshness.py
+
       - name: Verify vendored evidence releases
         run: python -B scripts/verify_vendored_evidence.py

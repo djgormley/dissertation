@@ -27,9 +27,11 @@ pdf: figures
 	$(LATEX) $(LATEXFLAGS) dissertation.tex
 
 manifest: all test
+	$(PYTHON) scripts/check_pdf_freshness.py --write
 	$(PYTHON) scripts/release_manifest.py --write
 
 manifest-check:
+	$(PYTHON) scripts/check_pdf_freshness.py
 	$(PYTHON) scripts/release_manifest.py
 
 verify: all test

@@ -42,7 +42,12 @@ result to global optimality of the complete calibrated detector. \\
 Exact integer detector output & verified & Frozen weight bank and transform,
 golden vectors, independent reference implementations, concurrency emulation,
 and device equality tests & Release source commit, compiler/toolkit versions,
-weight/twiddle hashes, binary hash, exact test count, and edge-vector results. \\
+weight/twiddle hashes, binary hash, exact test count, and edge-vector results.
+Compare weight banks by their coefficient digest rather than by a whole-file
+digest.  The bank that produced the archive and the bank now carried in the
+analysis repository differ only in an embedded profile-name string, so their
+file digests differ while every quantized coefficient is identical; a
+file-digest comparison alone would misread a rename as a detector change. \\
 
 Legacy paired injection loss & measured on superseded geometry & Standards-chain
 8-VSB plus AWGN, $45{,}000$ paired full-precision/packed trials, bootstrap
