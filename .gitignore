@@ -13,3 +13,7 @@
 __pycache__/
 *.py[cod]
 /tmp/
+
+# derived tables and figures: too large for Overleaf; kept on the WVU OneDrive
+evidence/
+figure_src/
