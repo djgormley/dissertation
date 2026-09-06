@@ -1,0 +1,74 @@
+{
+  "artifacts": [
+    {
+      "authoritative_for_draft": true,
+      "authority": "authoritative-source-export",
+      "description": "Conservative maximum-envelope ATSC 1.0 UHF emitter-channel census within 500 miles of DRAO; schema and per-row evidence status are preserved.",
+      "owner": "pilot-proxy",
+      "path": "census_full_500mi.csv",
+      "replacement_required": false,
+      "rows": 499,
+      "sha256": "5ebc30658003233ed4550d18ed188938aeb8ac0278f0316207f3baad7d06b2be",
+      "source_kind": "pilot-proxy-export",
+      "status": "frozen",
+      "upstream": "WVURAIL/pilot-proxy@24586f54fdf41e0b77c6ab07aaf55153cd61c778: census_full_500mi.csv"
+    },
+    {
+      "authoritative_for_draft": true,
+      "authority": "authoritative-source-subset",
+      "description": "Transmitter-census rows within 120 miles of DRAO, preserving schema and per-row evidence status.",
+      "owner": "pilot-proxy",
+      "path": "census_inner_120mi.csv",
+      "replacement_required": false,
+      "rows": 36,
+      "sha256": "5e7e9aa3f87178ecf3ec4b25e7f04d03ac92545ff2f7eaf699cc9fd7a1037964",
+      "source_kind": "pilot-proxy-export",
+      "status": "frozen",
+      "upstream": "WVURAIL/pilot-proxy@24586f54fdf41e0b77c6ab07aaf55153cd61c778: census_inner_120mi.csv"
+    },
+    {
+      "authoritative_for_draft": false,
+      "authority": "legacy-artwork-recovery",
+      "description": "Pedagogical correlation-function curve reconstructed from the supplied vector PDF.",
+      "owner": "external-cosmology-model",
+      "path": "intro_wiggle_correlation.csv",
+      "replacement_required": true,
+      "rows": 61,
+      "sha256": "4fbaf702750dace4b3994259d4eae98d92f0fe00a9522988f2e649c39ef6bfd3",
+      "source_kind": "external-pedagogical-bridge",
+      "status": "frozen",
+      "upstream": "figure_src/legacy_reference/fig_intro_wiggle_original.pdf"
+    },
+    {
+      "authoritative_for_draft": false,
+      "authority": "legacy-artwork-recovery",
+      "description": "Pedagogical power-spectrum wiggle curve reconstructed from the supplied vector PDF.",
+      "owner": "external-cosmology-model",
+      "path": "intro_wiggle_power.csv",
+      "replacement_required": true,
+      "rows": 181,
+      "sha256": "aa3278975c525a9ca0dd0e762147fbd8af8ee00c0748a36632f38b3b4312739d",
+      "source_kind": "external-pedagogical-bridge",
+      "status": "frozen",
+      "upstream": "figure_src/legacy_reference/fig_intro_wiggle_original.pdf"
+    }
+  ],
+  "frozen_for": "pilot-proxy dissertation draft",
+  "schema": {
+    "name": "pilot-proxy-dissertation-frozen-data",
+    "version": 1
+  },
+  "upstream_exports": {
+    "pilot_proxy": {
+      "commit": "24586f54fdf41e0b77c6ab07aaf55153cd61c778",
+      "complete": false,
+      "complete_scope": "PilotProxy dissertation-export v1 tabular interface only; this flag does not describe all-23-channel CANFAR archive coverage",
+      "repository": "WVURAIL/pilot-proxy",
+      "schema": {
+        "name": "pilot-proxy-dissertation-export",
+        "version": 1
+      },
+      "summary_snapshot_id": "dissertation-draft-2026-08-19"
+    }
+  }
+}

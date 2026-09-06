@@ -1,0 +1,86 @@
+# Dissertation number gate as CI.
+#
+# Drop this file at .github/workflows/number-gate.yml in the dissertation
+# repository. On every push/PR it checks out RFIsher (for the
+# gate script and out/*.csv) and the pilot-proxy provenance snapshot, then
+# runs the number gate against dissertation.tex + chapters/,
+# scanning the frozen figure data for figure-borne numbers. It also verifies
+# the immutable vendored evidence releases. Both checkers are stdlib-only, so
+# no pip install step is needed.
+#
+# If WVURAIL/RFIsher or WVURAIL/pilot-proxy are private, add
+#   token: ${{ secrets.GH_PAT }}
+# to their checkout steps (a fine-grained PAT with read access).
+#
+# Pair this with Overleaf's GitHub Sync (Overleaf: Menu -> Sync -> GitHub)
+# so edits made on Overleaf land here and get gated automatically.
+
+name: dissertation-number-gate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out dissertation
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Check out RFIsher (gate + out/*.csv)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: WVURAIL/RFIsher
+          # Pinned to a commit, not a branch, so an upstream default-branch
+          # change cannot alter this dissertation's CI result silently.
+          # Advance deliberately to pick up new gate checks.
+          ref: 594b15a17ae0841121e8a0acc811163e11dbbb95
+          path: rfisher
+          persist-credentials: false
+
+      - name: Check out pilot-proxy provenance snapshot
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: WVURAIL/pilot-proxy
+          # Pinned to a commit for the same reason.
+          ref: 36b8232f65c48f3f3808a13e986c31a704692bc7
+          path: pilot-proxy
+          persist-credentials: false
+          sparse-checkout: |
+            data/provenance
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+
+      - name: Run the number gate
+        # With .number-gate-baseline committed (a file holding the current
+        # FAIL count), CI is a ratchet: green unless a push adds failures.
+        # Without the file, the strict gate applies (red until 0 failures).
+        run: |
+          python rfisher/scripts/check_dissertation_numbers.py \
+            --tex dissertation.tex chapters \
+            --summary-json pilot-proxy/data/provenance/dissertation_summary_v3.json \
+            --also-scan figure_src/data \
+            --baseline .number-gate-baseline
+
+      - name: Verify release-bundle manifest
+        run: |
+          python -m unittest discover -s tests -p 'test_*.py'
+          python scripts/release_manifest.py
+
+      # The manifest alone cannot catch a PDF rebuilt from older sources:
+      # refreshing it against a stale PDF is self-consistent. This binds
+      # dissertation.pdf to the digest of the sources it was built from.
+      - name: Verify dissertation.pdf is not stale
+        run: python scripts/check_pdf_freshness.py
+
+      - name: Verify vendored evidence releases
+        run: python -B scripts/verify_vendored_evidence.py

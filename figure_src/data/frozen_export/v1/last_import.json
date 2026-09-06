@@ -1,0 +1,12 @@
+{
+  "imported_artifacts": [
+    "census_full_500mi.csv",
+    "census_inner_120mi.csv"
+  ],
+  "source_commit": "24586f54fdf41e0b77c6ab07aaf55153cd61c778",
+  "source_complete": false,
+  "source_export": "WVURAIL/pilot-proxy@24586f54fdf41e0b77c6ab07aaf55153cd61c778",
+  "source_export_manifest_sha256": "51f9b077c50b1f7549e79963b3e36da28a6348342d844d728a74cc680ddc5d86",
+  "source_repository": "WVURAIL/pilot-proxy",
+  "source_summary_snapshot_id": "dissertation-draft-2026-08-19"
+}

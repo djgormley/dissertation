@@ -1,0 +1,37 @@
+schema_version,rf_channel,callsign,service_class,distance_km,bearing_deg,frequency_tolerance,city,state_prov,evidence_status
+dtv_transmitter_census_v1,30,CHKL-1,Relay,37.8,5.6,±1 kHz,Penticton,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,24,CHKL-DT+CHBC-DT,Full-power,72.1,5.4,±1 kHz,Kelowna,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,31,CH4491-DT,Relay,86.2,9.5,±1 kHz,Winfield,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,34,CH4490-DT,Relay,86.2,9.5,±1 kHz,Winfield,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,17,K17KR-D,Translator (LPTV),99.8,215.4,None specified,MAZAMA,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,19,K19JC-D,Translator (LPTV),99.8,215.4,None specified,MAZAMA,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,21,K21LD-D,Translator (LPTV),99.8,215.4,None specified,MAZAMA,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,17,K17EV-D,Translator (LPTV),101.4,176.0,None specified,OMAK,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,19,K19AU-D,Translator (LPTV),101.4,176.0,None specified,"OMAK, OKANOGAN, ETC.",WA,reported_on_air_unverified
+dtv_transmitter_census_v1,26,K26GV-D,Translator (LPTV),101.4,176.0,None specified,OMAK,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,31,K31AH-D,Translator (LPTV),101.4,176.0,None specified,"OMAK, ETC",WA,reported_on_air_unverified
+dtv_transmitter_census_v1,33,K33NM-D,Translator (LPTV),101.4,176.0,None specified,"OMAK, ETC.",WA,reported_on_air_unverified
+dtv_transmitter_census_v1,35,K35MN-D,Translator (LPTV),101.4,176.0,None specified,"OMAK, ETC.",WA,reported_on_air_unverified
+dtv_transmitter_census_v1,22,CHKL-2,Relay,108.8,11.6,±1 kHz,Vernon,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,36,K36PH-D,Translator (LPTV),135.2,192.0,None specified,METHOW,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,14,K14SF-D,Translator (LPTV),136.8,184.9,None specified,BREWSTER & PATEROS,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,34,K34NN-D,Translator (LPTV),136.8,184.9,None specified,BREWSTER & PATEROS,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,22,K22MO-D,Translator (LPTV),143.2,188.4,None specified,PATEROS,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,23,K23MU-D,Translator (LPTV),146.5,181.4,None specified,BRIDGEPORT,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,24,K24LM-D,Translator (LPTV),146.5,181.4,None specified,BRIDGEPORT,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,25,K25NY-D,Translator (LPTV),146.5,181.4,None specified,BRIDGEPORT,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,16,CHWW-DT,Full-power,148.9,79.1,±1 kHz,Winlaw,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,24,CHCV-DT,Full-power,151.5,82.2,±1 kHz,Crescent Valley,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,14,CH2516-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,16,CH5530-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,18,CH2518-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,20,CH5531-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,24,CH5532-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,26,CH2519-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,28,CH5533-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,30,CH2520-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,32,CH5534-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,34,CH3083-DT,Relay,156.4,327.5,±1 kHz,Logan Lake,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,22,CHKM-DT,Full-power,160.0,340.0,±1 kHz,Kamloops,BC,reported_on_air_licensed
+dtv_transmitter_census_v1,32,K32MC-D,Translator (LPTV),167.4,190.1,None specified,BAKER FLATS AREA,WA,reported_on_air_unverified
+dtv_transmitter_census_v1,31,CHAN-1,Relay,176.8,261.8,±1 kHz,Chilliwack,BC,reported_on_air_licensed
