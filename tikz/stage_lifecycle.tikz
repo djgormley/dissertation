@@ -1,0 +1,26 @@
+% Editable source for Figure \ref{fig:deployment:lifecycle}: the stage lifecycle as a decision flow.
+\begin{tikzpicture}[font=\footnotesize, node distance=6mm and 8mm,
+  st/.style={draw, rounded corners=2pt, align=center, inner sep=4pt, minimum height=15mm, text width=#1, line width=0.75pt},
+  ex/.style={st=#1, fill=ppMeasured!8, draw=ppMeasured!90!black},
+  fail/.style={st=#1, fill=ppFailure!8, draw=ppFailure!90!black},
+  ok/.style={st=#1, fill=ppConditional!10, draw=ppConditional!90!black},
+  dec/.style={diamond, draw=ppModel!90!black, fill=ppModel!10, align=center, inner sep=1pt, aspect=2.4, font=\footnotesize, line width=0.75pt},
+  arr/.style={-{Stealth[length=1.8mm]}, thick, ppMeasured!90!black},
+  arrf/.style={-{Stealth[length=1.8mm]}, thick, ppFailure!90!black}]
+\node[ex=32mm] (in) {\textbf{input frame}\\frame identity, geometry, era, receiver contract};
+\node[dec, right=of in] (c1) {contracts\\valid?};
+\node[ex=34mm, right=of c1] (init) {\textbf{initialize}\\bind the bundle by era; zero accumulators and the completion word, in-stream};
+\node[ex=34mm, right=of init] (launch) {\textbf{launch}\\one block per input: row sums, marginals, \texttt{fxfft256}, atomic sums};
+\node[ex=34mm, below=9mm of launch] (fin) {\textbf{finalize} (last block)\\fence; re-read the sums; marginal tripwire; exact rank and threshold};
+\node[dec, left=of fin] (c2) {CUDA ok and\\tripwire exact?};
+\node[ok=34mm, left=of c2] (pub) {\textbf{publish valid}\\mask bit, valid$=$true, marginals, diagnostics; completion event};
+\node[fail=64mm, below=9mm of c2, xshift=-8mm] (bad) {\textbf{publish invalid}\\valid$=$false with a reason code, completion event, operations event --- never substitute keep or mask; an invalid frame enters neither retained nor excised accounting};
+\draw[arr] (in) -- (c1);
+\draw[arr] (c1) -- node[above, font=\scriptsize]{yes} (init);
+\draw[arr] (init) -- (launch);
+\draw[arr] (launch) -- (fin);
+\draw[arr] (fin) -- (c2);
+\draw[arr] (c2) -- node[above, font=\scriptsize]{yes} (pub);
+\draw[arrf] (c1.south) -- ++(0,-4mm) node[right, font=\scriptsize]{no} -| ([xshift=-5mm]pub.west) |- (bad.west);
+\draw[arrf] (c2.south) -- node[right, font=\scriptsize]{no} (bad.north -| c2.south);
+\end{tikzpicture}

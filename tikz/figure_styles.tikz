@@ -1,0 +1,29 @@
+% Dissertation-wide TikZ style.
+% Typography is inherited from the parent document (Latin Modern via lmodern).
+% The status colors match figure_src/style.py exactly.
+\tikzset{
+  ppbase/.style={
+    rounded corners=1.2pt,
+    align=center,
+    font=\scriptsize,
+    inner sep=3.2pt,
+    minimum height=8.5mm,
+    line width=0.75pt
+  },
+  ppcontext/.style={ppbase,draw=ppPending!90!black,fill=black!2},
+  ppmeasured/.style={ppbase,draw=ppMeasured!90!black,fill=ppMeasured!7},
+  ppmodel/.style={ppbase,draw=ppModel!90!black,fill=ppModel!8},
+  ppconditional/.style={ppbase,draw=ppConditional!90!black,fill=ppConditional!8},
+  ppfailure/.style={ppbase,draw=ppFailure!90!black,fill=ppFailure!8},
+  ppglobal/.style={ppbase,draw=ppMeasured!90!black,fill=ppMeasured!8},
+  pplabel/.style={font=\tiny,text=ppPending!90!black},
+  pparrow/.style={-{Stealth[length=1.6mm]},ppPending!90!black,thick},
+  pparrowmeasured/.style={-{Stealth[length=1.6mm]},ppMeasured!90!black,thick},
+  pparrowmodel/.style={-{Stealth[length=1.6mm]},ppModel!90!black,thick},
+  pparrowconditional/.style={-{Stealth[length=1.6mm]},ppConditional!90!black,thick},
+  % Fine dash pattern and a darker stroke: the shortest of these connectors
+  % spans one inter-column gap, where the default pattern renders as a single
+  % dash and reads as a printing artefact rather than a relation.
+  ppdashedarrow/.style={-{Stealth[length=1.5mm]},ppPending!95!black,
+                        dash pattern=on 1.1pt off 0.9pt,line width=0.6pt}
+}

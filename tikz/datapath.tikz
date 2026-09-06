@@ -1,0 +1,59 @@
+% Editable source for Figure \ref{fig:impl:datapath}: the exact datapath as a digital design, with bus widths.
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm,
+  b/.style={blk, text width=30mm, minimum height=9mm},
+  fl/.style={blk, draw=ppPending!90!black, fill=ppPending!12, dashed, text width=40mm, minimum height=9mm}]
+% ---- row 1: unpack and project
+\node[reg, minimum width=16mm] (byte) at (-0.4,0) {re $\mid$ im};
+\node[lab, below=1mm of byte] {one packed byte per sample};
+\node[op, minimum size=5.5mm] (xor) at (1.7,0) {$\oplus$};
+\node[lab, above=0.5mm of xor] {\texttt{0x88}};
+\node[b, text width=28mm] (lane) at (4.5,0) {sign-extend and pack two samples per lane word};
+\node[op] (mac) at (7.7,0) {$\times$};
+\node[op] (acc4) at (8.8,0) {$\sum_4$};
+\node[reg, minimum width=18mm] (r32) at (10.5,0) {int32 acc};
+\node[lab, below=0.5mm of r32] {DP4A, $64$ tap-pairs};
+\node[b, text width=24mm] (row) at (13.5,0) {row sum: $|{\cdot}| \le 14336 < 2^{14}$};
+\draw[bus] (byte) -- (xor) node[width, midway, above]{8};
+\draw[bus] (xor) -- (lane) node[width, midway, above]{$4{+}4$};
+\draw[bus] (lane) -- (mac) node[width, midway, above]{$4\times$int8};
+\node[lab, below=0.5mm of mac] {$w_r$: $4\times$int8};
+\draw[sig] (mac) -- (acc4); \draw[sig] (acc4) -- (r32) node[width, midway, above]{32};
+\draw[sig] (r32) -- (row) node[width, midway, above]{32};
+% ---- row 2: shared memory, transform, powers
+\node[smem, minimum width=30mm, text width=28mm] (sm) at (2.4,-2.9) {shared memory:\\$3 \times L$ row sums};
+\node[b, text width=28mm] (fft) at (6.6,-2.9) {\texttt{fxfft256}: Q15 twiddles, \texttt{round15}, no scaling};
+\pic at (6.3,-4.15) {butterfly};
+\node[op] (sq) at (9.6,-2.9) {$|\cdot|^2$};
+\node[op] (atom) at (10.9,-2.9) {$\sum_m$};
+\node[lab, below=0.5mm of atom] {atomic add};
+\node[gmem, minimum width=24mm] (S) at (13.5,-3.0) {$S_r[f]$\\$3 \times 256$ \texttt{uint64}};
+\draw[bus] (row.south) -- ++(0,-1.4) -| (sm.north) ;
+\draw[bus] (sm) -- (fft) node[width, midway, above, yshift=1pt]{$\le 2^{20}$};
+\draw[bus] (fft) -- (sq) node[width, pos=0.72, above]{Q15};
+\draw[sig] (sq) -- (atom); \draw[bus] (atom) -- (S) node[width, midway, above]{64};
+% ---- row 3: exact decision
+\node[b, text width=30mm] (nd) at (13.5,-6.0) {$(n_f,d_f) = (2S_0[f],\,S_1[f]{+}S_2[f])$};
+\node[op] (x128) at (10.4,-6.0) {$\times$};
+\node[lab, above=0.5mm of x128] {$128$-bit cross products};
+\node[b, text width=26mm] (cnt) at (7.3,-6.0) {rank by counting: $n_< < \rho \le n_\le$};
+\node[op] (x192) at (4.0,-6.0) {$\times$};
+\node[lab, above=0.5mm of x192] {$192$-bit limbs};
+\node[cmp, shape border rotate=180, minimum height=9mm] (c) at (2.1,-6.0) {$>$};
+\node[blkc, text width=18mm, minimum height=9mm] (mask) at (-0.2,-6.0) {mask bit};
+\draw[bus] (S) -- (nd) node[width, midway, right]{64};
+\draw[bus] (nd) -- (x128) node[width, midway, above]{$2\times 64$}; \draw[bus] (x128) -- (cnt) node[width, midway, above]{128};
+\draw[bus] (cnt) -- (x192) node[width, midway, above, yshift=1pt]{$\eta_{q16}, n_\rho, d_\rho$}; \draw[bus] (x192) -- (c) node[width, midway, above]{192};
+\draw[sigc] (c) -- (mask) node[width, midway, above]{1};
+\node[lab, below=1mm of nd, text width=40mm] {$n_f\,2^{16}\,d_\rho > \eta_{q16}\,n_\rho\,d_f$, exact};
+% ---- verification paths (dashed: never in the decision)
+\node[fl, text width=34mm] (cpu) at (0.4,-9.9) {\textbf{portable integer CPU reference}: the same integer arithmetic on the host; must be bit-identical};
+\node[fl, text width=36mm] (ref) at (5.6,-9.9) {\textbf{floating reference} (complex128): the same samples through library arithmetic; compared to the exact path by tolerance at the row sums and at $S_r[f]$};
+\node[fl, text width=36mm] (rat) at (11.0,-9.9) {\textbf{rational oracle} (arbitrary precision): every rank and threshold comparison must agree exactly};
+\draw[ctl] (cpu.north) -- ++(0,0.5) node[lab, above]{equal at every integer};
+\draw[ctl] (ref.north) -- ++(0,0.5) node[lab, above]{compared at $Z$ and $S_r[f]$};
+\draw[ctl] ([xshift=-10mm]rat.north) -- ++(0,0.5) node[lab, above]{compared at every decision};
+% ---- tripwire
+\draw[ctl] ([xshift=7mm]r32.north) -- ++(0,0.75) -| ([xshift=-6mm]row.north);
+\node[lab, anchor=south] at (12.6,1.3) {exact tripwire: $P_r$ from the registers $=$ $P_r$ from the row sums};
+\node[lab, anchor=west, text width=30mm, align=left] at (14.9,-4.5) {$\sum_f S_r[f] = L_F P_r$ checked separately, to the rounding bound};
+\end{tikzpicture}

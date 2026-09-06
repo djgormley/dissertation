@@ -1,0 +1,383 @@
+\chapter{Calibration: Eras, Anchors, Nulls, \& Operating Points}
+\label{sec:calibration}
+
+Calibration turns the detector's fixed arithmetic into per-channel policy data
+for a validated stable era.  It does not retune the pilot to whatever line happens to
+be strongest: the synthesized target remains the nominal ATSC pilot.  Calibration
+identifies the latest stable era of each channel, localizes the residual offset
+around that target, characterizes the empirical null and correlation structure,
+calibrates the science transfer, and constructs the residual-score histograms
+used to select an operating point.  Every estimator is allowed to refuse when the
+archive lacks the population it requires.  Calendar boundaries and older eras
+remain essential provenance and evidence, but they are not arguments to the
+operating-point selector.  Station and instrument changes each define
+boundaries.  Their intersection forms a \emph{stable era}: a contiguous
+interval with one accepted station state and one accepted instrument state.
+``Station epoch'' in the archive discussion names only the station-state side
+of that partition.  Each section below produces one per-channel object, and
+each object appears once, for all 23 channels, in the table the section names.
+Figure~\ref{fig:calibration:flow} draws the whole path from products to verdict.
+
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{\input{tikz/calibration_flow.tikz}}
+\caption[From products to verdict]{From products to verdict. The era classifier is calibration-free and runs first; the four calibration objects are measured on the era it fixes; the histogram family is authorized only when none of them is refused; RFIsher selects one operating point; the blocked holdout evaluates it once on untouched blocks; and every arrow can terminate in a refusal that is reported rather than filled.}
+\label{fig:calibration:flow}
+\end{figure}
+
+\section{Stable-Era Identification}
+\label{sec:calibration:eras}
+
+Every fraction the archive can quote averages over a span within which the
+broadcast environment measurably changed --- the FCC incentive-auction repack
+was still relocating stations through mid-2020, and individual transmitters
+came and went throughout.  An archive-average operating point can therefore
+describe no physical era: a station departure can move a channel from the
+occupancy wall into a usable region, while a switch-on can move another channel
+in the opposite direction, and a calibration that blends the two describes a
+transmitter that never existed.  The unit of calibration is the channel's
+\emph{current} era, chosen because it is the one that best represents the
+channel's future.
+
+The era is read from the fine-statistic time--frequency record.  For each
+channel the survey products supply the fine statistic $T[f]$ of every valid
+frame; binned by UTC month, that is a spectrogram of the detector statistic
+across the fine span (Appendix~\ref{app:archive-diagnostics} shows one per
+channel).  Thresholding the monthly median of $10\log_{10}(F/\mu_0)$ --- the
+calibration-free coarse ratio --- marks every month as proxy-high or
+proxy-low, and a change in the fine-peak location within the \emph{nominal}
+pilot neighbourhood between proxy-high months marks a station change; the
+procedure below is the authoritative statement of both.  A transition is placed at the boundary
+between the last month in one state and the first in the next, or inside a
+collection gap when the archive supplies no frames between them; the latest
+interval with one accepted station state and one accepted instrument state is
+the \emph{latest archive-observed stable era}, written ``current era'' for
+short throughout.  The shorthand is a claim about the archive, not about the
+present: a channel whose latest era ends well before the snapshot --- channel
+30, whose collection ended in \rerun{September 2023} --- is marked
+\emph{stale-latest} in Table~\ref{tab:calibration:eras}, and its era is called
+current, or representative of the channel's future, only when resumed
+monitoring or live data support that claim.  The rule is predeclared, calibration-free, and deliberately simple, so
+that the era boundary is reproducible from the product and auditable by eye on
+the plate, and so that it cannot be circular: the features are the monthly
+fraction of valid frames raising the survey flag of
+Eq.~\eqref{eq:survey-bootstrap-rule}, the monthly median pilot excess in the
+nominal neighbourhood, the located anchor, the reference level, and the
+recorded instrument state; a month enters only with at least thirty valid
+frames; a state must persist for at least two consecutive populated months to
+count as a transition rather than an excursion; a transition falling inside a
+collection gap is placed at the gap with the gap's width as its boundary
+uncertainty; and where a station or instrument record exists the transition is
+checked against it and the agreement recorded.  None of these inputs is the
+tolerance-selected $\eta^\star$ or anything derived from it --- the era must be
+fixed before the threshold that is estimated on it.  A formal change-point
+detector on the same monthly features \cite{killick2012} is the natural
+refinement and is recorded as the sensitivity check, not the rule.  The frozen
+procedure is:
+
+\begin{enumerate}[leftmargin=2em,itemsep=1pt]
+\item \emph{Inputs, all calibration-free.} Per valid frame: UTC; the exact
+normalized coarse ratio $F/\mu_0$ ($\mu_0$ from weight norms alone); the fine
+peak location within the \emph{nominal} acquisition neighbourhood
+$f_{\rm pred} \pm 30$ bins (never the era-calibrated anchor); the reference
+level $P_1 + P_2$; and the recorded receiver software tag and input map.
+\item \emph{Aggregation.} UTC calendar month.  A month is populated only with at
+least $30$ valid frames drawn from at least $5$ distinct acquisitions on at
+least $3$ distinct days; policy values, with sensitivity values $(3, 5, 10)$
+acquisitions recorded.
+\item \emph{State.} A populated month is \emph{proxy-high} if its median
+$10\log_{10}(F/\mu_0)$ is at least $1$~dB, \emph{proxy-low} if at most $0.5$~dB, and
+\emph{ambiguous} between (sensitivity values $0.5$, $1$, $2$~dB); ``on'' and
+``off'' are used only where a station record confirms the transmitter state; the
+positive-excess rule itself fires on about half of quiet frames, which is why a
+median excess and not a fired fraction is the statistic.  A \emph{station
+change} is a shift of the monthly peak location by at least $3$ fine bins
+($36$~Hz) against the running era.  An \emph{instrument change} is a change in
+the recorded software tag or input map.
+\item \emph{Persistence.} A new state or anchor must hold for at least $2$
+consecutive populated months; a single-month excursion is flagged, not a
+transition.  Ambiguous months inherit the state of their populated neighbours
+if those agree and open a transition otherwise.
+\item \emph{Placement and uncertainty.} A transition is placed between the last
+month of the old state and the first of the new; when unpopulated months lie
+between them it is placed at that gap and the gap's span is the boundary
+uncertainty.
+\item \emph{Fallback.} A channel with no proxy-low month has its current era bounded
+only by station and instrument changes; its null then comes from the fine
+bulk, declared as a mixture, or is refused (Section~\ref{sec:calibration:nulls}).
+\item \emph{Naming.} A boundary is a \emph{transmitter sign-on} or
+\emph{sign-off} only where a station record confirms it; otherwise it is a
+\emph{spectral-state transition}.
+\item \emph{Independence.} None of the inputs is the selected $\eta^\star$, the
+era-calibrated anchor, or the era-calibrated null; the null of
+Section~\ref{sec:calibration:nulls} is estimated \emph{on} the era after the
+era is fixed, and the check that it does not feed back is that repeating the
+procedure with the calibrated anchor substituted for the nominal neighbourhood
+changes no boundary.
+\end{enumerate}  Sign-offs and
+switch-ons on the archive are frequent enough that the split matters on a
+material fraction of the band: the superseded products resolved dated sign-offs
+on channels \rerun{19, 20, 26, 27, and 32}, a switch-on on channel \rerun{35},
+a two-epoch persistent carrier on channel \rerun{17}, and a collection-curtailed
+archive on channel \rerun{30}.
+
+\stubtab{v5 archive rerun}{One row per channel 14--36: current-era start and end
+(UTC month) with boundary uncertainty; the transition evidence that defines the
+start (sign-on, sign-off, station change, instrument change, or archive start)
+and its agreement with any station or instrument record; a stale-latest flag
+where the era ends before the snapshot; earlier eras listed for provenance;
+current-era valid-frame count; and current-era calendar coverage (months with
+frames / months spanned).}{Stable-era identification for every
+channel: the current era used by every downstream calibration and its
+transition evidence.\label{tab:calibration:eras}}
+
+\section{Anchor Localization}
+\label{sec:calibration:anchors}
+
+For fine bin $f$, let $T_f^{\mathrm{on}}$ and $T_f^{\mathrm{quiet}}$ denote the
+sets of recorded fine statistics in coarse-detected and coarse-quiet frames of
+the current era.  The primary anchor estimator is
+\begin{equation}
+  \widehat f_a
+  = \operatorname*{arg\,max}_{f}
+  \left[
+    \operatorname{median}(T_f^{\mathrm{on}})
+    - \operatorname{median}(T_f^{\mathrm{quiet}})
+  \right].
+  \label{eq:calibration:anchor}
+\end{equation}
+Static structure common to both cohorts cancels, so the contrast isolates the
+feature associated with the transmitter state rather than simply returning the
+largest fixed instrumental bin.  A channel with no defensible quiet cohort uses
+a plain-median fallback and is labelled as such; that fallback is adequate to
+place a designated window around an always-present line but does not create a
+transmitter-off null.
+
+The current-era time-averaged spectrum around each pilot
+(Figure~\ref{fig:census:psd}) shows the same anchor from the other side --- the
+dominant lobe inside the fine span --- together with everything else the coarse
+channel carries within $\pm 15$~kHz: companions, sidelobe forests on the
+crowded-field channels, the instrumental channel-centre line where the pilot
+happens to sit near it, and the two reference placements in clean territory.  A
+lobe read from an averaged spectrum is not the same estimand as the
+on-minus-off anchor of Eq.~\eqref{eq:calibration:anchor}, and the two are
+reported side by side.  Their comparison against the fine span is a containment check on the
+tap length, not a proof that $K = 128$ is optimal: Figure~\ref{fig:calibration:containment}
+and Table~\ref{tab:calibration:anchors} place every measured anchor against
+the $\pm 1.526$~kHz span of $K = 128$ and the $\pm 0.763$~kHz span of
+$K = 256$, so the reader can see directly which channels the next radix-2 step
+would clip (Section~\ref{sec:param:tradeoffs}).
+On the superseded products the anchors lay \rerun{hundreds of hertz to
+$-1.37$~kHz} from the synthesized tone, every one inside the $K = 128$ span,
+and the largest --- channel 32's --- outside the $K = 256$ span; calendar
+splits also revealed station changes rather than gradual drift (channel 32's
+anchor moved by \rerun{11} fine bins and channel 35's by \rerun{29} between
+eras, and channel 17's shifted between its two on-epochs as the later
+transmitter configuration came to dominate).  The correct calibration object is
+therefore $(c, e)$, channel and era, not channel alone; the runtime bundle
+carries one anchor per era, and a wide union window is a temporary
+compatibility measure, not a substitute for an era-specific calibration.
+
+\stubfig{v5 archive rerun}{All 23 channels on one axis: the current-era anchor
+offset from synthesis with its block-bootstrap error bar, over shaded bands for
+the $K = 64$, $128$, and $256$ spans, so containment is read directly; channels
+with a previous era show its anchor as an open marker.}{Anchor containment
+against the fine spans, all channels.\label{fig:calibration:containment}}
+
+\stubtab{v5 archive rerun}{One row per channel: current-era anchor
+$\widehat f_a$ (fine bin and Hz from synthesis) with its estimator (on-minus-off
+or fallback median) and block-bootstrap uncertainty; the dominant lobe of the
+current-era averaged spectrum (Hz from synthesis, dB over median); the
+per-frame peak-offset distribution (median, 90th and 99th percentiles, from
+the retained fine spectra rather than the average); for $K = 64$, $128$, and
+$256$, the fraction of frames and of pilot-associated energy $E_K(c)$ inside the span (against $E_{\min}$ of Eq.~\eqref{eq:param:kstar}, naming the channel that binds $K^\star$),
+the straddle loss at the measured anchor, the margin to the span edge, and any
+reference-region contamination (these come from the retained per-frame
+$23.8$~Hz power spectra, which cover all three spans; they are a spectral
+containment analysis, not a rerun of the detector at the other two tap
+lengths, which the products cannot supply); the disposition (supported, supported with
+sentinel, unsupported); and, for channels with more than one era, the anchor
+of the previous era.}{Measured anchors against the fine span: the empirical
+justification of $K = 128$.\label{tab:calibration:anchors}}
+
+\section{A Floor Is Not the Smallest Observed Value}
+\label{sec:calibration:floor}
+
+A sensitivity floor is a property of a specified null population and estimator.
+It is not the minimum value observed in a mixture of quiet and contaminated
+frames.  For a channel with verified quiet data, calibration reports the
+empirical null distribution of the selected statistic, its sample size, the
+block structure used for uncertainty, the tail quantiles relevant to the false
+alarm requirement, and the corresponding shelf-level mapping.  A robust core
+width and an ordinary standard deviation are both useful because a thin
+contaminated tail can leave the former nearly ideal while inflating the latter.
+
+Channels that are effectively always on are censored in the wrong direction for
+an empirical off-state floor.  For them, the calibration can still report:
+
+\begin{enumerate}[leftmargin=2em]
+  \item an analytical or injected-signal sensitivity under the declared noise model;
+  \item the distribution of retained-frame proxy levels under a chosen policy; and
+  \item an upper bound on a quiet-state floor if an independently verified off era exists elsewhere.
+\end{enumerate}
+
+It cannot call the least contaminated retained frame an off-state measurement.
+The tempting substitute is the smallest shelf among frames that were detected,
+and it is wrong in a way that is easy to miss and expensive to keep: the
+inferred shelf tends to zero as the detection statistic approaches its null
+centre from above, so the minimum detected shelf is not a physical floor but
+the weakest positive excess that happened to occur in the sample, and it falls
+without bound as the detection count grows.  On the superseded products it
+evaluated to \rerun{$-76$~dB} on one always-on channel against measured floors
+of \rerun{$-45$ to $-49$~dB} on the channels that have them --- thirty
+decibels of sampling artefact, which would have inverted that channel's verdict.
+Preparation therefore refuses to authorize a residual-score histogram without
+a measured floor rather than substituting one, and an explicit override is the
+only way to stand a value in from elsewhere.  A dated transmitter-off era
+supplies the most defensible floor of all, because the off state is
+established by the era rather than by the absence of a detection; where the
+current era is an off era, its 90th-percentile shelf is the floor.
+
+\section{The Null Distribution of the Current Era}
+\label{sec:calibration:nulls}
+
+The null is calibrated empirically because the independent-feed Gaussian
+model of Chapter~\ref{sec:pipeline} is only a baseline.  Feed covariance,
+receiver gain structure, spectral leakage, and intermittent non-Gaussian
+features change the effective width and tail, and they change them per channel
+and per era.  For each channel the histogram of the current era's frames --- the
+normalized coarse statistic $F/\mu_0$ and the fine designated-window statistic
+$Z(\rho)$ of Section~\ref{sec:detection:rule} --- is the object from which the
+null is read.  It is in general a mixture: a null bulk of transmitter-off or
+below-sensitivity frames and an upper tail of detected frames, and a histogram
+of the era is not by itself the null.  Every channel therefore states the
+\emph{source} of its null explicitly, from the following list in order of
+strength: a verified transmitter-off era; an independently identified quiet
+subset (frames quiet by a criterion other than the statistic being
+calibrated); a control or reference-bin surrogate; a synthetic or model-only
+null; or null unavailable, in which case the estimator refuses.  Where the
+null is read from the bulk of a mixture, that is declared as such: its centre
+is the median of the bulk and its scale is the left-side deviation about that
+median, so that the detected tail cannot pull the calibration upward, and the
+mixture assumption --- that the bulk is the $H_0$ population --- is stated
+beside the number rather than left implicit.  The histogram is shown with its
+tail complementary distribution (CCDF) so the reader can see where the bulk
+ends and the tail begins.  The calibration
+reports the bulk centre against the packed-weight prediction $\mu_0$, the raw
+and robust-core widths against the i.i.d.\ widths of
+Section~\ref{sec:estimator:statistics}, the tail fraction beyond a stated
+number of core widths, and the shelf-level mapping of those quantiles.
+
+Two checks accompany every null.  The width factor --- the ratio of the
+measured to the idealized width --- is the number that says how far the
+receiver departs from the i.i.d.\ model, and it is reported in both raw and
+robust-core forms because a thin contaminated tail can inflate the former by an
+order of magnitude while leaving the latter near ideal.  The exchangeability
+check is what the rank rule requires: on quiet frames, a bulk bin tested
+against the rank of the remaining bulk must exceed it at the combinatorial rate
+$(|\mathcal B|+1-\rho)/(|\mathcal B|+1)$ implied by that rank.  On the
+superseded products channel 29 met it to three significant figures at every
+tested rank; the check is repeated per channel on the current era, and its
+final form is performed on held-out quiet blocks, so that agreement supports
+the rank calibration for that cohort rather than being assumed from the name of
+the method.
+
+\stubtab{v5 archive rerun}{One row per channel: current-era frame count and
+null-bulk count; the null source (off era, quiet subset, reference surrogate,
+model-only, or refused) and, for a bulk-read null, the declared mixture
+assumption; coarse null centre of $F/\mu_0$ against $1$ (the packed-weight prediction) and its
+left-side scale; coarse and fine width factors, raw and robust-core; tail
+fraction beyond three core widths; fine-axis exchangeability rate at the
+selected rank against the combinatorial prediction; kept-frame or off-era floor
+in dB with its population; and the histogram plate reference in
+Appendix~\ref{app:archive-diagnostics}.}{Current-era null calibration for
+every channel: the object RFIsher's threshold selection consumes.\label{tab:calibration:nulls}}
+
+\section{Correlation Time and Refusal Semantics}
+\label{sec:calibration:correlation}
+
+The residual chain needs a coherence scale, but the archive contains dense
+samples only within a short capture and sparse samples between captures.  The
+estimator therefore uses same-day or same-era structure functions with
+bootstrap resampling over sidereal-day blocks and reports one of three outcomes:
+
+\begin{equation}
+  \widehat\tau_c \in
+  \{\text{measured interval},\; \text{one-sided bound},\; \text{refused}\}.
+\end{equation}
+
+A refusal is propagated as a conservative sidereal-day cap in the screening
+forecast and is visually and numerically distinguished from a measurement.  On
+the superseded products a handful of channels carried measured values
+(\rerun{34, 45, 62, and 165 minutes}), two carried an upper bound of
+\rerun{five minutes} set by the shortest resolved lag, and the rest refused.
+Because a verdict can change by orders of magnitude across the cadence gap
+between the capture duration and the acquisition spacing, a contiguous-scan
+campaign is a required measurement on the refused channels rather than an
+optional precision improvement.  The outcome for every channel is carried in
+Table~\ref{tab:tolerance:channels}.
+
+\section{Stable-Era Operating Points}
+\label{sec:calibration:operating}
+
+Within the current era, calibration rejects invalid frames, validates the
+anchor, designated set, bulk, and empirical null, applies the measured
+correlation and coherence model, and maps the proxy through the declared
+science transfer.  It also applies stability and coverage gates before
+constructing the histogram.  A failed gate or missing transfer produces a
+refusal, not an extra selector parameter.
+
+The uncertainty gate keeps acquisition or sidereal-day blocks whole, resamples
+the two era halves separately, and evaluates the worst movement over the
+complete candidate surface.  Its seed, replicate count, coverage floor, minimum
+block count, upper interval, and acceptable cost and residual margins are
+explicit, recorded inputs.
+
+The resulting input is the family $\{\mathcal H_\rho\}$ of
+Eq.~\eqref{eq:detection:histogram}.  Its count bins determine the total and kept
+frame counts, while its additive $r_{\rm sys}$ and optional $r_{\rm var}$ totals
+are already in science units.  Each histogram also records $|\mathcal B|$, so the
+selector can validate the one-based $\rho$ and report
+$q_\rho=\rho/(|\mathcal B|+1)$.  The selector, RFIsher's threshold stage,
+receives only this histogram family and the channel science tolerance.  It
+evaluates the forecast cost
+\begin{equation}
+  \mathcal{C}(\pi)=\frac{1+r_{\rm var}(\pi)}{1-f(\pi)}
+\end{equation}
+subject to the separate coherent-bias constraint
+$r_{\rm sys}(\pi)\le r_{{\rm sys},\rm tol}$.  Candidates retaining fewer than
+thirty frames are omitted.  Among points within 2\% of the minimum cost, the
+selector orders by lower $r_{\rm sys}$, less masking, lower $\rho$, and lower
+$\eta$.  On the fine axis the selected policy is
+$(f_a,\mathcal D,\mathcal B,\rho^\star,\eta^\star_{q16})$, although only $\rho$
+and $\eta$ vary inside this final calculation; the rank is an optional second
+degree of freedom, and a channel whose cost surface is flat in $\rho$ reports
+the lowest rank in the plateau.  Until the visibility transfer is measured, the
+survey reports $r_{\rm proxy}$ and carries $r_{\rm var}=g_{\rm var}r_{\rm proxy}$
+and $r_{\rm sys}=g_{\rm sys}r_{\rm proxy}$ as explicit provisional closures.
+
+For the final campaign, the calibration blocks build and select from the
+accepted histogram, the chosen bundle is frozen, and a disjoint blocked holdout
+is then evaluated without retuning.  This separates upstream stability evidence
+from the threshold calculation and prevents held-out data from influencing the
+selected pair.  A future runtime bundle carries an era validity interval and
+refuses to load a calibration outside it; that interval is a deployment guard
+and provenance field, not an input to the threshold calculation.  The selected
+$(\rho^\star,\eta^\star)$ for every channel, with its cost, masked fraction, and
+residual, is Table~\ref{tab:tolerance:eta}.
+
+\section{Closing Calibration Campaign}
+\label{sec:calibration:closing}
+
+The final campaign produces one immutable evidence record per channel--stable-era
+pair and marks exactly one, the latest accepted era, as operational.  Each record
+contains anchor and uncertainty; designated and bulk masks; null sample count and
+block definition; false-alarm curve; accepted residual-score histogram; selected
+rank and Q16 multiplier where applicable; masked fraction and residual on disjoint
+holdout blocks; correlation-time outcome; proxy-transfer version; era provenance;
+and all source/product hashes.  Older records and their calendar boundaries remain
+available for audit and state-change studies but are never blended into the current
+selector input.  The campaign also includes simultaneous spectra
+across each 6-MHz allocation and contaminated complex visibilities before and
+after the sidereal filter.  Those latter products close the two transfer gates
+that a pilot-only calibration cannot close by itself.

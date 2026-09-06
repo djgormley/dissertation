@@ -1,0 +1,34 @@
+% Editable source for Figure \ref{fig:system:placement}: where the stage sits in the shared signal path.
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm]
+% antennas
+\foreach \i in {0,1,2} \pic at (0.35*\i,0.05) {antenna};
+\node[lab, anchor=north] at (0.35,-0.05) {$M$ inputs};
+% ADC
+\node[minimum width=15mm, minimum height=9mm, inner sep=0pt] (adc) at (2.7,0.45) {};
+\pic at (2.7,0.45) {adcbox};
+\node[lab, below=0.5mm of adc, text width=18mm] {ADC: $800$~MSPS, $8$ bit};
+% PFB
+\node[blk, minimum width=24mm, minimum height=10mm] (pfb) at (5.4,0.45) {};
+\pic at (4.85,0.45) {impulse}; \pic at (5.65,0.45) {butterfly};
+\node[lab, below=0.5mm of pfb, text width=24mm] {F-engine PFB: $1024$ channels, $f_s = 390.625$~kHz};
+% quantizer
+\node[blk, minimum width=12mm, minimum height=10mm] (q) at (8.0,0.45) {};
+\pic at (8.0,0.45) {stair};
+\node[lab, below=0.5mm of q] {$4{+}4$-bit quantizer};
+% corner turn
+\node[blk, minimum width=14mm, minimum height=10mm] (ct) at (10.4,0.45) {};
+\pic at (10.1,0.15) {crossbar};
+\node[lab, above=0.5mm of ct, text width=22mm] {corner turn: all inputs, few channels};
+% X-engine
+\node[blk, minimum width=16mm, minimum height=12mm] (xe) at (14.0,0.45) {};
+\pic at (13.68,0.78) {corr};
+\node[lab, above=0.5mm of xe, text width=22mm] {X-engine: visibilities per $N$-sample frame};
+\draw[bus] (1.05,0.45) -- (adc); \draw[bus] (adc) -- (pfb); \draw[bus] (pfb) -- (q) node[width, midway, above]{float}; \draw[bus] (q) -- (ct) node[width, midway, above]{$4{+}4$ b}; \draw[bus] (ct) -- (xe);
+% the tap
+\node[blk, draw=ppMeasured!90!black, fill=ppMeasured!12, line width=1pt, text width=52mm, minimum height=13mm] (det) at (10.4,-2.6) {\textbf{pilot-proxy stage}\\one monitored coarse channel per DTV allocation; $M\times N$ packed \texttt{int4} in $\to$ one mask bit $+$ validity out};
+\pic at (7.05,-2.6) {butterfly};
+\draw[bus] (ct.south) -- (det.north -| ct.south) node[width, midway, left]{$M\times N$ int4};
+\draw[sigc, dashed] (det.east) -| (xe.south);
+\node[lab, anchor=west, align=left, text width=26mm] at (14.75,-1.55) {applied mode (future): mask consumed after the completion event; shadow mode: recorded only};
+\node[lab, anchor=west, text width=40mm] at (0.2,-2.6) {the path is CHIME's; CHORD's differs in raster and frame length but not in where the tap sits, which is why the Pathfinder can host the stage};
+\end{tikzpicture}

@@ -1,0 +1,249 @@
+\chapter{Legacy Validation Evidence and Reuse Boundaries}
+\label{app:legacy}
+
+This appendix makes the useful legacy work part of the dissertation's canonical
+record without silently promoting it to the current detector geometry.  The
+retained projects served three purposes: they exposed failure modes that shaped
+the present design, supplied measured implementation and survey diagnostics, and
+recorded enough source and compact data to audit how the claims were produced.
+Their numerical results are classified here as \emph{measured on the recorded
+legacy geometry}, \emph{analytically scaled}, or \emph{historical prototype}.
+Only the first label is a measurement, and none of the three labels implies that
+the current two-stage operating point has already been validated.
+
+\section{Controlled-Injection Evidence}
+\label{app:legacy:injection}
+
+Section~\ref{sec:detection:synthetic} specifies the current campaign; the
+principal legacy result it builds on is a paired implementation-loss study on
+an earlier detector generation.  A standards-chain 8-VSB waveform was produced
+with the GNU Radio ATSC randomizer, Reed--Solomon encoder, interleaver, trellis
+encoder, field-sync multiplexer, and RRC pulse shaping.  Complex AWGN was
+added, the signal was passed through the four-tap sinc--Hamming reference PFB,
+and the samples were quantized to offset-binary \texttt{int4} at a declared
+$3\sigma$ clipping level.  The sweep covered shelf SNR from $-38$ to $-24$~dB
+and pilot offsets of $-1$, $0$, and $+1$~kHz, with $1000$ trials at each of the
+$45$ grid points.  Each trial carried both the packed-integer statistic and a
+matched full-precision-weight control, so the implementation comparison was
+paired rather than inferred from independently generated curves.  Its older
+$512$-row coarse geometry makes it a retained method and implementation-loss
+result, not a receiver-operating curve for the current $2048$-input fine
+decision.
+
+\begin{table}[H]
+\centering
+\caption[Legacy paired implementation-loss measurement]{Legacy paired implementation-loss measurement.  The entries are the
+horizontal difference between the full-precision and packed-\texttt{int4}
+crossings on the same trials; negative values indicate that the packed crossing
+was slightly more favorable.  These are measurements of the earlier
+$512$-row, coarse-statistic geometry, not of the present two-stage detector.}
+\label{tab:impl:legacyloss}
+\begin{tabular}{lcc}
+\toprule
+Operating crossing & Point estimate (dB) & Paired-bootstrap 95\% interval (dB) \\
+\midrule
+Fixed threshold, $P_{\rm d}=0.5$ & $-0.047$ & $[-0.121,+0.022]$ \\
+Fixed threshold, $P_{\rm d}=0.9$ & $-0.022$ & $[-0.100,+0.051]$ \\
+Positive excess, $P_{\rm d}=0.9$ & $-0.063$ & $[-0.238,+0.121]$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:impl:legacyloss} disfavors quantization as the dominant term in
+the observed $+0.27$--$0.32$~dB ideal-to-measured crossing envelope, although
+the widest interval still permits an implementation contribution near
+$0.24$~dB.  A same-seed CPU/GPU spot check at $-31$~dB supplied an orthogonal
+gate: all $200$ packed trials agreed exactly in the statistic and in both sets
+of decisions ($126/200$ fixed-threshold and $197/200$ positive-excess
+detections), and the weight-bank hash matched between the CPU sweep and GPU
+session.  The experiment also exposed why an injected signal must be audited
+independently of the detector.  The nominal golden capture contained a
+generator startup transient: its first $5.6$~ms block carried $9.7$~dB less
+pilot power than the stationary mean, the second was $0.4$~dB low, and
+subsequent blocks were stable.  After cropping to the stationary span, two
+independent estimators agreed within $0.007$~dB; the steady pilot was
+$0.136$~dB above the nominal ratio and required an amplitude retrim by
+$0.9845$.  The durable protocol is to crop, measure, and trim the exact span
+consumed by the evaluator before generating the sweep, and to report waveform
+calibration, model discrepancy, and implementation loss as separate terms.
+
+The source project preserves the $45$-point sweep summary, waveform-audit JSON,
+weight-bank identity, CPU/GPU parity memo, decision records, producing commit,
+and the manuscript source.  The large per-trial bundle was intentionally held
+outside the restored project, so the compact products can audit the reported
+crossings but cannot regenerate every trial from this directory alone.
+
+Four distinctions from that experiment are retained as design requirements:
+
+\begin{enumerate}
+  \item A paired floating-point/integer comparison isolates representation loss;
+  comparing two independently generated sweeps does not.
+  \item An ideal-to-measured crossing difference includes waveform and convention
+  error as well as implementation error and must not be labelled ``fixed-point
+  loss'' without the paired control.
+  \item A nominal test waveform is not ground truth until its exact evaluated span
+  has been checked independently.  The startup transient found here changed the
+  apparent pilot ratio by several tenths of a decibel.
+  \item Dimensionality must be stated with every sensitivity number.  The measured
+  curves used $R=512$ rows per trial; the $13.6$-dB improvement quoted for a full
+  $2048$-input frame was an analytic $1/\sqrt{R}$ scaling, not a regenerated
+  deployment curve --- which is why the current campaign measures the $M$-sweep
+  to $2048$ rather than scaling a single-chain result.
+\end{enumerate}
+
+The earlier GPU-prototype manuscript is retained for a different reason.  Its
+$-0.309$-dB mean and $0.59$-dB maximum absolute shelf-equivalent bias summarize a
+vertical statistic residual over its tested range, whereas
+Table~\ref{tab:impl:legacyloss} reports horizontal detection-curve shifts at fixed
+operating probabilities.  Its $14\times$ real-time shortfall ($216.23$ blocks/s, or $29.02$~GB/s of
+packed input, against its stated $3051.76$-blocks/s requirement) is likewise a
+result for its block definition, not for the fused kernel of
+Chapter~\ref{sec:impl}.
+Keeping both records prevents a later reader from treating unlike metrics as a
+disagreement or a universal correction.
+
+\section{Sensitivity Geometry and Policy Lessons}
+
+The standalone sensitivity project developed a reusable artifact grammar:
+detector configuration, injection grid, trial arrays, detection-probability
+surface, required-SNR table, finite-trial support, figures, and a provenance
+summary.  Its representative $-21.699$~dB/bin operating point belongs to the
+older $K=128$, long-accumulation geometry and is not imported into the present
+result.  What survives is the workflow: report the SNR convention, invert
+$P_{\rm d}(\mathrm{SNR},P_{\rm FA})$ only where the trial count supports it,
+separate interpolation from measured grid points, and archive arrays rather than
+only figures.
+
+The earlier positive-excess detector also admits a useful dimensionless
+sensitivity coordinate, retained here because it explains two things the body
+relies on.  If a shelf SNR $s$ moves the mean statistic by $C s$ and the
+idealized null width is
+\begin{equation}
+  \sigma = \sqrt{\frac{1}{R}+\frac{1}{2R}},
+  \qquad k = \frac{Cs}{\sigma},
+\end{equation}
+then the detection curves at different row counts collapse approximately onto
+one curve in $k$.  In the development study, the width crossing $k=1$ gave
+$P_{\rm d}=0.833$ at $-34.30$~dB for the measured $512$-row trials; the
+analytically scaled full-frame value was $P_{\rm d}=0.841$ at $-47.85$~dB.
+The latter was not a deployment-scale injection measurement and is retained
+only as the scaling prediction that the $M$-sweep of
+Section~\ref{sec:detection:synthetic} tests.
+
+The same coordinate clarifies why moving a keep threshold deep into the left
+tail is not a substitute for sensitivity.  Under the shifted-Gaussian model, a
+threshold two null widths below the mean retains $2.3\%$ of clean frames rather
+than $50\%$: approximately $22\times$ less exposure and $4.7\times$ worse map
+noise at fixed survey time.  The contamination fraction among retained frames
+improves by only $1.2\times$ for $k=0.1$, $1.6\times$ for $k=0.3$, and
+$5.4\times$ even at $k=1$.  Below the width crossing, both signal and null are
+retained at nearly the same rate, so purity changes slowly while exposure falls
+exponentially.  Moreover, low statistic values need not be especially pure:
+power entering a reference cell depresses the ratio, so reference contamination
+can populate the far left tail.  This is why the coarse mean crossing is a
+parameter-free health diagnostic rather than the science policy, and why the
+positive-excess rule's null mask fraction near one half is a drift sentinel and
+retention coordinate, not a small false-alarm probability.
+
+One incident from the superseded products is retained because the
+reason-coded validity rule of Chapter~\ref{sec:survey} descends from it.  A
+post-completion audit of those products found \rerun{178} nominally valid
+frames in \rerun{eight} events whose mean decoded complex-\texttt{int4} power
+sat exactly at the representation ceiling; that identity proves a constant
+native \texttt{0x00} word on every input (\texttt{0x88} after the detector's
+excess-8 repack), which is the signature of an acquisition-side fault rather
+than of any sky or receiver state.  Because such a frame's spectrum is a known
+constant, its contribution to an accumulated spectrum could be subtracted
+exactly; the durable lesson is that input validity must be decided per frame,
+at processing time, by rules independent of the detection statistic, which is
+how the v5 products are written.  The acquisition-side cause was never
+identified and does not need to be for the frames to be excluded.
+
+One further superseded record is worth one sentence.  The first masking-cost
+forecast was built on a quarterly rate table produced by an $f_s/2$-mistuned
+detector; the mistuning was diagnosed by the disagreement between that record
+and the correctly tuned products on the loudest channel, and the lesson ---
+that a rate table must carry its detector's weight-bank digest --- is now part
+of the product contract of Chapter~\ref{sec:survey}.
+
+\section{Blind Spots and Spectral Forensics}
+
+The earlier 23-channel survey produced several negative results worth retaining
+because they are easy to erase when only successful detections survive.
+Table~\ref{tab:legacy:forensics} records the most operationally important ones.
+
+\begin{table}[t]
+\centering
+\caption[Legacy survey findings retained as design evidence]{Legacy survey findings retained as design evidence.  They describe the
+earlier 23-channel products of a superseded detector generation and are not
+inputs to the current-era calibration.}
+\label{tab:legacy:forensics}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.22\linewidth}
+                              >{\raggedright\arraybackslash}p{0.35\linewidth}
+                              >{\raggedright\arraybackslash}X}
+\toprule
+Finding & Recorded evidence & Consequence retained here \\
+\midrule
+Off-nominal blind spot & Channel 33 carried a guard-region line near
+$-3.6$~kHz at about $21$~dB integrated SNR, where detector response was
+approximately $-17$~dB; eleven nearby translator/LPTV candidates lacked a
+tight source tolerance. & Pair the target statistic with a broad spectral
+sentinel, guard sweep, and epoch-specific anchor search; do not equate a clean
+target cell with a clean allocation. \\
+
+Instrument tones & Five of six extra-cell lines lay within $9.5$~Hz of rational
+receiver-clock fractions, were localized to one coarse channel, and changed by
+no more than $0.3$~dB under the analytic mask.  The unidentified sixth line was
+retained. & Require multiple independent attribution tests; unidentified means
+unexcised.  Fixed-width notches must be checked for residual skirts. \\
+
+Physical-invariant archive join & A join using day $\pm1$ plus integer frame
+count was $97.4\%$ consistent on singleton days and classified $79.0\%$ of
+$77{,}423$ channel-event records; a day-only join mixed trigger classes. & When
+datasets share no identifier, validate a physical invariant before using the
+join and retain the unmatched population. \\
+
+Recorded versus optimal subset & The recorded $16$-channel subset contained
+$1548$ common events; an unrestricted search later found $1829$.  The stacked
+headline changed from $3.74$ to $3.53$~MHz while per-channel and full-depth
+results were stable. & Report the recorded procedure and the post hoc optimum
+separately; robustness does not make the original selection preregistered. \\
+
+Exact rational thresholds & Per-channel rational approximations used
+$Q\le2^{16}$, error at most $10^{-9}$, zero decision disagreements over
+$339{,}196$ frames, and a worst recorded cross-product width of $55$ bits. &
+Calibration constants can remain data while the runtime decision stays exact;
+repeat the denominator and width audit for the current schema. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Two taxonomy distinctions also survive.  A channel can be \emph{separable but
+null-unusable}: an off-air minority proves that signal and null populations are
+distinct, yet the measured null is still too broad or contaminated to set an
+operating point.  Or it can be \emph{unseparable} inside the chosen statistic,
+as in the guard-region blind spot.  The first state calls for a better null
+campaign; the second calls for a different observable.  Neither is accurately
+described by a single ``clean/dirty'' label.
+
+The old redshift-tiering note is retained only as geometry: refusing an
+allocation removes a narrow redshift slice, so conservative tiering costs depth
+at multiple points across the interval rather than moving one terminal redshift.
+Chapter~\ref{sec:tolerance} supersedes the old numerical forecast with the current
+Fisher and residual-chain conventions.
+
+\clearpage
+\section{Where the Legacy Products Live}
+
+The retained legacy projects are vendored under
+\nolinkurl{evidence/legacy_projects/} in the dissertation repository, with the
+reviewed PDFs as fixed reading copies and the original keep/discard assessment
+beside them; Appendix~\ref{app:software} is the durable software and data
+availability statement.  The large raw artifacts of the pilot-informed project
+(two CANFAR results bundles, the archived $45{,}000$-trial CPU records,
+\texttt{all\_spectra.npz}, and the generated waveform and weight-bank
+binaries) are held outside the repository and named in its provenance
+record; the release manifest distinguishes \emph{retained source and compact
+products} from \emph{externally held raw products}.

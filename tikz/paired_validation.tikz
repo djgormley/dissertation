@@ -1,0 +1,35 @@
+% Editable source for Figure \ref{fig:detection:paired}: paired synthetic validation as a one-factor ladder.
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm,
+  fx/.style={blk, text width=36mm, minimum height=9mm},
+  fl/.style={blk, draw=ppPending!90!black, fill=ppPending!12, dashed, text width=36mm, minimum height=9mm},
+  rung/.style={font=\scriptsize, text=ppModel!95!black, align=left, text width=30mm, anchor=west}]
+\node[blk, minimum width=16mm, minimum height=10mm] (gen) at (0,0) {};
+\pic at (0,0) {sine};
+\node[lab, below=0.5mm of gen, text width=24mm] {8-VSB generator: known shelf SNR and pilot offset};
+\node[adder, scale=0.8, color=ppMeasured!90!black] (add) at (2.2,0) {};
+\draw[sig] (2.2,1.0) node[lab, above]{noise, commanded SNR} -- (add.north);
+\node[blk, minimum width=14mm, minimum height=10mm] (pfb) at (4.0,0) {};
+\pic at (4.0,0) {impulse};
+\node[lab, below=0.5mm of pfb, text width=18mm] {reference PFB};
+\node[blk, minimum width=12mm, minimum height=10mm] (q) at (6.1,0) {};
+\pic at (6.1,0) {stair};
+\node[lab, below=0.5mm of q, text width=18mm] {\texttt{int4} quantizer};
+\draw[sig] (gen) -- (add.west); \draw[sig] (add.east) -- (pfb); \draw[sig] (pfb) -- (q);
+% the ladder, top to bottom, one factor per rung
+\node[fl] (r1) at (10.2,3.2) {1\; float, full-precision weights, \textbf{unquantized} input};
+\node[fl] (r2) at (10.2,1.6) {2\; float, full-precision weights, quantized input};
+\node[fl] (r3) at (10.2,0.0) {3\; float, \texttt{int4} weights, quantized input};
+\node[fx] (r4) at (10.2,-1.6) {4\; integer CPU oracle (\texttt{fxfft256}, exact decision)};
+\node[fx] (r5) at (10.2,-3.2) {5\; production GPU kernel};
+\node[rung] at (12.5,2.4) {$1\to2$: input quantization};
+\node[rung] at (12.5,0.8) {$2\to3$: weight quantization};
+\node[rung] at (12.5,-0.8) {$3\to4$: transform rounding and integer decision};
+\node[rung] at (12.5,-2.4) {$4\to5$: must be bit-identical};
+\coordinate (split) at (7.4,0);
+\draw[bus] (q) -- (split);
+\foreach \t in {r2,r3,r4,r5} \draw[bus] (split) |- (\t.west);
+\draw[ctl] (pfb.north) |- (r1.west);
+\node[lab, anchor=south west] at (4.35,3.25) {bypasses the quantizer};
+\node[blkc, text width=50mm, minimum height=10mm] (res) at (10.2,-5.4) {per trial: statistic and mask bit at an $H_0$-calibrated threshold; per cohort: the paired crossing shift between rungs};
+\draw[sigc] (r5.south) -- (res.north);
+\end{tikzpicture}

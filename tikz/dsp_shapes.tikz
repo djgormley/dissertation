@@ -1,0 +1,53 @@
+% Reusable DSP / digital-design / computing symbols for the dissertation figures.
+% Loaded once from dissertation.tex after figure_styles.tikz.  Colours are the
+% dissertation palette: blue = exact/measured, gold = model/policy, green =
+% conditional, red = failure, gray = context/pending.
+\usetikzlibrary{shapes.geometric,shapes.symbols,shapes.misc,calc,positioning,fit,arrows.meta,decorations.pathreplacing}
+\tikzset{
+  % ---- generic blocks
+  blk/.style={draw=ppMeasured!90!black, line width=0.75pt, fill=ppMeasured!8, font=\small, align=center, inner sep=3pt, minimum height=9mm, minimum width=13mm},
+  blkm/.style={blk, draw=ppModel!90!black, fill=ppModel!10},
+  blkc/.style={blk, draw=ppConditional!90!black, fill=ppConditional!10},
+  blkx/.style={blk, draw=ppPending!90!black, fill=black!2},
+  blkf/.style={blk, draw=ppFailure!90!black, fill=ppFailure!8},
+  % ---- DSP operators
+  op/.style={circle, draw=ppMeasured!90!black, line width=0.75pt, fill=white, minimum size=8.5mm, inner sep=0pt, font=\small},
+  opm/.style={op, draw=ppModel!90!black},
+  cmp/.style={isosceles triangle, isosceles triangle apex angle=55, draw=ppModel!90!black, fill=ppModel!10, line width=0.75pt, minimum height=8mm, inner sep=1pt, font=\scriptsize},
+  % ---- memory / storage
+  smem/.style={draw=ppPending!90!black, fill=black!2, line width=0.75pt, minimum height=9mm, minimum width=16mm, align=center, font=\small, inner sep=3pt},
+  gmem/.style={cylinder, shape border rotate=90, aspect=0.22, draw=ppMeasured!90!black, fill=ppMeasured!8, line width=0.75pt, minimum height=11mm, minimum width=17mm, align=center, font=\small, inner sep=2pt},
+  db/.style={cylinder, shape border rotate=90, aspect=0.25, draw=ppPending!90!black, fill=black!2, line width=0.75pt, minimum height=12mm, minimum width=20mm, align=center, font=\small, inner sep=2pt},
+  reg/.style={draw=ppMeasured!90!black, fill=white, line width=0.75pt, minimum height=6mm, minimum width=16mm, font=\scriptsize, inner sep=2pt,
+    path picture={\draw[ppMeasured!60, line width=0.4pt] ([xshift=1.6mm]path picture bounding box.north west) -- ([xshift=1.6mm]path picture bounding box.south west) ([xshift=-1.6mm]path picture bounding box.north east) -- ([xshift=-1.6mm]path picture bounding box.south east);}},
+  % ---- wiring
+  sig/.style={-{Latex[length=1.8mm]}, thick, ppMeasured!90!black},
+  sigm/.style={-{Latex[length=1.8mm]}, thick, ppModel!90!black},
+  sigc/.style={-{Latex[length=1.8mm]}, thick, ppConditional!90!black},
+  sigf/.style={-{Latex[length=1.8mm]}, thick, ppFailure!90!black},
+  ctl/.style={-{Latex[length=1.6mm]}, dashed, ppPending!85!black},
+  bus/.style={-{Latex[length=1.8mm]}, line width=1.4pt, ppMeasured!90!black},
+  width/.style={font=\scriptsize, text=ppMeasured!90!black, inner sep=1pt, fill=white},
+  lab/.style={font=\scriptsize, text=ppPending!90!black, align=center},
+  % ---- pics
+  butterfly/.pic={\draw[ppMeasured!90!black, line width=0.6pt] (0,0.28) -- (0.55,0.28) (0,-0.28) -- (0.55,-0.28) (0,0.28) -- (0.55,-0.28) (0,-0.28) -- (0.55,0.28);
+                  \fill[ppMeasured!90!black] (0.55,0.28) circle (0.035) (0.55,-0.28) circle (0.035);},
+  impulse/.pic={\draw[ppPending!80!black, line width=0.4pt] (-0.4,0) -- (0.4,0);
+                \foreach \x/\h in {-0.3/0.05,-0.2/-0.1,-0.1/0.18,0/0.36,0.1/0.18,0.2/-0.1,0.3/0.05} {\draw[ppMeasured!90!black, line width=0.6pt] (\x,0) -- (\x,\h); \fill[ppMeasured!90!black] (\x,\h) circle (0.025);}},
+  stair/.pic={\draw[ppPending!80!black, line width=0.4pt] (-0.4,-0.32) -- (0.4,-0.32) (-0.4,-0.32) -- (-0.4,0.34);
+              \draw[ppMeasured!90!black, line width=0.7pt] (-0.36,-0.28) -- (-0.2,-0.28) -- (-0.2,-0.12) -- (-0.04,-0.12) -- (-0.04,0.04) -- (0.12,0.04) -- (0.12,0.2) -- (0.28,0.2) -- (0.28,0.3);},
+  adcbox/.pic={\draw[ppMeasured!90!black, line width=0.75pt, fill=ppMeasured!8] (-0.75,-0.45) rectangle (0.75,0.45);
+                \draw[ppMeasured!90!black, line width=0.6pt] (-0.75,-0.45) -- (0.75,0.45);
+                \draw[ppMeasured!90!black, line width=0.7pt, smooth, domain=-0.62:-0.12, samples=24] plot (\x, {0.22+0.12*sin(deg(24*(\x+0.62)))});
+                \node[font=\scriptsize, text=ppMeasured!90!black] at (0.32,-0.2) {\texttt{0101}};},
+  sine/.pic={\draw[ppMeasured!90!black, line width=0.7pt, smooth, domain=-0.42:0.42, samples=40] plot (\x, {0.28*sin(deg(9*\x))});},
+  antenna/.pic={\draw[ppMeasured!90!black, line width=0.8pt] (0,0) -- (0,0.42); \draw[ppMeasured!90!black, line width=0.8pt] (-0.24,0.66) -- (0,0.42) -- (0.24,0.66); \draw[ppMeasured!90!black, line width=0.8pt] (-0.24,0.66) -- (0.24,0.66);},
+  cells/.pic={\foreach \i in {0,...,5} \foreach \j in {0,1} \draw[ppPending!80!black, fill=ppPending!15, line width=0.3pt] (\i*0.17,\j*0.17) rectangle ++(0.14,0.14);},
+  threads/.pic={\foreach \i in {0,...,7} \foreach \j in {0,...,3} \fill[ppMeasured!55] (\i*0.13,\j*0.13) rectangle ++(0.1,0.1);},
+  blocks/.pic={\foreach \i in {0,...,9} \foreach \j in {0,...,2} \draw[ppMeasured!70, fill=ppMeasured!15, line width=0.3pt] (\i*0.19,\j*0.19) rectangle ++(0.15,0.15);},
+  ring/.pic={\draw[ppMeasured!90!black, line width=0.7pt] (0,0) circle (0.42); \draw[ppMeasured!90!black, line width=0.7pt] (0,0) circle (0.22);
+             \foreach \a in {0,45,...,315} \draw[ppMeasured!70, line width=0.4pt] (\a:0.22) -- (\a:0.42);
+             \fill[ppMeasured!35] (0:0.22) arc (0:45:0.22) -- (45:0.42) arc (45:0:0.42) -- cycle;},
+  crossbar/.pic={\foreach \i in {0,1,2,3} {\draw[ppPending!80!black, line width=0.4pt] (\i*0.18,0) -- (\i*0.18,0.6) (0,\i*0.18) -- (0.6,\i*0.18);} \foreach \i in {0,1,2,3} \fill[ppMeasured!90!black] (\i*0.18,{(3-\i)*0.18}) circle (0.03);},
+  corr/.pic={\foreach \i in {0,1,2,3} \foreach \j in {0,1,2,3} {\ifnum\j>\i\relax\else\draw[ppMeasured!80, fill=ppMeasured!20, line width=0.3pt] (\i*0.16,-\j*0.16) rectangle ++(0.13,-0.13);\fi}},
+}

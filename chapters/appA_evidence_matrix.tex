@@ -1,0 +1,161 @@
+\chapter{Evidence, Assumptions, and Closing Tests}
+\label{app:evidence}
+
+The dissertation crosses several disciplinary boundaries, and the word
+``verified'' does not mean the same thing in each of them.  Table~\ref{tab:evidence:matrix}
+centralizes the claim boundary used throughout the text, with the platform that supplies each piece of evidence named in the claim.  It is not a
+substitute for the derivations in the body; it is a map from each major claim to
+the kind of evidence that supports it and to the experiment that would change
+its status.  The distinction is intentional: bit equality can close an
+implementation question, whereas no amount of bit equality can validate an
+astrophysical transfer model.
+
+\begin{landscape}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.22\linewidth}
+                  >{\raggedright\arraybackslash}p{0.12\linewidth}
+                  >{\raggedright\arraybackslash}p{0.29\linewidth}
+                  >{\raggedright\arraybackslash}p{0.28\linewidth}}
+\caption[Evidence matrix for the principal claims]{Evidence matrix for the principal claims.  ``Conditional'' means that
+the calculation is reproducible under the stated model but that a load-bearing
+transfer remains to be measured.}\label{tab:evidence:matrix}\\
+\toprule
+Claim & Status & Present evidence & Closing test or release record \\
+\midrule
+\endfirsthead
+\toprule
+Claim & Status & Present evidence & Closing test or release record \\
+\midrule
+\endhead
+Pilot frequency and nominal pilot-to-data power relation & specified &
+ATSC~A/53 gives the symbol rate, pilot insertion, exact pilot-frequency
+relation, nominal 309-kHz placement, 1.25 bias, and approximately 11.3-dB
+pilot-to-data power ratio & Retain the cited standard edition and record the
+weight-generator convention in the release manifest. \\
+
+Matched-filter projection for the declared known-tone model & analytic &
+Likelihood-ratio/matched-filter result under circular Gaussian noise and a known
+signal family & Report departures from the model separately; do not promote this
+result to global optimality of the complete calibrated detector. \\
+
+Exact integer detector output & verified & Frozen weight bank and transform,
+golden vectors, independent reference implementations, concurrency emulation,
+and device equality tests & Release source commit, compiler/toolkit versions,
+weight/twiddle hashes, binary hash, exact test count, and edge-vector results.
+Compare weight banks by their coefficient digest rather than by a whole-file
+digest.  The bank that produced the archive and the bank now carried in the
+analysis repository differ only in an embedded profile-name string, so their
+file digests differ while every quantized coefficient is identical; a
+file-digest comparison alone would misread a rename as a detector change. \\
+
+Threshold-free estimator transfer (synthetic platform) & measured & A
+$41$-point fully digital GNU~Radio sweep covers $-60$ to $+60$~dB with $9000$
+trials and compares the floating-point CPU, packed CPU, and fixed-point GPU
+paths. A $30$-pass LimeSDR over-the-air sweep calibrates the received axis from
+per-pass controls and agrees with the control-conditioned expectation over its
+fitted range. & Retain the trial summaries, control definitions, pass-cluster
+intervals, source and artifact hashes, and raw-capture inventory. Do not promote
+these transfer sweeps to a sensitivity, receiver-operating, threshold,
+propagation, or telescope-deployment result. \\
+
+Synthetic detection at the production geometry (synthetic platform) & pending
+& The paired fixed/floating design, the stacked-capture construction of the
+$M = 2048$ spatial axis, the $M$-sweep, and the fully correlated bracket are
+specified (Section~\ref{sec:detection:synthetic}); the retained earlier study
+on a superseded $512$-row geometry bounds the representation loss below
+$0.1$~dB (Appendix~\ref{app:legacy}) & Run the campaign: publish the measured
+scaling of null width and deflection with $M$, the paired crossing shifts with
+their intervals, the fine-versus-coarse gain against the $10.5$~dB bound, and
+every unsmoothed frontier point with uncertainty. \\
+
+Archive-scale accounting and product reproduction (offline platform) &
+pending rerun & The \texttt{pilot-proxy} survey enumeration, inventory,
+quarantine ledger, and per-channel \texttt{pilotproxy\_per\_pilot\_product\_v5}
+products reconcile unit by unit; every product records its binary digest,
+archive version, receiver software tag, and typed input-map digest; reason-coded
+validity is decided at processing time & Retain the input, product,
+source-cohort, kernel, and release hashes; publish the survey and cross-build
+denominators of Section~\ref{sec:survey:reproduction}, including the joined
+event/frame counts and the mismatch count. \\
+
+Current-era calibration objects (offline platform) & pending rerun & The era
+classifier, anchor estimator, floor rule, bulk-calibrated null, correlation
+estimator, and RFIsher selector are defined with refusal semantics
+(Chapter~\ref{sec:calibration}) & Fill Tables~\ref{tab:calibration:eras},
+\ref{tab:calibration:anchors}, \ref{tab:calibration:nulls},
+\ref{tab:tolerance:eta}, and~\ref{tab:tolerance:channels} from the rerun, one
+row per channel, with block-bootstrap intervals. \\
+
+Blocked archive transfer (offline platform) & pending & The blocked holdout
+design is defined (Section~\ref{sec:survey:holdout}); because the archive
+informed development, a split of the same captures establishes temporal
+transfer rather than a pristine blind result & Freeze each channel--era bundle
+on whole acquisition or time blocks, then evaluate blocks reserved before
+operating-point selection once without retuning and publish residual, mask,
+coverage, refusal, and uncertainty terms. \\
+
+Online shadow operation (CHORD Pathfinder) & pending & The
+\texttt{cudaPilotProxyDetector} stage is implemented on the Pathfinder
+profile, verified bit-for-bit against the offline reference by GPU oracle and
+file-pipeline replay, and benchmarked for kernel time; no hours-long live run
+is claimed & Run the frozen estimator and decision in \texttt{kotekan} shadow
+mode, record but do not apply proposed masks, replay sampled frames
+independently, record before-and-after spectra, and pass the predeclared
+latency, loss, drift, and stability gates
+(Section~\ref{sec:deployment:results}). \\
+
+Triggered archive as a representation of transmitter occupancy & conditional &
+A \rerun{7.6-year} calendar span of captures with per-event provenance, but a
+trigger-based rather than uniform sampling process.  The release quantifies the
+retained exposure by UTC and local time of day, month and meteorological season,
+local mean sidereal time, and triggered versus scheduled provenance. & Recover or
+define the missing operations-state annotation and the corresponding selection
+model; evaluate frozen policies on blocked holdout intervals. \\
+
+Pilot-to-shelf transfer across a 6-MHz allocation & conditional & Standard
+transmitter power relation and a receiver model; existing products observe the
+pilot-containing coarse channel only & Record simultaneous spectra across the
+allocation and infer the transfer distribution by channel, epoch, and
+propagation state. \\
+
+Scalar pilot-power proxy for the visibility-domain contamination residual after sidereal filtering
+& conditional & A nested temporal decomposition of the scalar proxy and an
+explicit coherence model & Measure contaminated complex visibilities before and
+after the per-sidereal-day operation, including baseline dependence and phase;
+fit separate coherent and stochastic residual terms. \\
+
+Fisher estimator and tolerance & modelled & Reproducible per-bin perturbation
+and an explicit collaboration-style combined multi-bin implementation using
+the same instrument bank.  The versioned evidence executes all seven DTV bins
+for the per-bin noise-normalized, combined noise-normalized, and combined
+fixed-physical cases, with all lower/central/upper stability diagnostics;
+legacy per-bin output is preserved to machine precision.  The physical-channel
+mapping uses the smaller accepted value when an allocation overlaps two bins. &
+Retain the per-bin/joint difference as model sensitivity.  Apply a
+channel-policy change only after the empirical residual template and transfer
+select the relevant forecast response. \\
+
+Residual-template shape & modelled + conditional & A transparent thermal-noise-shaped
+contamination model $C_{\rm res}\propto C_N$ plus authenticated analytic
+low-$k_\parallel$, wedge-like, and localized-$|k|$ banks, all executed over the
+seven DTV bins with accepted and refused Fisher points published. & The
+analytic envelope is complete.  Frequency-, baseline-, sidereal-, and empirical
+visibility templates remain data-dependent because the forecast callable and
+archive proxy expose none of those coordinates. \\
+
+Channel evidence map (23 of 23 product-covered) & conditional & Archive
+products for all 23 channels; the full proxy and forecast chain evaluated on
+every channel's current era at its tolerance-selected operating point
+(Table~\ref{tab:tolerance:channels}), including dated sign-offs and
+transmitter-off floors & Complete the transfer validations, contiguous scans,
+and the blocked holdout before issuing a final 23-channel operations
+matrix. \\
+\bottomrule
+\end{longtable}
+\end{landscape}
+
+A compact visual version of the same boundary appears in
+Figure~\ref{fig:intro:claimchain}.  The operational rule is simple: a claim can
+move from \conditional\ to \measured\ only when the named closing product is
+attached to the same immutable analysis bundle as the result it supports.

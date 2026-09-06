@@ -1,0 +1,77 @@
+\chapter{Software and Data Availability}
+\label{app:software}
+
+Every result in this dissertation is produced by one of seven repositories,
+and every number in a table or figure is traceable to a pinned commit of the
+one that produced it.  Table~\ref{tab:software:repos} lists them with the
+role each plays and the chapters that depend on it.  The release manifest of
+the dissertation repository records the exact commit of each, together with
+the digests of the vendored evidence bundles under \nolinkurl{evidence/}; a
+commit listed here without a pin is a commit still to be frozen.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption[Repositories behind the dissertation]{The repositories behind the dissertation, their roles, and the chapters that depend on them. All are under \nolinkurl{github.com/WVURAIL/} unless noted; the three forks carry the changes named and are otherwise their upstream.}
+\label{tab:software:repos}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}}
+\toprule
+Repository & Role & Depends & Pinned commit \\
+\midrule
+\texttt{pilot-proxy} & The detector: weight synthesis, floating and fixed-point references, the CUDA kernels of Chapter~\ref{sec:impl}, the synthetic testbench (GNU~Radio generator, sweeps, audits), and the archive runtime (survey, inventory, transfer, quarantine, products) of Chapter~\ref{sec:survey}. & Ch.~\ref{sec:param}--\ref{sec:survey} & \rerun{to pin} \\
+\texttt{datatrail-cli} (fork of CHIMEFRB) & CHIME/FRB's Datatrail archive-service client; the fork carries the recursive discovery, inventory-manifest, manifest-pull-with-integrity, dataset-verification, and doctor commands the survey relies on. & Ch.~\ref{sec:survey} & \rerun{to pin} \\
+\texttt{dtv-census} & The transmitter census: source compilations, curated workbook, deterministic reduction, ISED overlay, and the frozen 500-mile envelope of Section~\ref{sec:dtv:environment}. & Ch.~\ref{sec:dtv}, \ref{sec:calibration} & \rerun{to pin} \\
+\texttt{RFIsher} & The masking-cost and contamination-residual tolerance workflow of Chapter~\ref{sec:tolerance}: residual-score preparation, the two-input threshold selector and its decision record, the incumbent comparison, and the Fisher-bank interface. & Ch.~\ref{sec:calibration}, \ref{sec:tolerance} & \rerun{to pin} \\
+\texttt{RadioFisher} (fork of philbull) & The Fisher-forecast backend of Bull et al.\ \cite{bull2015}, configured to the CHIME Overview convention; the fork carries the instrument bank and the residual-template hooks RFIsher calls. & Ch.~\ref{sec:tolerance} & \rerun{to pin} \\
+\texttt{kotekan} (fork of kotekan) & The real-time framework; the fork carries \texttt{cudaPilotProxyDetector}, \texttt{cudaPilotProxyPacker}, their tests, and the Pathfinder configuration of Chapter~\ref{sec:deployment}. & Ch.~\ref{sec:deployment} & \rerun{to pin} \\
+\texttt{dissertation} (djgormley) & This document, its figure generators, the vendored evidence bundles, and the release manifest that pins the six above. & all & --- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{Rerunning it}
+
+The reproducibility claim is operational, not rhetorical: a reader with the
+pinned revisions of Table~\ref{tab:software:repos} reruns the chain below and
+obtains the same digests.  Each step names the durable check it passes; the
+development diagnostics that produced no result in this document are not part
+of the chain.
+
+\begin{enumerate}[leftmargin=2em,itemsep=2pt]
+\item \emph{Detector and kernel} (\texttt{pilot-proxy}): \texttt{make build\-kernel}
+then \texttt{make test} runs the release suite of Section~\ref{sec:impl:verify}
+--- the golden-vector, oracle, concurrency-emulation, and on-hardware gates;
+\texttt{make release-check} adds the specification-document, vocabulary, and profile-contract checks; \texttt{make freeze-check} adds the clean-tree and
+commit checks that a release manifest requires.  All must pass before any
+product is trusted.
+\item \emph{Synthetic campaigns} (\texttt{pilot-proxy}): \texttt{make generate-atsc}, 
+\texttt{make audit-atsc}, \texttt{make quantize}, \texttt{make evaluate}, and \texttt{make detect} regenerate the waveform, its stationary-span audit, the
+quantized inputs, the estimation sweep, and the detection campaign; their
+outputs carry the digests quoted in Chapters~\ref{sec:estimator}
+and~\ref{sec:detection}.
+\item \emph{Archive survey and products} (\texttt{pilot-proxy} over
+\texttt{datatrail}): \texttt{make archive\-integration\-check} confirms the
+archive environment; the survey and processing commands of
+Chapter~\ref{sec:survey} then produce the v5 products, whose per-unit digests
+and the cross-build comparison of Section~\ref{sec:impl:verify} are the
+reproduction record.
+\item \emph{Calibration, selection, and forecast} (\texttt{RFIsher} with the
+\texttt{RadioFisher} fork): the test suite reproduces the clean-survey table
+of Chapter~\ref{sec:tolerance} to machine precision, and the selection
+workflow emits the per-channel evidence ledger from which every table of
+Chapters~\ref{sec:calibration} and~\ref{sec:tolerance} is generated.
+\item \emph{Live stage} (\texttt{kotekan} fork): the CI configuration runs the
+GPU-oracle and file-pipeline replay tests of Chapter~\ref{sec:deployment}; the
+shadow run's acceptance table is evaluated against the recorded run.
+\item \emph{This document} (\texttt{dissertation}): \texttt{make verify} rebuilds
+the figures from the frozen exports, rebuilds the PDF, and checks every number
+against the number gate and the release manifest; \texttt{make manifest}
+re-pins the digests after a deliberate change.
+\end{enumerate}
+
+The CHIME baseband archive itself is the property of the CHIME collaboration
+and is accessed through CANFAR under the collaboration's data policy; the
+survey products derived from it are released under the same policy with their
+provenance ledgers.  The synthetic captures, the LimeSDR raw recordings, and
+the Pathfinder shadow-run records are released with the campaigns that produce
+them, with digests recorded in the release manifest.

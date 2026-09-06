@@ -1,0 +1,36 @@
+% Editable source for Figure \ref{fig:calibration:flow}: from products to a verdict.
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm,
+  st/.style={draw, rounded corners=2pt, align=center, inner sep=3.5pt, minimum height=13mm, text width=#1, line width=0.75pt},
+  ex/.style={st=#1, fill=ppMeasured!8, draw=ppMeasured!90!black},
+  md/.style={st=#1, fill=ppModel!10, draw=ppModel!90!black},
+  cd/.style={st=#1, fill=ppConditional!10, draw=ppConditional!90!black},
+  arr/.style={-{Stealth[length=1.8mm]}, thick, ppPending!85!black},
+  ln/.style={thick, ppPending!85!black}]
+\node[db, minimum width=30mm, text width=28mm, minimum height=12mm] (prod) at (1.6,0) {\textbf{v5 products}: per frame $P_r$, $S_r[f]$, PSD, validity, UTC, ids};
+\node[ex=30mm] (era) at (6.2,0) {\textbf{era classifier} (\S\ref{sec:calibration:eras})\\calibration-free; monthly medians; persistence};
+\node[ex=30mm] (cur) at (10.8,0) {\textbf{current era}\\one station state, one instrument state};
+\node[ex=24mm] (anc) at (2.2,-2.6) {\textbf{anchor} $f_a$\\on-minus-off, or fallback};
+\node[ex=24mm] (nul) at (5.6,-2.6) {\textbf{null} $+$ source\\bulk median, left scale, CCDF};
+\node[ex=24mm] (flr) at (9.0,-2.6) {\textbf{floor}\\off era, quiet subset, or refused};
+\node[ex=24mm] (tau) at (12.4,-2.6) {$\boldsymbol{\tau_c}$\\measured, bound, or refused};
+\node[md=34mm] (hist) at (6.0,-5.2) {\textbf{histogram family} $\{\mathcal H_\rho\}$\\counts, $r_{\rm sys}$ and $r_{\rm var}$ totals per candidate $\eta$};
+\node[md=30mm] (sel) at (10.8,-5.2) {\textbf{RFIsher selector}\\cost under the bias constraint $\to (\rho^\star,\eta^\star)$};
+\node[cd=30mm] (hold) at (10.8,-8.0) {\textbf{blocked holdout}\\frozen pair on untouched blocks, once};
+\node[cd=30mm] (verd) at (15.4,-8.0) {\textbf{verdict}\\recovery, excision, or measurement-bound};
+\draw[arr] (prod) -- (era); \draw[arr] (era) -- (cur);
+% distribution line from the current era to the four objects
+\draw[ln] (cur.south) -- ++(0,-0.45) coordinate (d1);
+\draw[ln] (d1 -| anc.north) -- (d1 -| tau.north);
+\foreach \t in {anc,nul,flr,tau} \draw[arr] (d1 -| \t.north) -- (\t.north);
+% collector line from the four objects into the histogram family
+\draw[ln] (anc.south) -- ++(0,-0.45) coordinate (c1);
+\draw[ln] (c1 -| anc.south) -- (c1 -| tau.south);
+\foreach \t in {nul,flr,tau} \draw[ln] (\t.south) -- (c1 -| \t.south);
+\draw[arr] (c1 -| hist.north) -- (hist.north);
+\draw[arr] (hist) -- (sel); \draw[arr] (sel) -- (hold); \draw[arr] (hold) -- (verd);
+\node[md=30mm, minimum height=10mm] (tol) at (15.4,-5.2) {\textbf{science tolerance} $r_{\rm tol}$ and \textbf{transfer model} $(g_{\rm var}, g_{\rm sys})$};
+\draw[arr] (tol) -- (sel);
+\node[db, minimum width=28mm, text width=26mm, minimum height=9mm] (evalb) at (5.6,-8.0) {\textbf{evaluation blocks} (untouched)};
+\draw[arr] (evalb) -- (hold);
+\node[font=\scriptsize, text=ppFailure!90!black, align=left, text width=34mm, anchor=west] at (14.2,-2.6) {any refused input refuses the histogram; the selector never invents a floor or a $\tau_c$};
+\end{tikzpicture}

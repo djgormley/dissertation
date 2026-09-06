@@ -1,0 +1,62 @@
+% Editable source for Figure \ref{fig:dtv:skirt}: where the pilot sits and what the references see.
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm]
+% --- (a) the whole allocation: transmitted 8-VSB power spectrum (RRC-shaped), 6 MHz = 12 cm
+\node[anchor=west, font=\small\bfseries] at (0.6,6.5) {(a) one 6-MHz allocation as transmitted (amplitude, linear scale)};
+\draw[->] (-0.2,0) -- (12.6,0) node[right, font=\scriptsize]{MHz from the lower edge};
+\draw[->] (0,-0.2) -- (0,5.6) node[above left, font=\scriptsize, align=right]{relative\\amplitude};
+\foreach \x/\l in {0/0,2/1,4/2,6/3,8/4,10/5,12/6} { \draw (\x,-0.08) -- (\x,0.08); \node[below, font=\scriptsize] at (\x,-0.1) {\l}; }
+% flat top at y=3, transitions 0.62 MHz wide (1.24 cm) centred at 0.31 and 5.69 MHz (0.62 cm and 11.38 cm)
+\draw[ppMeasured!90!black, thick, fill=ppMeasured!8]
+  (0,0) -- (0.618,3.536) -- plot[domain=0.618:1.24, samples=30] (\x, {5*sin(deg(3.14159*\x/2.48))})
+  -- (10.76,5) -- plot[domain=10.76:11.382, samples=30] (\x, {5*cos(deg(3.14159*(\x-10.76)/2.48))}) -- (12,0) -- cycle;
+\draw[dashed, ppPending!90!black] (0.62,0) -- (0.62,5.0); \draw[dashed, ppPending!90!black] (11.38,0) -- (11.38,5.0);
+\draw[<->, ppPending!90!black] (0.62,5.2) -- (11.38,5.2) node[midway, above, font=\scriptsize]{Nyquist bandwidth $R_s/2 = 5.381$~MHz between the half-power points};
+% pilot line at 0.309 MHz (0.618 cm)
+\draw[ppFailure!90!black, very thick] (0.618,0) -- (0.618,5.6);
+\node[font=\scriptsize, text=ppFailure!90!black, align=left, anchor=west, text width=76mm] at (1.6,3.45) {pilot at $309.441$~kHz above the edge (exact clock relation), at $0.707$ of the flat-top amplitude; the skirt's half-power point $\alpha B_N/2 = 309.95$~kHz is $0.51$~kHz higher --- a near-coincidence, not an identity};
+\node[font=\scriptsize, text=ppMeasured!90!black] at (6.5,2.0) {flat data shelf, $11.3$~dB above the pilot in total power};
+% the monitored coarse channel: 390.6 kHz = 0.78 cm, containing the pilot
+\draw[ppModel!90!black, thick, fill=ppModel!25, fill opacity=0.5] (0.30,-0.95) rectangle (1.08,-0.65);
+\node[font=\scriptsize, text=ppModel!95!black, anchor=west] at (1.25,-0.8) {the one monitored $390.6$-kHz coarse channel, containing the pilot};
+% --- (b) zoom: +-10 kHz around the pilot
+\node[anchor=west, font=\small\bfseries] at (0,-1.45) {(b) the same pilot, $\pm 10$~kHz (the shelf slope is exaggerated $\times 50$ for visibility)};
+\draw[->] (-0.2,-4.6) -- (12.6,-4.6) node[right, font=\scriptsize]{kHz from the pilot};
+\foreach \x/\l in {1/-10,3.5/-5,6/0,8.5/+5,11/+10} { \draw (\x,-4.68) -- (\x,-4.52); \node[below, font=\scriptsize] at (\x,-4.7) {\l}; }
+\draw[ppMeasured!90!black, thick] (0.5,-3.55) -- (11.5,-3.05);
+\node[font=\scriptsize, text=ppMeasured!90!black, anchor=west, align=left] at (9.9,-2.75) {local shelf density: half the flat top\\($g \simeq 0.56$ against the 6-MHz average)};
+\draw[ppFailure!90!black, very thick] (6,-4.6) -- (6,-2.05);
+\node[font=\scriptsize, text=ppFailure!90!black, above] at (6,-2.05) {pilot line};
+% target bin and reference bins, 3.05 kHz wide = 1.525 cm; references at +-6.1 kHz = 3.05 cm
+\draw[ppMeasured!90!black, fill=ppMeasured!30, fill opacity=0.6] (5.24,-4.6) rectangle (6.76,-2.4);
+\draw[ppModel!90!black, fill=ppModel!30, fill opacity=0.6] (2.19,-4.6) rectangle (3.71,-3.439);
+\draw[ppModel!90!black, fill=ppModel!30, fill opacity=0.6] (8.29,-4.6) rectangle (9.81,-3.161);
+\node[font=\scriptsize, text=ppMeasured!95!black, anchor=west] at (6.1,-4.35) {target $w_0$};
+\node[font=\scriptsize, text=ppModel!95!black, align=center] at (2.95,-5.35) {reference $w_2$ at $-6.1$~kHz};
+\node[font=\scriptsize, text=ppModel!95!black, align=center] at (9.05,-5.35) {reference $w_1$ at $+6.1$~kHz};
+\node[font=\scriptsize, align=left, text width=44mm, anchor=west] at (0.2,-2.55) {the symmetric pair cancels the linear slope; each reference then holds the \emph{local} shelf plus noise, which is what $g$ measures};
+
+% --- (c) the detector's view when the shelf is under the noise (dB relative to the noise density per analysis bin)
+% y mapping: 0 dB at y=-7.6, 0.16 cm per dB; -25 dB at y=-11.6
+\node[anchor=west, font=\small\bfseries] at (0,-6.35) {(c) the same $\pm 10$~kHz when the shelf is $20$~dB \emph{under} the noise (per $3.05$-kHz bin, dB re noise)};
+\draw[->] (-0.2,-11.6) -- (12.6,-11.6) node[right, font=\scriptsize]{kHz from the pilot};
+\foreach \x/\l in {1/-10,3.5/-5,6/0,8.5/+5,11/+10} { \draw (\x,-11.68) -- (\x,-11.52); \node[below, font=\scriptsize] at (\x,-11.68) {\l}; }
+\draw[->] (0.3,-11.6) -- (0.3,-6.75);
+\foreach \y/\l in {-11.6/-25,-10.8/-20,-10.0/-15,-9.2/-10,-8.4/-5,-7.6/0} { \draw (0.22,\y) -- (0.38,\y); \node[left, font=\scriptsize] at (0.22,\y) {\l}; }
+% boxes: references = noise + shelf (~0 dB); target = noise + shelf + pilot (+3.9 dB)
+\draw[ppModel!90!black, fill=ppModel!30, fill opacity=0.6] (2.19,-11.6) rectangle (3.71,-7.59);
+\draw[ppModel!90!black, fill=ppModel!30, fill opacity=0.6] (8.29,-11.6) rectangle (9.81,-7.59);
+\draw[ppMeasured!90!black, fill=ppMeasured!30, fill opacity=0.6] (5.24,-11.6) rectangle (6.76,-6.98);
+% shelf at -20 dB, noise floor at 0 dB
+\draw[ppMeasured!90!black, thick] (0.5,-10.82) -- (11.5,-10.78);
+\node[font=\scriptsize, text=ppMeasured!90!black, anchor=west, align=left] at (9.95,-10.55) {data shelf, $-20$~dB};
+\draw[ppPending!90!black, thick, dashed] (0.5,-7.6) -- (11.5,-7.6);
+\node[font=\scriptsize, text=ppPending!95!black, anchor=west] at (0.55,-7.42) {system noise, $0$~dB};
+% pilot
+\draw[ppFailure!90!black, very thick] (6,-11.6) -- (6,-7.34);
+\node[font=\scriptsize, text=ppFailure!90!black, anchor=west, align=left] at (6.9,-7.02) {pilot: $21.6$~dB above the shelf in its bin, so $+1.6$~dB above the noise};
+\node[font=\scriptsize, text=ppModel!95!black] at (2.95,-12.4) {reference: $\approx 0$~dB};
+\node[font=\scriptsize, text=ppMeasured!95!black] at (6,-12.4) {target: $+3.9$~dB};
+\node[font=\scriptsize, text=ppModel!95!black] at (9.05,-12.4) {reference: $\approx 0$~dB};
+\node[font=\scriptsize, align=left, text width=17mm, anchor=west] at (0.45,-9.55) {$F = 2.4$: the coarse rule fires};
+\node[font=\scriptsize, align=left, text width=13mm, anchor=west] at (10.2,-9.3) {a power flagger sees only the noise};
+\end{tikzpicture}

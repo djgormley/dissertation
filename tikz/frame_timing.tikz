@@ -1,0 +1,19 @@
+% Editable source for Figure \ref{fig:deployment:timing}: one frame on a time axis (tikz-timing).
+\begin{tikztimingtable}[timing/slope=0.18, timing/xunit=0.78cm, timing/yunit=0.6cm, timing/rowdist=5ex, timing/coldist=2ex,
+  timing/font=\scriptsize, timing/name/.style={font=\scriptsize, align=right}]
+frame clock (rising edge $=$ readiness) & 6L 3H 3L 3H 3L \\
+samples in the ring & 6D{frame $n-1$} 6D{frame $n$} 6D{frame $n+1$} \\
+detector kernel (busy) & 6L 0.15L 0.6H 5.25L 0.15L 0.6H 5.25L \\
+completion event (mask $+$ validity) & 6.75L 0.2H 5.8L 0.2H 5.05L \\
+visibility, applied mode & 6.95L 5.05D{frame $n$, masked} 0.95L 5.05D{frame $n+1$, masked} \\
+visibility, shadow mode & 6D{frame $n-1$} 6D{frame $n$, unmasked; mask($n$) logged} 6D{frame $n+1$} \\
+\extracode
+\begin{pgfonlayer}{background}
+\vertlines[ppPending!60, dashed]{6, 12, 18}
+\end{pgfonlayer}
+% timing annotations, in timing units
+\draw[<->, ppMeasured!90!black, thick] (6,1.7) -- (12,1.7) node[midway, above, font=\scriptsize, text=ppMeasured!90!black]{$t_{\rm frame} = N/f_s = 41.94$~ms};
+\draw[<->, ppFailure!90!black, thick] (6.15,-7.1) -- (6.95,-7.1); \node[font=\scriptsize, text=ppFailure!90!black, anchor=east, align=right] at (6.0,-7.1) {$t_{\rm kernel} \approx 1$~ms (drawn wider)};
+\draw[<->, ppConditional!90!black, thick] (6.95,-8.1) -- (12,-8.1) node[midway, below, font=\scriptsize, text=ppConditional!90!black]{headroom: everything for frame $n$ before frame $n{+}1$ is ready (the deadline)};
+\node[font=\scriptsize, text=ppMeasured!90!black, anchor=north, text width=120mm, align=center] at (9,-10.3) {the frame clock's rising edge is the readiness event; the completion event is the only other signal in the contract: applied-mode integration waits on it, shadow-mode integration does not};
+\end{tikztimingtable}

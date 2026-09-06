@@ -1,0 +1,26 @@
+% Editable source for Figure \ref{fig:impl:bits}: the bit layouts the exact datapath is built on (bytefield).
+\begingroup\footnotesize\centering
+\begin{minipage}[t]{0.38\linewidth}\centering
+\begin{bytefield}[bitwidth=2.3em, bitheight=3ex, endianness=big]{8}
+\bitheader{0-7} \\
+\bitbox{4}{re} & \bitbox{4}{im} \\
+\wordbox[lrb]{1}{\scriptsize $\oplus$ \texttt{0x88}: excess-8 $\to$ two's complement}
+\end{bytefield}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.60\linewidth}\centering
+\begin{bytefield}[bitwidth=0.74em, bitheight=2.8ex, endianness=big]{32}
+\bitheader{0,7,8,15,16,23,24,31} \\
+\bitbox{8}{$x_{1,\rm im}$} & \bitbox{8}{$x_{1,\rm re}$} & \bitbox{8}{$x_{0,\rm im}$} & \bitbox{8}{$x_{0,\rm re}$} \\
+\bitbox{8}{$w_{1,\rm im}$} & \bitbox{8}{$w_{1,\rm re}$} & \bitbox{8}{$w_{0,\rm im}$} & \bitbox{8}{$w_{0,\rm re}$} \\
+\wordbox[lrb]{1}{\scriptsize one DP4A: $4$ int8 products $\to$ int32 accumulator}
+\end{bytefield}
+\end{minipage}
+
+\vspace{5mm}
+\begin{bytefield}[bitwidth=0.62em, bitheight=3ex, endianness=big]{64}
+\bitheader{0,1,63} \\
+\bitbox{64}{in flight: completion counter, $+1$ per finished block, $0 \to 2048$} \\
+\bitbox{63}{$0$} & \bitbox{1}{\tiny $m$} \\
+\wordbox[lrb]{1}{\scriptsize \texttt{MaskOut} after the last block: mask bit $m$ ($1$ = reject; degenerate frames $\to 0$)}
+\end{bytefield}
+\endgroup

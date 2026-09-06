@@ -1,0 +1,18 @@
+% Editable source for Figure \ref{fig:survey:product}: one v5 product, per frame.
+\begin{tikzpicture}[font=\small, node distance=2.5mm and 6mm,
+  row/.style={draw, align=left, inner sep=3pt, minimum height=7.5mm, text width=#1, line width=0.6pt, font=\small},
+  key/.style={row=#1, fill=black!3, draw=ppPending!90!black},
+  ex/.style={row=#1, fill=ppMeasured!8, draw=ppMeasured!90!black},
+  vl/.style={row=#1, fill=ppConditional!10, draw=ppConditional!90!black},
+  ps/.style={row=#1, fill=ppModel!10, draw=ppModel!90!black}]
+\node[key=62mm] (k1) {\textbf{keys}: frame index, event id, unit index, frame-in-unit, UTC, duration};
+\node[ex=62mm, below=of k1] (c1) {$P_0, P_1, P_2$ --- exact coarse marginals, \texttt{uint64} $\times 3$};
+\node[ex=62mm, below=of c1] (f1) {$S_0[f], S_1[f], S_2[f]$ --- exact fine powers, \texttt{uint64} $\times 3 \times 256$, every bin};
+\node[ps=62mm, below=of f1] (p1) {per-frame PSD, feeds summed --- \texttt{int16} $\times 16384$ at $0.01$~dB about a per-frame reference; decode before averaging};
+\node[vl=62mm, below=of p1] (v1) {validity (reason-coded), railed, fill and active-input counts, mean input power};
+\node[key=62mm, below=of v1] (d1) {survey flag $F > \mu_0$ --- a per-frame mechanism check, never a decision};
+\node[draw=ppPending!90!black, rounded corners=3pt, fit=(k1)(c1)(f1)(p1)(v1)(d1), inner sep=4pt,
+      label={[font=\small, text=ppPending!90!black]north:\texttt{pilotproxy\_per\_pilot\_product\_v5}: one row per frame, $n_{\rm frames}$ rows per unit}] (box) {};
+\node[align=left, text width=62mm, font=\small, anchor=north west] at ([xshift=8mm, yshift=-1mm]box.north east) (meta) {\textbf{per unit (once):} source identity and archive version; receiver software tag and typed input-map digest; weight-bank, twiddle and kernel hashes; reference placement and exact norms; schema token; integrated spectra before and after the bootstrap mask};
+\node[align=left, text width=62mm, font=\small, below=6mm of meta.south west, anchor=north west] (what) {\textbf{what this buys:} any coarse or fine $(\rho,\eta)$ replays exactly from the integers; any frame mask applies to the decoded PSDs; nothing is inferred from a stored verdict.\\[2pt]\textbf{what it cannot supply:} raw voltages, sub-frame time structure, or the detector re-run at another tap length.};
+\end{tikzpicture}

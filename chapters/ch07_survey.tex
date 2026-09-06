@@ -1,0 +1,288 @@
+\chapter{The Archive Dataset: Captures, Reprocessing, \& Products}
+\label{sec:survey}
+
+The survey is the bridge between a verified detector and a scientific claim.
+It applies the detector to archival telescope data, preserves enough intermediate
+information to revisit the decision later, and records where the archive cannot
+support an inference.  This chapter therefore distinguishes three objects that
+are easy to conflate: the \emph{available archive}, the \emph{processing
+inventory}, and the \emph{population of telescope time} about which one might
+want to make a statement.  The first two are measurable from logs.  The third
+requires a selection model, because the archive consists of triggered snapshots
+rather than a uniform observing stream.
+
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{\input{tikz/survey_evidence_flow.tikz}}
+\caption[Survey evidence flow and claim boundary]{The survey evidence flow.
+Triggered baseband captures are discovered, inventoried, and transferred
+with integrity checks by \texttt{datatrail}; the restartable
+\texttt{pilot-proxy} archive runtime drives that survey and produces exact
+detector terms, integer fine spectra, decisions, and provenance; calibration
+and forecast products are derived from those records.  The dashed boundary is
+load-bearing: a triggered archive is not automatically a random sample of
+transmitter occupancy.  Selection diagnostics and blocked holdout validation are
+therefore part of the scientific product, not optional metadata.}
+\label{fig:survey:evidenceflow}
+\end{figure}
+
+\section{Triggered Baseband Captures and Their Selection Function}
+\label{sec:survey:data}
+
+The raw material is CHIME's archive of full-array baseband captures recorded by
+the telescope's transient backend \cite{amiri2018frb}.  A capture contains the
+packed $4{+}4$-bit channelized stream for all $M = 2048$ inputs and spans
+seconds rather than a continuous day.  The survey enumerates every archived
+event, excludes those carrying the recorded outrigger label, and targets the
+remainder on all 23 ATSC allocations (channels 14--36), each complete against
+the archive holdings at the survey snapshot.  Three denominators are kept
+separate throughout, because ``discovered and readable'' is not the same
+population as ``contributed a detector frame'': the inventory of unique
+event--channel source objects, the processed product units, and the stored
+detector frames.  Units shorter than one complete $N = 16384$-sample frame are
+retained in the ledger as zero-frame units rather than dropped.  The
+stored-frame population has a median of a few $N$-sample detector frames per
+acquisition, and its calendar coverage runs from \rerun{December 2018} to the
+snapshot.  Per-channel event counts are far from uniform, and the deficit is
+concentrated on the most contaminated channels, for the selection reason
+discussed below.  Those figures describe the working archive at snapshot time;
+the immutable release ledger, rather than this prose, is the authoritative
+denominator.
+\stub{v5 archive rerun}{Archive accounting paragraph with the v5 numbers:
+events enumerated, excluded (outrigger), targeted, and completed; quarantined
+units; unique inventory objects; product units; stored and valid detector
+frames; calendar span; per-channel event-count range; median frames per
+acquisition.  Every number in it comes from the release ledger via the number
+gate, not from prose.}
+
+Frame validity is decided at processing time by reason-coded input-health rules
+that are independent of the detection statistic: an all-zero frame, a frame
+whose every decoded sample sits at the same rail (a constant word at negative
+full scale is the signature of an acquisition-side fault, not of receiver
+noise), a frame with an anomalous decoded code histogram, and a frame whose
+reference denominator is degenerate are each recorded with their reason and
+excluded from every scientific denominator.  The exclusion is part of the
+product, so the valid population is a stated object rather than an implicit one.
+
+The captures were not selected by the DTV detector.  They were initiated by the
+transient system and filtered by telescope operations, data availability,
+archive retention, and later inventory rules.  One of those filters is measured
+and deserves emphasis because it is \emph{endogenous to the contamination
+itself}: the telescope curtails baseband collection on its most contaminated
+coarse channels, and captures on the channel-30 monitored bin cease entirely
+after \rerun{September 2023} --- an operations exclusion driven by the DTV
+occupancy this survey measures.  Archive completeness is therefore correlated
+with the quantity under study; the thin channel-30 and channel-24 inventories
+are a selection effect, not a property of the transmitters, and a channel
+excluded from collection can never report a subsequent transmitter sign-off
+from this archive (several sign-offs or station departures were recorded on
+collected channels during the survey span, so the possibility is not
+hypothetical).
+
+Let $I(t,c)$ be the indicator that telescope time $t$ on channel $c$ enters the
+survey.  The occupancy quantity measured directly by the survey is
+\begin{equation}
+\Pr(\text{DTV state} \mid I = 1, c),
+\end{equation}
+not the unconditional time occupancy $\Pr(\text{DTV state} \mid c)$ unless the
+inclusion process is ignorable for the variables controlling propagation and
+transmitter state.  Time of day, season, sidereal time, weather, trigger class,
+commissioning state, and station-era boundaries are all plausible dependencies.
+The archive can still support a strong detector and calibration study, but its
+masked fractions are explicitly \emph{archive} fractions until the selection
+comparison is completed.
+
+The exposure profiles keep a second denominator because a stored frame is not
+automatically a timed frame: frames without a finite timestamp and a positive
+finite duration remain in count-based summaries but contribute no invented
+seconds to an exposure histogram.  The release tabulates frame counts and
+durations by UTC month and hour, America/Vancouver civil month, hour, and
+meteorological season, and local mean sidereal hour.  The last coordinate uses
+the declared DRAO longitude ($-119.6175^\circ$) and UTC as a documented proxy
+for UT1; it is therefore a reproducible coverage diagnostic, not an
+astrometry-grade apparent-sidereal timestamp.  Trigger and scheduled labels are
+measured inventory fields.  Operations states that were never recorded remain
+unavailable rather than being inferred from those labels.
+
+Two consequences recur later.  First, the snapshot duration caps any contiguous
+block statistic that can be reproduced from this archive at the longest capture
+(\rerun{$1.38$~s}).  Second, the sparse spacing leaves a correlation-time blind
+interval between the frame duration and typical acquisition separation.
+Chapter~\ref{sec:calibration} therefore allows the correlation estimator to
+return a measurement, a bound, or a refusal rather than interpolating across
+that gap.
+
+\section{A Restartable, Bounded-Storage Survey}
+\label{sec:survey:trawl}
+
+The survey processes every eligible capture through the same detector arithmetic
+described in Chapters~\ref{sec:pipeline} and~\ref{sec:impl}.  It is organized in
+three nested units: an inventory entry identifies an archived acquisition, a
+processing unit identifies a contiguous readable segment, and a detector frame
+is the $N$-sample decision quantum.  This separation allows the operational
+machinery to restart without changing the scientific definition of a frame.
+
+The processing environment cannot stage the entire archive locally, so the
+survey runs a bounded-storage cycle --- discover, pull one unit, validate,
+process every complete frame, write and verify a content-addressed product,
+then release the staged source --- with failed units quarantined with their
+exception and provenance rather than silently omitted, and with resume keyed on
+the source identity, detector geometry, weight and transform hashes, schema,
+and science-relevant configuration, so that a kernel, geometry, or schema
+change creates a new cohort while a cosmetic source change does not force a
+re-run.  The operational details (retry, checkpoint, staging, and deletion
+rules) are repository documentation, not science.
+
+The survey is intentionally detector-agnostic at the operational layer, and
+its two layers live in two tools.  \texttt{datatrail} --- CHIME/FRB's archive
+data-management client, in the fork that carries the recursive discovery,
+inventory-manifest, manifest-pull-with-integrity, dataset-verification, and
+doctor commands added for this work \cite{datatrail-cli} --- owns the archive
+side: discovery of every eligible capture, the inventory manifest, transfer
+with integrity checks against CANFAR's storage, and dataset verification.  The
+\texttt{pilot-proxy} archive runtime drives it and owns everything else:
+survey state and restart, retry and checkpoint, quarantine, control, and the
+analyzer that consumes a frame and emits the declared product schema, binding
+each processed unit to its archive version, receiver software tag, and typed
+input-map digest.  This boundary is why failures in
+archive access do not become hidden branches in the signal-processing code, and
+why the same survey core can support other large telescope reductions.  Three
+verdict types are kept distinct in the survey loop: a transient failure is
+retried, a contract refusal (a source object that does not satisfy the declared
+input contract) is recorded and skipped, and an event with no data is accepted
+as empty.  The survey stage records its own denominator --- every discovered
+unit, its archive-read and formula-derived fields, and every resume through an
+uncontrolled host restart --- so that a later re-survey can be compared with it
+field by field.
+
+\section{Products: Statistics, Not Only Verdicts}
+\label{sec:survey:products}
+
+Each product (schema \texttt{pilotproxy\_per\_pilot\_product\_v5}) retains, per
+frame: the three exact \texttt{uint64} fine-power spectra $S_r[f]$ over every
+fine bin, so that any later rank $\rho$ can be evaluated; the exact coarse
+integer power terms $P_r$; the frame's UTC timestamp, duration, and event and
+acquisition identifiers, which are the keys every blocked split and exposure
+table is built on; the reason-coded validity state; the active-input count and
+the separate railed-component and missing-fill counts against a shared
+denominator; the per-frame survey flag of
+Eq.~\eqref{eq:survey-bootstrap-rule}, a mechanism check rather than a decision; and the per-frame feed-summed power spectrum on the frame's own $N$-point
+grid ($23.8$~Hz bins across the coarse channel), stored as \texttt{int16}
+codes at $0.01$~dB per step about a per-frame reference level and decoded to
+linear power before any average is formed --- so the masked and unmasked
+spectra of any later $(\rho,\eta)$ are assembled by averaging decoded frames,
+and no sub-frame time structure or raw voltage is retained.  The reference
+marginals $P_1$ and $P_2$ and the decoded mean input power together serve as
+the per-frame receiver gain and noise proxy; the product records them for that
+purpose rather than assuming the receiver stationary across an era.  Product-wide metadata retain
+the source identity, weight-bank and transform hashes, resolved reference
+placement, exact integer norms, detector and schema versions, the receiver
+software and typed input-map identity of every source unit, and the
+within-channel time-averaged spectra used for the broadcast characterization.
+Per-unit arrays are indexed by the recorded processing order; the parallel
+sorted key listing is not the alignment axis, and the alignment is verified
+directly against the archive's own object sizes and path dates.
+Figure~\ref{fig:survey:product} draws one product.
+
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{\input{tikz/product_card.tikz}}
+\caption[One v5 product]{One \texttt{pilotproxy\_per\_pilot\_product\_v5} product: the per-frame rows it stores, with their types, and what they do and do not make possible afterwards.}
+\label{fig:survey:product}
+\end{figure}
+
+What the retained integers do and do not remove should be stated plainly.
+They remove reconstruction ambiguity, any assumed fine-stage sensitivity
+credit, and any uncertainty about how a mask was computed.  They do not remove
+receiver-gain variation, the pilot-to-shelf calibration, PFB and straddle loss,
+the pilot-to-allocation transfer, or the scalar-power-to-visibility transfer;
+each of those remains an explicit gate in Chapters~\ref{sec:estimator}
+and~\ref{sec:tolerance}.  This choice makes every threshold exactly reversible.  A product that stored
+only a mask bit could answer what one historical policy rejected; the retained
+integer terms instead permit any later coarse rule to be re-evaluated by the
+same exact cross-product, and any later fine pair $(\rho,\eta_{q16})$ to be
+replayed exactly from the three integer fine powers --- with no gain or loss
+assumption and no return to the raw capture.  No decision is baked into the products: the stored flag is the mechanism
+check of Section~\ref{sec:pipeline:decision}, and the fine order-statistic
+decision is applied to the products after calibration (Chapter~\ref{sec:calibration}).  Implementation verification and policy are thus
+kept separate without a floating diagnostic ever standing in for the decision
+operands.
+
+\section{Reproduction and the Required Denominator}
+\label{sec:survey:reproduction}
+
+A reproduction claim about the survey is only as good as its denominator, and
+the release states it in four parts:
+\begin{itemize}
+\item the number of discovered, eligible, and successfully joined events and frames;
+\item join completeness and the treatment of duplicates, missing products, and invalid frames;
+\item the exact fields and byte representations compared; and
+\item the source, binary, toolkit, weight, transform, schema, and cohort hashes.
+\end{itemize}
+The survey stage carries such a denominator for discovery: a re-survey of the
+live archive is compared with the frozen inventory unit by unit, and every
+archive-read and formula-derived field --- object sizes, common paths,
+observation dates, frame estimates --- must agree, with archive growth in the
+interval reported separately and no unit lost.  The processing stage carries it
+for the products: the cross-build comparison of Section~\ref{sec:impl:verify}
+joins two independently built cohorts on the physical archive key and compares
+their integer outputs.  Absent telemetry is reported as absent: throughput,
+transfer volume, GPU time, peak staging storage, and wall time are recorded only
+where the survey logs preserve them, and catalogued bytes are never relabelled
+as transferred bytes.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption[Survey inventory fields]{Survey inventory fields after reconciliation of the products, inventory
+attachment, and quarantine ledger.  ``Not recorded'' is an evidence state, not a
+numerical zero.}
+\label{tab:survey:inventory}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}X}
+\toprule
+Inventory field & Recorded value/status & Provenance or remaining limitation \\
+\midrule
+Calendar coverage & \rerun{Dec 2018}--snapshot & per-channel first/last stored and valid UTC released; calendar-month gaps preserved in Appendix~\ref{app:archive-diagnostics} \\
+Capture events per analyzed channel & \pending: range and distinct-event total from the v5 ledger & unique inventory objects $=$ processed units $+$ quarantines; no duplicate keys \\
+Frames per acquisition & \pending: median; stored; valid; reason-coded exclusions & full distribution and frame-level exclusion ledger released \\
+Longest contiguous statistic & \rerun{$1.38$~s} & the snapshot duration cap of Section~\ref{sec:survey:data} \\
+Raw and derived storage & \pending: catalogued source bytes & discovered object size, not transfer volume \\
+Retry attempts & \pending: count of multi-attempt events & attempt multiplicity preserved; per-attempt reason codes where the survey log has them \\
+Survey throughput and wall time & recorded where the survey log preserves them & frames/s, transfer rate, GPU time, and peak staging otherwise reported as not recorded \\
+Selection diagnostics & frame UTC and trigger/scheduled labels retained; operations state incomplete & UTC supports reproducible local-time/season/sidereal projections; no absent operations annotation is inferred \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Selection-Aware Calibration and Holdout Design}
+\label{sec:survey:holdout}
+
+Randomly splitting individual frames would overstate independence: neighboring
+frames within a capture share receiver state, transmitter state, and propagation,
+and frames across a station era can share a persistent offset.  Calibration and
+evaluation are therefore blocked at the acquisition or sidereal-day level and
+stratified by measured station era.  The latest accepted stable era is the input
+population for a current policy; its dates and label remain provenance rather
+than threshold inputs.
+
+Within that era, one block set performs preparation: it rejects invalid frames,
+localizes the anchor and usable bulk, resolves the floor and correlation treatment,
+applies the declared residual transfers, and tests block stability.  Only an
+authorized preparation emits the complete mapping of candidate $\rho$ values to
+residual-score histograms.  Each bin records a frame count, a calibrated
+$r_{\rm sys}$ total, and an $r_{\rm var}$ total when statistical-cost calibration
+is available.  The selector receives only this mapping and the science tolerance;
+it derives sample count and masked fraction from bin counts and returns
+$(\rho,\eta)$.  A missing or refused preparation quantity prevents authorization
+of the histogram rather than becoming another selector argument.
+
+Disjoint blocks then estimate false alarms, masked fraction, residual levels, and
+cost for the frozen pair.  A stricter leave-one-year-or-era-out check asks whether
+the selected operating point transports across calendar structure.
+
+The holdout design cannot make the archive uniform, but it prevents a second,
+avoidable optimism: evaluating a threshold on the same correlated frames that
+selected it.  The final campaign reports both the within-archive blocked result
+and the coverage diagnostics of Table~\ref{tab:survey:inventory}.  Only then can
+an archive fraction be promoted to an estimate of observing-time occupancy, and
+only over the population for which the coverage comparison supports that move.

@@ -1,0 +1,291 @@
+% ============================================================================
+% The Pilot-Proxy Method -- dissertation master.
+% Chapter sources live in chapters/; this file carries the preamble and
+% front matter. The title and abstract pages follow the WVU ETD template.
+% ============================================================================
+\documentclass[11pt,oneside]{report}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{MaxMatrixCols}{20}
+
+% Float placement: several chapters carry closely related figures and tables.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.7}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{4}
+
+\usepackage{booktabs}
+% Table captions sit above the table, and with zero clearance the \toprule is
+% drawn through the caption's last line of descenders.
+\setlength{\abovetopsep}{6pt}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage[american]{circuitikz}
+\usepackage{bytefield}
+\usepackage{tikz-timing}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,shapes.geometric,decorations.pathreplacing}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{xcolor}
+% Shared semantic palette for Matplotlib and TikZ figures.
+% WVU visual-identity palette: safety blue, old gold, hemlock, woodburn,
+% seneca gray (scm.wvu.edu/brand/visual-identity/).
+\definecolor{ppMeasured}{HTML}{0062A3}
+\definecolor{ppModel}{HTML}{7F6310}
+\definecolor{ppConditional}{HTML}{6A724F}
+\definecolor{ppFailure}{HTML}{8D4638}
+\definecolor{ppPending}{HTML}{988E8B}
+\input{tikz/figure_styles.tikz}
+\input{tikz/dsp_shapes.tikz}
+\usepackage{array,tabularx,longtable,multirow}
+\usepackage{pdflscape}
+\usepackage{rotating}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage[hidelinks,bookmarksnumbered=true]{hyperref}
+\hypersetup{
+  pdftitle={The Pilot-Proxy Method},
+  pdfauthor={Dylan Gormley},
+  pdfsubject={Radio-astronomy interference detection, masking cost, and contamination-residual tolerance forecasting},
+  pdfkeywords={CHIME, CHORD, radio astronomy, radio-frequency interference, ATSC, signal processing, cosmology, BAO}
+}
+\raggedbottom
+
+% Compact, reusable status labels. These describe evidence maturity rather than
+% formatting decoration, so the definitions live in the master document.
+\newcommand{\measured}{\textsc{measured}}
+\newcommand{\modelled}{\textsc{modelled}}
+\newcommand{\pending}{\textsc{pending}}
+\newcommand{\conditional}{\textsc{conditional}}
+
+% ---------------------------------------------------------------------------
+% Result placeholders.  Three campaigns still have to land before the text is
+% final: the v5 archive rerun (raw integer products, all 23 channels), the
+% LimeSDR detection campaign, and the CHORD Pathfinder shadow run.  Every place
+% that waits on one of them is marked with \stub{<campaign>}{<what goes here>}.
+% Numbers quoted from the superseded archive products that are expected to
+% move (slightly) when the rerun lands are wrapped in \rerun{...}; they render
+% in blue so they can be re-verified in one pass.  Once the campaigns are in,
+% set \reruncolor to black and delete the stubs.
+% ---------------------------------------------------------------------------
+\newcommand{\reruncolor}{ppMeasured}
+\newcommand{\rerun}[1]{\textcolor{\reruncolor}{#1}}
+\DeclareRobustCommand{\stub}[2]{\par\medskip\noindent\fcolorbox{ppFailure}{ppFailure!6}{%
+  \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small
+  \textbf{\textsc{pending} --- #1.}\ #2}}\par\medskip}
+\newcommand{\superseded}{\fcolorbox{ppFailure}{ppFailure!6}{\parbox{0.92\linewidth}{\small\centering\textbf{\textsc{superseded plate}} --- health-filtered archive-average products; placeholder for the v5 current-era plate}}\\[3pt]}
+\newcommand{\stubfig}[3]{\begin{figure}[H]\centering
+  \fcolorbox{ppFailure}{ppFailure!6}{\parbox{0.92\linewidth}{\small\centering
+  \textbf{\textsc{figure pending} --- #1.}\\[2pt] #2}}
+  \caption{#3}\end{figure}}
+\newcommand{\stubtab}[3]{\begin{table}[H]\centering
+  \caption{#3}
+  \fcolorbox{ppFailure}{ppFailure!6}{\parbox{0.92\linewidth}{\small\centering
+  \textbf{\textsc{table pending} --- #1.}\\[2pt] #2}}
+  \end{table}}
+
+\begin{document}
+% The title page is unnumbered and should not create a duplicate page anchor.
+\hypersetup{pageanchor=false}
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+% ---------------------------------------------------------------- title page
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+\vspace*{0.65in}
+{\large\textbf{The Pilot-Proxy Method}}\\[0.70in]
+{\large Dylan Gormley}\\[0.70in]
+
+Dissertation submitted\\
+to the Benjamin M. Statler College of Engineering and Mineral Resources\\
+at West Virginia University\\[0.35in]
+in partial fulfillment of the requirements for the degree of\\[0.16in]
+Doctor of Philosophy in\\
+Electrical Engineering\\[0.65in]
+
+Kevin Bandura, Ph.D., Chair\\
+Duncan Lorimer, Ph.D., FRS\\
+Natalia Schmid, D.Sc.\\
+Matthew Valenti, Ph.D.\\
+Katerina Goseva-Popstojanova, Ph.D.\\[0.55in]
+
+Lane Department of Computer Science and Electrical Engineering\\[0.55in]
+
+Morgantown, West Virginia\\
+2027\\[0.55in]
+
+Keywords: radio astronomy, radio-frequency interference, signal processing,\\
+21\,cm intensity mapping, cosmology, forecasting, CHIME, CHORD, CANFAR, digital television\\[0.24in]
+Copyright 2027 Dylan Gormley
+\end{titlepage}
+\setcounter{page}{2}% the titlepage environment resets the counter; the (unnumbered) abstract is ii
+\hypersetup{pageanchor=true}
+
+% ------------------------------------------------------------------ abstract
+\clearpage
+\thispagestyle{empty}
+\begin{center}
+    {\textbf{Abstract}}\\[0.20in]
+    {\textbf{The Pilot-Proxy Method}}\\[0.18in]
+    {Dylan Gormley}\\[0.32in]
+\end{center}
+
+North American broadcast television occupies 470--608~MHz, a 138-MHz interval
+that maps to $1.34 \le z \le 2.02$ for the redshifted 21\,cm line and therefore
+covers roughly one third of CHIME's cosmological observing band.  The received
+8-VSB payload can lie below thermal noise in an individual detector frame yet
+remain correlated long enough to bias a multi-year intensity-mapping survey.
+The problem is therefore not whether television can be detected, but whether a
+frame-level mask can remove enough contamination, at an acceptable exposure
+cost, for the baryon acoustic oscillation (BAO) measurement to remain practical
+in that band.
+
+This dissertation develops the pilot-proxy method around the one feature an
+ATSC~A/53 transmitter is required to emit continuously: the suppressed-carrier
+pilot.  A matched-filter projection onto the standardized pilot frequency,
+normalized by two displaced reference projections, yields a per-frame statistic
+that estimates the shelf-to-noise ratio of the whole 6-MHz allocation from a
+single monitored coarse channel; a rank-based fine-axis decision turns that
+estimate into a mask.  The detector is parameterized for the upgraded CHIME
+correlator geometry (2048 inputs, 16384-sample frames, 128-tap weights) and
+implemented as an exact fixed-point pipeline whose projections, frozen
+fixed-point transform, power sums, and rational decision arithmetic are
+bit-reproducible against independent references.
+
+The method is validated on an evidence ladder with one arithmetic contract,
+two receiver profiles, and three evidence platforms.  Synthetic proof of
+concept uses GNU~Radio and a LimeSDR radio path to measure the pilot
+statistic's transfer against known data-shelf SNR and to bound the cost of the
+fixed-point implementation against floating point on paired trials.  Offline validation applies the detector to
+CHIME's archive of triggered full-array baseband captures on all 23
+allocations: it identifies each channel's latest stable transmitter era,
+characterizes that era's null distribution, selects a per-channel operating
+threshold against a Fisher-forecast tolerance, and reports the spectrum the
+mask removes.  Online validation deploys the same arithmetic as a
+\texttt{kotekan} stage on the CHORD Pathfinder, whose real-time pipeline is
+shared with CHIME's, in an hours-long shadow run.
+
+A Fisher-forecast framework (RFIsher) converts masked fraction and surviving
+contamination residual into integration-time cost and parameter-bias
+tolerance, and prices each policy against keeping everything, excising the
+channel, and the incumbent flaggers.
+\stub{v5 archive rerun and Pathfinder shadow run}{Two or three sentences with
+the headline results: how many of the 23 channels admit a tolerance-selected
+operating point, how many are excision candidates, the band-level
+integration-time cost of the selected masks, and the outcome of the
+Pathfinder shadow run (hours run, frames dropped, exact-replay agreement).}
+The principal result is both an instrument and an auditable decision
+framework: exact where the digital contract permits exactness, measured where
+the archive supplies evidence, and explicitly bounded where it does not.
+
+% ----------------------------------------------------------- acknowledgements
+\clearpage
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+I owe my deepest thanks to my advisor, Kevin Bandura, who let this project grow
+from a narrow instrumentation question into a dissertation, and who insisted
+throughout that a result is only as good as the record that supports it.  Much
+of what is careful in this work is careful because he asked the next question.
+
+I thank the members of my committee --- Duncan Lorimer, Natalia Schmid, Matthew
+Valenti, and Katerina Goseva-Popstojanova --- for their time, their scrutiny,
+and for the breadth of perspective they brought to a document that sits between
+radio astronomy, statistical signal processing, and computer engineering.
+
+This work rests entirely on instruments and archives built by others.  I thank
+the CHIME collaboration for the telescope, the correlator, and the baseband
+archive that made an offline survey possible at all, and the staff of the
+Dominion Radio Astrophysical Observatory for maintaining the quiet site those
+measurements depend on.  I thank the Canadian Advanced Network for Astronomical
+Research for the storage and compute that hosted the archive survey.  I am grateful to
+the members of the WVU Radio Astronomy Instrumentation Group for years of
+conversation, code review, and shared debugging.
+
+% EDIT ME: name your funding sources and grant numbers here before submission.
+% Left deliberately unwritten rather than guessed -- the ETD office and your
+% sponsors both expect the exact award identifiers.
+I gratefully acknowledge the financial support that made this research
+possible.
+\stub{before submission}{Name every funding source with its award identifier (the NSF award requires its exact acknowledgment text); the ETD office and the sponsors both expect the identifiers.}
+
+% EDIT ME: the personal thanks below are a scaffold in your voice to replace.
+Finally, I thank my family and friends, who tolerated a long apprenticeship in
+patience with more grace than it deserved.
+
+% ------------------------------------------------------------------ contents
+\clearpage
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+\clearpage
+\chapter*{List of Acronyms and Abbreviations}
+\addcontentsline{toc}{chapter}{List of Acronyms and Abbreviations}
+\begin{longtable}{>{\bfseries}p{0.18\textwidth}p{0.74\textwidth}}
+8-VSB & eight-level vestigial sideband\\
+ATSC & Advanced Television Systems Committee\\
+BAO & baryon acoustic oscillation\\
+CANFAR & Canadian Advanced Network for Astronomical Research\\
+CFAR & constant false-alarm rate\\
+CHIME & Canadian Hydrogen Intensity Mapping Experiment\\
+CHORD & Canadian Hydrogen Observatory and Radio-transient Detector\\
+CUDA & Compute Unified Device Architecture\\
+DFT & discrete Fourier transform\\
+DP4A & four-way packed 8-bit integer dot-product instruction\\
+DTV & digital television\\
+ENBW & equivalent noise bandwidth\\
+FFT & fast Fourier transform\\
+FRB & fast radio burst\\
+GPU & graphics processing unit\\
+HPC & high-performance computing\\
+NTSC & National Television System Committee\\
+OFDM & orthogonal frequency-division multiplexing\\
+PFB & polyphase filter bank\\
+PNR & pilot-to-noise ratio\\
+PSD & power spectral density\\
+Q15/Q16 & signed fixed-point formats with 15/16 fractional bits\\
+RFI & radio-frequency interference\\
+RRC & root-raised cosine\\
+SDR & software-defined radio\\
+SNR & signal-to-noise ratio\\
+\end{longtable}
+
+% ------------------------------------------------------------------ chapters
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\include{chapters/ch01_introduction}
+\include{chapters/ch02_context}
+\include{chapters/ch03_broadcast}
+\include{chapters/ch04_parameterization}
+\include{chapters/ch05_pipeline}
+\include{chapters/ch06_implementation}
+\include{chapters/ch07_survey}
+\include{chapters/ch08_calibration}
+\include{chapters/ch09_tolerance}
+\include{chapters/ch10_deployment}
+\include{chapters/ch11_conclusions}
+
+% ---------------------------------------------------------------- appendices
+\appendix
+\include{chapters/appA_evidence_matrix}
+\include{chapters/appB_legacy_evidence}
+\include{chapters/appC_archive_diagnostics}
+\include{chapters/appD_software}
+
+% -------------------------------------------------------------- bibliography
+\clearpage
+\addcontentsline{toc}{chapter}{Bibliography}
+\input{chapters/bibliography}
+
+\end{document}

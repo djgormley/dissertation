@@ -1,0 +1,264 @@
+
+\chapter{Digital Television RF Anatomy \& Parametric Beacon Characteristics}
+\label{sec:dtv}
+
+\section{Physical Channel Allocations \& the UHF/VHF Raster}
+\label{sec:dtv:raster}
+In North American broadcast standards (ATSC A/53 \cite{atsc-a53}), Digital Television (DTV) signals are allocated across fixed $B_c = 6\text{ MHz}$ terrestrial frequency channels --- the allocation width inherited from the 1941 monochrome NTSC standard. The telescope observes 400--800~MHz, the octave band set by its 21~cm science goals (mapping neutral hydrogen across redshifts $0.8 \le z \le 2.5$, the epoch in which cosmic expansion transitioned from decelerating to accelerating) and by the electronics economy of second-Nyquist-zone sampling over exactly one octave (an 800~MSPS converter captures 400--800~MHz directly as its own alias, halving the sampling rate otherwise required) \cite{amiri2022chime}. The intersection of this band with the UHF television allocation runs from the 470~MHz band edge --- channel 14, the first UHF assignment, channels 2--13 occupying VHF allocations at 54--88 and 174--216~MHz --- up to 608~MHz (channel 36), the top of the television band after the 2017--2020 incentive-auction repack, bounded above by the internationally protected radio-astronomy allocation at 608--614~MHz (channel 37). The monitored census is therefore $C = 36 - 14 + 1 = 23$ active or incumbent physical DTV channel allocations. Let $c \in \{1, 2, \dots, 23\}$ index the monitored DTV channels. The lower RF boundary of the $c$-th allocation, denoted $f_{\text{edge}}^{(c)}$, is defined by the standard terrestrial UHF television raster: in the core UHF broadcast band (physical channels 14--36), the lower allocation edge for physical channel number $n_{\text{ch}}$ is given analytically in MHz by
+\begin{equation}
+f_{\text{edge}}(n_{\text{ch}}) = 470 + 6(n_{\text{ch}} - 14) \text{ MHz}.
+\end{equation}
+Because terrestrial broadcast transmitters emit high Effective Isotropic Radiated Power from elevated horizons, even distant or horizon-diffracted DTV emissions present severe, highly correlated RFI across high-gain astrophysical receiving arrays. This interference environment is directly measured at the site: the telescope's RFI characterization identifies television station bands across 480--580~MHz among the strongest persistent features in its spectrum, alongside intermittent few-second events --- 6~MHz-wide bursts of distant broadcast channels scattered into the beam by meteor ionization trails and aircraft \cite{amiri2022chime}. DTV energy therefore arrives through two distinct modes, persistent carriers on line-of-sight and diffracted paths, and transient scattered bursts; the flagging system of this work must detect both, which shapes the per-frame decision cadence of Chapter~\ref{sec:pipeline}.
+
+\section{8-VSB Signal Anatomy \& the Normative Clock Relations}
+\label{sec:dtv:vsb}
+
+An ATSC~A/53 broadcast occupies a $B_c=6$~MHz allocation using eight-level
+vestigial-sideband modulation.  The quantities used by the detector come from
+two different kinds of statements in the standard, and the distinction matters:
+the clock relations are exact, whereas the root-raised-cosine roll-off is a
+separately specified nominal response.  Treating those two categories as one exact ``allocation-fill'' identity would impose a relation the standard does not state.
+
+The exact symbol rate is inherited from the 4.5-MHz picture--sound spacing and
+the NTSC line-rate relation.  A/53 specifies
+\begin{equation}
+\label{eq:atsc:symbolrate}
+R_s = 684\left(\frac{4.5~\mathrm{MHz}}{286}\right)
+    = \frac{1539}{143}~\mathrm{MBd}
+    \approx 10.762238~\mathrm{MBd}.
+\end{equation}
+Equivalently, because $4.5~\mathrm{MHz}=3B_c/4$ for a 6-MHz allocation,
+\begin{equation}
+R_s=\frac{513}{286}B_c,
+\qquad
+B_N=\frac{R_s}{2}=\frac{513}{572}B_c
+    \approx 5.381119~\mathrm{MHz},
+\end{equation}
+where $B_N$ is the Nyquist bandwidth associated with the symbol clock.  The
+standard's framing hierarchy is synchronized to the same clock: a data segment
+contains four segment-sync symbols and 828 data symbols, and the coded payload
+carried by those 828 symbols corresponds to one Reed--Solomon-protected
+transport packet \cite{atsc-a53}.  These relations establish the exact timing
+used by the pilot-frequency calculation below; they do not determine the
+spectral roll-off.
+
+A/53 separately specifies a nominal linear-phase transmitter RRC response with
+roll-off
+\begin{equation}
+\alpha=0.1152.
+\end{equation}
+The concatenated transmitter and receiver responses are therefore nominally a
+raised cosine.  Using the exact $B_N$ above gives
+$B_N(1+\alpha)\approx6.001024$~MHz.  The approximately 1-kHz difference from
+6~MHz is not a physical excess to be explained by a new constraint; it is the
+consequence of combining an exact clock with a nominal roll-off quoted to four
+decimal places.  The standard itself depicts the channel occupancy at rounded
+scales of 5.38~MHz and 0.31-MHz transition regions \cite{atsc-a53}.  The
+transmission mask, not an inferred rational value of $\alpha$, is the regulatory
+boundary.  No later detector calculation depends on the skirts filling the
+allocation exactly.
+
+The data stream is randomized, error-corrected, interleaved, and trellis-coded
+before mapping to levels $\{\pm1,\pm3,\pm5,\pm7\}$.  In a narrow spectrometer
+cell and over the short frame used here, the resulting payload is therefore
+well approximated as broadband noise-like power, although it is not
+mathematically Gaussian and the standard also contains deterministic segment-
+and field-synchronization sequences.  Those qualifications are important for
+claims about alternative detectors.  They do not change the narrower design
+fact used here: the continuously present pilot concentrates coherent energy far
+more strongly in frequency than either the randomized payload or the distributed
+synchronization structure.
+
+\section{The Suppressed-Carrier Pilot as a Detection Beacon}
+\label{sec:dtv:pilot}
+
+A/53 inserts a small in-phase pilot at the suppressed-carrier frequency,
+describing its position nominally as 309~kHz above the lower band edge and
+providing an exact frequency relation in the accompanying note
+\cite{atsc-a53,atsc-a53-part2}.  Expressed through the exact symbol rate, that relation is
+\begin{equation}
+\label{eq:pilotoffset}
+\Delta f_{\mathrm{pilot}}
+ = \frac{B_c}{2}-\frac{R_s}{4}
+ = B_c\left(\frac{1}{2}-\frac{513}{1144}\right)
+ = \frac{59}{1144}B_c
+ = \frac{177}{572}~\mathrm{MHz}
+ \approx 309.440559~\mathrm{kHz}.
+\end{equation}
+For physical channel $c$,
+\begin{equation}
+\label{eq:pilotfreq}
+f_{\mathrm{pilot}}^{(c)}
+ = f_{\mathrm{edge}}^{(c)}+\frac{177}{572}~\mathrm{MHz}.
+\end{equation}
+The weight generator stores this offset rounded to the hertz,
+309.441~kHz.  The resulting 0.44-Hz representation error is far below the
+11.9-Hz fine-bin spacing and is absorbed by the per-channel anchor measured from
+the survey.
+
+The exact frequency relation should not be confused with an exact roll-off
+identity.  Under the independently specified nominal $\alpha=0.1152$, the
+half-amplitude point of the lower composite raised-cosine transition lies at
+approximately 309.95~kHz.  The pilot is therefore close to that point, as the
+standard's rounded 0.31-MHz drawing suggests, but not exactly fixed to it by the
+same rational integer.  Figure~\ref{fig:dtv:skirt} marks both points.
+
+\begin{figure}[p]
+\centering
+\resizebox{!}{0.60\textheight}{\input{tikz/pilot_on_skirt.tikz}}
+\caption[Where the pilot sits, and what the references see]{Where the pilot sits and what the references see. \textbf{(a)} The transmitted 8-VSB power spectrum of one allocation is root-raised-cosine shaped: a flat data shelf between two $0.62$-MHz transitions, and the pilot at the centre of the lower one, inside the single $390.6$-kHz coarse channel the detector monitors. The standard's exact clock relation puts the pilot $309.441$~kHz above the lower edge, while the half-power point implied by the separately specified roll-off $\alpha = 0.1152$ lies at $\alpha B_N/2 = 309.95$~kHz: a $0.51$-kHz near-coincidence that must not be promoted to an identity (it changes the local density by a fraction of a percent, negligible for $g$, but it is why the anchor is measured rather than assumed). The envelope is schematic; the regulatory transmission mask is the governing boundary. \textbf{(b)} Within $\pm 10$~kHz of the pilot the shelf is locally linear: the target bin holds pilot plus local shelf plus noise, the two references at $\pm 6.1$~kHz hold local shelf plus noise, and their symmetric placement cancels the slope. The ratio of that local shelf density to the $6$-MHz allocation average is $g$ of Eq.~\eqref{eq:estimator:inversion}: half the flat-top density, which is $g \simeq 0.56$ against the allocation average (the average is itself $0.47$~dB below the flat top), and measured rather than assumed in Section~\ref{sec:estimator:validation}. The curve is the power envelope produced by root-raised-cosine shaping; the pilot's height is its integrated power, not a density. \textbf{(c)} The same bins when the shelf sits $20$~dB below the system noise, the regime the detector is built for: every reference reads the noise, a power or variability flagger sees nothing, and the pilot --- $21.6$~dB above the shelf in its bin --- still clears the noise by $1.6$~dB, so the coarse ratio fires; the fine axis then resolves the same tone $128\times$ finer.}
+\label{fig:dtv:skirt}
+\end{figure}
+
+The pilot is synthesized by adding a DC level 1.25 to every composite symbol
+(data and synchronization) before suppressed-carrier modulation.  For the
+nominal equiprobable eight-level data model,
+$\langle a_n^2\rangle=21$, so the pilot-to-data power ratio is
+\begin{equation}
+\frac{P_{\mathrm{pilot}}}{P_{\mathrm{data}}}
+ = \frac{1.25^2}{21}
+ = \frac{25}{336}
+ \approx 0.0744,
+\end{equation}
+consistent with the standard's statement that the pilot is approximately
+11.3~dB below the average data signal power \cite{atsc-a53}.  This is a nominal
+mean-power relation, not a statement that an arbitrary received 6-MHz spectrum
+must reproduce the ratio without scatter.
+
+The corresponding transmitter-side proxy is
+\begin{equation}
+\label{eq:shelfproxy}
+P_{\mathrm{data}} = \frac{336}{25}P_{\mathrm{pilot}},
+\qquad
+S_{\mathrm{shelf}} \approx
+\frac{336}{25}\frac{P_{\mathrm{pilot}}}{B_N},
+\end{equation}
+where the second expression adopts a flat-shelf approximation over the Nyquist
+band.  This is the flat-top density.  Every shelf-SNR figure in this
+dissertation is instead defined on the allocation-average density over the
+$6$~MHz channel, $S_{\mathrm{shelf}} B_N / B_{\mathrm{DTV}}$, which is $0.47$~dB
+lower; the conversion constant $A$ of Section~\ref{sec:estimator:translation},
+the injected truth of the synthetic campaigns, and every reported shelf
+estimate use that single definition, and the flat-top density appears only in
+this transmitter-side derivation.  A finite-bandwidth comparison is required for the coherent pilot line.
+In a cell of width $\Delta f$, the corresponding model ratio is
+$P_{\mathrm{pilot}}/(S_{\mathrm{shelf}}\Delta f)$; at the detector's
+$\Delta f=f_s/K=3.052$~kHz coarse analysis width, Eq.~\eqref{eq:shelfproxy}
+gives approximately $21.2$~dB.  The screening convention used later rounds the
+pilot-to-payload relation to $11.3$~dB and spreads the payload over the full
+6-MHz allocation, giving $21.6$~dB in the same cell.  Both numbers state their
+bandwidth convention.  A resolution-independent ``pilot PSD per hertz'' is not
+assigned to the line.  Its finite-cell concentration, continuous presence while
+the transmitter radiates, and nominal frequency standardization make it the
+appropriate low-cost beacon for this work.
+
+Equation~\eqref{eq:shelfproxy} is the starting model for the word
+``proxy,'' not its validation.  Frequency-selective propagation, transmitter
+filtering, and the receiver bandpass can change the received pilot-to-shelf
+ratio across a 6-MHz allocation.  The archive products used here observe only
+the pilot-containing coarse channel and therefore cannot measure that transfer.
+Chapter~\ref{sec:tolerance} carries it explicitly as a conditional model, and
+Chapters~\ref{sec:survey} and \ref{sec:calibration} specify the simultaneous
+across-allocation spectra required to turn it into a measured distribution.
+The matched-filter optimality statement is likewise limited to the declared
+known-tone Gaussian model; the complete calibrated detector and competing
+cyclostationary or decoding-assisted methods remain empirical comparisons.
+
+\section{The Transmitter Population \& the Propagation Environment}
+\label{sec:dtv:environment}
+
+Equation~\eqref{eq:pilotfreq} fixes where a pilot \emph{should} be; what stands behind the phrase ``to within transmitter tolerance'' is a population, and its structure turns out to matter as much as the standard itself. The population has two tiers, and the regulatory record explains why. Full-service (``primary'') stations are high-power facilities whose analog-era rule held the visual carrier to $\pm 1$~kHz \cite{cfr2015tv}, and whose co-channel coordination practice --- precise frequency offsets negotiated so that mutual interference between high-power neighbors interleaves rather than beats --- holds them to tens of hertz in practice: the discipline is enforced less by rule than by the mutual protection of stations that can hurt each other. Translators, boosters, and low-power stations (``secondary'' services under Part~74) are rebroadcast relays filling terrain shadows, historically licensed under tolerances orders of magnitude looser and typically built on aging or low-cost frequency synthesis; they protect full-service stations by displacement, not by precision, so nothing in their operating economics rewards a disciplined carrier. The current United States rules retain a duty but not a number: \S 73.1545 assigns carrier departure tolerances to AM, FM, and international stations only --- television is absent from the list --- and the Part~74 tolerance section, \S 74.761, is \emph{[Reserved]} \cite{cfr731545,cfr74761}; what survives is \S 74.762, which requires low-power and translator licensees to measure their output frequency at least once each calendar year and to operate consistently with A/53 Part~2 \cite{cfr74762} --- a standard that fixes where the pilot sits, Eq.~\eqref{eq:pilotfreq}, but specifies no numeric tolerance on it \cite{atsc-a53-part2}. Canadian facilities answer to ISED's separate technical standards, which are not adjudicated here. Frequency discipline in the modern DTV band is therefore a matter of a measurement duty and of coordination incentive rather than a codified tolerance, and the incentive binds exactly one tier. The expected offset population is a tight core of disciplined primaries surrounded by a broad skirt of undisciplined secondaries.
+
+That expectation was first explored because the detector's window geometry depends on it. The transmitter census is built by \texttt{dtv-census} \cite{dtv-census}, a reproducible reduction of three source compilations --- ISED Canada's spectrum-management extracts, the FCC Licensing and Management System, and the RabbitEars station compilation \cite{fcc-lms} --- through a curated station workbook: a deterministic script normalizes reported-on-air ATSC~1.0 facilities to physical channels, expands multi-channel facilities, and merges shared physical carriers, and an ISED overlay then attaches licensed sites, licence status, and effective radiated power to every Canadian row. (Replacing the curated workbook with a direct pull of the source databases is planned; the frozen export used here is the workbook-derived one.) The result is an inclusive maximum envelope of every emitter-channel record within a $500$-mile radius of DRAO --- \rerun{499} rows at \rerun{162} distinct source range--bearing sites in the frozen export used here --- with each row carrying its service class (full-service primary, or translator/booster/low-power secondary), licensed effective radiated power where a licence match exists, and an explicit evidence state. The licence overlay matters: matched rows take the licensed transmitter site rather than the community a compilation may anchor them on (nearest to the telescope, the Penticton channel-30 rebroadcaster CHKL-1 stands at $37.8$~km, not the $17.7$~km a community-anchored entry implies), relays without a current licence are dropped, analog-listed low-power stations holding digital licences enter, and rows without a licence match remain explicitly unverified rather than inheriting an adjudication. In that envelope the secondary tier dominates by count --- the undisciplined tier is the majority of the population --- which is the empirical basis for sizing the fine span of Section~\ref{sec:param:tradeoffs} around a broad skirt rather than a tight core. Table~\ref{tab:census} summarizes the envelope per physical channel, and Figure~\ref{fig:census:map} shows the inclusive normalized $500$-mile field while retaining the individual-record $120$-mile detail. The population's spectral face is measured independently from the survey products themselves: each product stores the time-averaged $16384$-point spectrum of its coarse channel over the channel's current era, and Figure~\ref{fig:census:psd} plots that average around each pilot. The channels sort into two clear morphologies. Where the local field is quiet, the average is a compact cluster --- at most a resolved companion or shoulder inside the fine span and an isolated narrow line or two beyond it (\rerun{channels 27, 28, 29, 34, 36}; on channel 28 the line beyond the span is the instrumental channel-centre bin identified in the caption of Figure~\ref{fig:census:psd} rather than an emitter; channel 29's cluster rides on a visibly tilted baseline, the odd-order structure the symmetric reference pair of Chapter~\ref{sec:param} cancels exactly). Where the field is crowded, a main lobe at the dominant transmitter's offset stands over a resolved forest of sidelobes spanning several kilohertz (\rerun{channels 30, 31, 32}). The narrow, stable multiplicity is consistent with the surrounding transmitter population and is not well described as a single carrier undergoing a time-varying Doppler smear; the inclusive census alone, however, does not identify which listed emitters produced a particular spectral line.
+
+The current census envelope and spectra show why a simple proximity ranking is not a defensible propagation model. Channel 30, whose shelf sits at system noise and is the loudest measured, does have the licence-matched CHKL-1 relay only $37.8$~km away. But channel 27 is masked above $98\%$ even though its nearest current envelope row is the reported-on-air but licence-unverified K27OO-D at $267.2$~km; channel 33 has \rerun{15} envelope rows, with the nearest a reported-on-air but licence-unverified translator at $101.4$~km; and channel 36's nearest envelope row is likewise unverified at $135.2$~km. Those rows constrain geometric plausibility but neither prove reception nor attribute occupancy to a transmitter. The survey-measured \emph{selected in-span anchors} of Section~\ref{sec:pipeline:decision} remain the defensible evidence --- per-channel residuals of hundreds of hertz to $1.4$~kHz, stable within eras, and stepping when the selected spectral component changes (Section~\ref{sec:tolerance:eras}). That statement is about the configured nominal or in-span target lobe; it is not a claim that the globally strongest line in every plotted coarse channel lies inside the fine span. Channel 33's averaged spectrum is \emph{dominated} by a component at its own offset, ${\approx}3.6$~kHz below the synthesized pilot and standing $16$~dB over the weaker lobe at the pilot position in the archive average. That dominant line is outside the $\pm1.526$~kHz fine span, so it is an explicit configuration sentinel rather than a captured anchor; the detector's wide-null diagnosis instead tests the spread seen by the configured in-span target (Section~\ref{sec:tolerance:verdicts}). It is the observed spectral spread, together with the population envelope and its explicit evidence limits, that sizes the in-span search of Section~\ref{sec:param:tradeoffs}; out-of-span lines require an alternate target profile or an unsupported-channel sentinel, not a retrospective claim of window coverage, and the census is not used here as a propagation measurement.
+
+The normalized census is deliberately a conservative maximum envelope rather
+than a list of 499 observed carriers.  Its frozen input preserves the
+\texttt{dtv\_transmitter\_census\_v1} schema and a per-row evidence state: 421
+records were reported on air but await licence verification, 67 were reported
+on air and licence-matched, and 11 are licence-only candidates whose emission
+was not confirmed.  Figure~\ref{fig:census:map} includes that envelope for
+geometric context; the evidence labels prevent licence-only candidates from
+being promoted to detections.
+
+\stubtab{\texttt{dtv-census} export}{One row per physical channel 14--36: envelope records, primary/secondary split, licence-matched count, nearest licence-matched facility and its range and bearing, and the licensed ERP of the strongest matched facility. Generated from the frozen \texttt{dtv-census} export that also feeds Figure~\ref{fig:census:map}; the export's digest is recorded in the release manifest.}{Transmitter-census envelope per physical channel within $500$ miles of DRAO, from \texttt{dtv-census}. Counts are inclusive envelope records with their evidence state, not observed carriers.\label{tab:census}}
+
+\begin{figure}[p]
+\centering
+\includegraphics[height=0.60\textheight,width=0.98\linewidth,keepaspectratio]{figs/fig_census_map.pdf}
+\caption[Conservative 500-mile DTV transmitter census envelope]{The normalized transmitter-census maximum envelope within $500$ miles of DRAO. \textbf{(a)} The inclusive export contains 499 emitter-channel records at 162 distinct source range--bearing sites; exactly coincident records are aggregated for legibility, with marker area retaining their multiplicity. The frozen rows preserve the evidence split (421 reported-on-air/unverified, 67 reported-on-air/licence-matched, and 11 licence-only candidates), so inclusion on the map is not a claim that a carrier was observed. Shape records the site's service-class composition and color records whether its entries list a $\pm1$~kHz transmitter-frequency tolerance. \textbf{(b)} The inner $120$-mile individual-record detail preserves the view used to diagnose the nearby field. \textbf{(c)} Emitter-channel records by $100$-mile annulus; annotations give records/sites. The DRAO-centred azimuthal-equidistant vector map preserves the supplied distances and bearings. Coastlines and administrative boundaries provide geographic context but intentionally do not imply terrain screening or propagation.}
+\label{fig:census:map}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.98\linewidth,height=0.50\textheight,keepaspectratio]{figs/fig_census_psd.pdf}
+\caption[The transmitter population's spectral face: current-era time-averaged spectrum around each pilot]{The transmitter population's spectral face: time-averaged spectrum within $\pm 15$~kHz of each pilot over each channel's current era (Section~\ref{sec:calibration:eras}), from the survey products' stored integrated spectra (dB relative to the channel median). Shaded: the $K = 128$ fine span ($\pm 1.526$~kHz); dashed: the $\pm 2$-bin reference placements ($\pm 6.1$~kHz). Panels are centred on each channel's \emph{synthesized} (nominal) pilot in the transmitted-frequency sense, so a carrier's displacement from zero is its measured off-nominal offset. On most channels the dominant carrier is a single compact lobe inside the fine span, within \rerun{$0.6$~kHz} of synthesis; on the crowded-field channels (\rerun{30, 31, 32}) it stands over the resolved sidelobe forest discussed in the text. Channel 33 is a documented exception: its globally dominant carrier sits at \rerun{$-3.6$~kHz}, in the skipped guard between the fine span and the lower reference, with companion structure near \rerun{$-2.6$~kHz}. It is outside the configured capture span even though a weaker nominal/in-span lobe remains available to the detector. Two channels carry a feature that is not a member of the transmitter population at all: channels 28 and 14 are the only two whose pilot lies within $15$~kHz of the coarse channel's own centre bin, which carries a line in every one of the twenty-three surveyed channels --- including channels whose nearest emitter lies hundreds of kilohertz away --- and which the detector's reference-placement contract designates a forbidden tone. Neither it nor channel 33's displaced carrier is treated as an in-window anchor. The references sit in clean territory on every channel --- the placement validation of Section~\ref{sec:param:tradeoffs} made visually.
+\stub{v5 archive rerun}{Regenerate as one 23-panel figure (channels 14--36 in physical-channel order) from the current-era averaged spectra; the panels shown here and in Figure~\ref{fig:census:psd:lower} are the superseded archive-average exports for channels 27--36 and 14--26.}}
+\label{fig:census:psd}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.98\linewidth,height=0.78\textheight,keepaspectratio]{figs/fig_census_psd_lower.pdf}
+\caption[Spectral face, channels 14--26 (placeholder)]{The transmitter population's spectral face for channels 14--26, on the same axes and conventions as Figure~\ref{fig:census:psd}. Placeholder from the superseded archive-average export; the two figures are replaced by one 23-panel current-era figure when the rerun lands.}
+\label{fig:census:psd:lower}
+\end{figure}
+
+Two propagation mechanisms then modulate what the census delivers, and they are worth distinguishing carefully because they act on different timescales and different terms of the residual budget. \emph{Tropospheric ducting}: the radio refractive index of the lower atmosphere decreases with height, and when temperature inversions or sharp humidity gradients steepen that lapse past the critical value, a layer forms that refracts UHF energy back downward faster than the Earth curves away --- a waveguide along the surface \cite{itup453}. A ducted path delivers transmitters from hundreds of kilometers beyond the horizon at strengths that can rival line-of-sight, and the duct's formation and collapse follow the meteorology: evolution over tens of minutes to hours, organized diurnally and seasonally, and uncorrelated with the sidereal frame. \emph{Aircraft scatter}: an airframe is a moving bistatic reflector, and the scattered path carries a Doppler shift bounded by $2v/\lambda$ --- the same signals and Doppler scales that DTV-based passive radar exploits deliberately \cite{griffiths2017passive}. Table~\ref{tab:doppler} evaluates the bound by traffic class at the band's midpoint: the civil envelope tops out near $\pm 1$~kHz at jet cruise speed, inside the detector's fine span; military speeds exceed the span but are rare in this airspace; satellite forward scatter lands tens of kilohertz out --- far outside the capture window --- and transits in seconds. The observable signature is twofold: a frequency-smeared scattered component, and \emph{amplitude flutter} --- the beat between the direct and scattered paths at their Doppler difference, familiar from the analog era as ``airplane flutter'' --- with fading on timescales of seconds.
+
+\begin{table}[H]
+\centering
+\caption[Maximum bistatic Doppler by reflector class]{Maximum bistatic Doppler $2v/\lambda$ by reflector class, evaluated at the DTV band midpoint ($539$~MHz, $\lambda = 0.556$~m); values scale linearly with frequency, $\pm 13\%$ across $470$--$608$~MHz; each row is a kinematic upper bound at the assumed speed, not an observed class maximum. The civil-aircraft envelope sits inside the $\pm 1.526$~kHz fine span; satellite scatter lands far outside it and transits the beam in seconds, so its contribution is confined to the fast (sub-acquisition) share of the timescale decomposition.}
+\label{tab:doppler}
+\begin{tabular}{lcc}
+\toprule
+reflector class & typical speed & max Doppler \\
+\midrule
+light general aviation & $50$~m/s & $\pm 0.18$~kHz \\
+turboprop / charter & $130$~m/s & $\pm 0.47$~kHz \\
+commercial jet, cruise & $250$~m/s & $\pm 0.90$~kHz \\
+military fast jet & $600$~m/s & $\pm 2.2$~kHz \\
+satellite, low Earth orbit & $7.6$~km/s & $\pm 27$~kHz \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Neither mechanism is directly proven from the survey products, and this subsection does not claim to have separated them. What can be said is that they are separable in principle by timescale, and that the decomposition of Section~\ref{sec:tolerance:chain} already measures the relevant split: flutter's seconds-scale fading lands in the sub-acquisition (fast) share, which carries no coherence amplification and is benign; ducting's slow wander lands in the intra-day share, the term that carries $n_{\text{coh}}$ and dominates every failing budget. The measured structure --- intra-day shares that dominate the surviving power on most channels, and correlation times of $34$ and $45$ minutes where the estimator succeeds, timescales natural to duct evolution and impossible for flutter --- is circumstantial evidence that ducting is the principal slow modulator and Doppler flutter a fast-share contributor. A definitive attribution --- correlating shelf power against refractivity soundings, or the fine spectra against transponder-derived aircraft tracks --- is specified for the closing campaign rather than claimed here.
+
+\section{Scope, Standard Evolution, \& Generalization}
+\label{sec:dtv:scope}
+The weight profiles of Chapter~\ref{sec:param} are specific to the A/53 standard: the implemented single-tone method detects the 8-VSB suppressed-carrier pilot and nothing else. Two boundaries of that scope should be stated explicitly. First, the broadcast standard itself is evolving. ATSC 3.0 replaces 8-VSB with an OFDM physical layer whose synchronization features --- a deterministic bootstrap preamble and embedded pilot subcarriers --- are structured differently, and the implemented single-tone profiles do not track that transition. The per-channel census and epoch structure of the survey accommodate a gradual transition naturally (a converted channel leaves the A/53 census), but detection of ATSC 3.0 emissions would require new profiles. Second, the method does not transfer geographically merely because the backend hardware does. An instrument sharing this digital signal chain but operating in a different regulatory domain --- HIRAX in South Africa, for example --- faces a different broadcast standard (DVB-T2, an OFDM system) on a different channel raster, so the weight bank is regulatory-domain data in the same sense that the calibration constants are channel data.
+
+\textit{Porting to another receiver.} The constraint equations of
+Chapters~\ref{sec:param} and \ref{sec:pipeline} are receiver-independent; the
+numerical values are not, and it is worth being explicit about which is which,
+because the natural assumption --- that a different telescope differs only by a
+spectral-sense convention --- is wrong in a way that fails quietly. The sense
+\emph{is} a convention, fixed per receiver profile, and a sense error announces
+itself: the synthesized tone lands at the mirror frequency, the pilot is not
+matched at all, and the channel simply never fires. What must be re-derived is
+subtler. The coarse-channel rate $f_s$ sets the tap length through the census
+requirement, since what that census fixes is the analysis window's width in
+\emph{frequency}: a receiver whose raster is half as wide needs half the taps to
+present the same window, and holding $K$ fixed instead silently halves both the
+window and the unambiguous fine span. The frame length $N$ follows the
+receiver's visibility-integration length, and with $K$ determines the sub-frame
+count $L$ and hence which member of the transform family of
+Section~\ref{sec:impl:fxfft} is required. The channel raster sets each pilot's
+baseband offset $\delta\!f_c$ and normalized tone frequency $\nu_c$, so the
+weight bank is regenerated per profile rather than transferred. The input count
+$M$ enters the degrees of freedom that set the null width. Only the beacon
+itself --- its existence, its standardized offset $\Delta f_{\text{pilot}}$, and
+the shelf proxy relation of Eq.~\eqref{eq:shelfproxy} --- is a property of the
+broadcast standard and carries over untouched. This port is not hypothetical:
+the CHORD Pathfinder, on which the live stage of Chapter~\ref{sec:deployment}
+runs, has a coarse raster half as wide as CHIME's ($f_s = 195.3125$~kHz), so
+its profile is $K = 64$ and $N = 8192$ --- the same $\pm 1.526$~kHz fine span,
+the same $\pm 6.1$~kHz reference displacement, the same $L = 128$ windows and
+$L_F = 256$ transform, and the same $41.94$~ms frame --- with its own weight
+bank, golden vectors, and bit-growth assertions regenerated from the profile
+rather than copied.
+
+The same observations define the method's generalization path. Nothing in the architecture is specific to a single sinusoidal beacon: the requirements on a detection feature are that it be standardized in frequency, spectrally concentrated or otherwise deterministic, and present whenever the transmitter radiates. OFDM broadcast standards satisfy these requirements through different structures --- continual pilot subcarriers at fixed carrier indices with known modulation, and repeated deterministic preambles --- and a generalized weight profile matched to a pilot comb rather than a single tone is the natural extension. This is not achievable in the current single-tone form, and it is left as future work; the framework of Chapters~\ref{sec:param}--\ref{sec:impl} (constraint-derived parameters, exact arithmetic, rank-based calibration against measured nulls) would carry over unchanged.

@@ -1,0 +1,24 @@
+% Editable source for Figure \ref{fig:tolerance:chainaudit}: the residual chain and its evidence boundary.
+\begin{tikzpicture}[font=\small, node distance=4mm and 5mm,
+  st/.style={draw, rounded corners=2pt, align=center, inner sep=3.5pt, minimum height=19mm, text width=#1, line width=0.75pt},
+  ex/.style={st=#1, fill=ppMeasured!8, draw=ppMeasured!90!black},
+  md/.style={st=#1, fill=ppModel!10, draw=ppModel!90!black},
+  cd/.style={st=#1, fill=ppConditional!10, draw=ppConditional!90!black},
+  ctx/.style={st=#1, fill=black!2, draw=ppPending!90!black},
+  arr/.style={-{Stealth[length=1.8mm]}, thick, ppPending!85!black}]
+\node[ex=26mm] (a) {\textbf{pilot statistic}\\measured per frame\\$e = F/\mu_0 - 1$};
+\node[md=26mm, right=of a] (b) {\textbf{pilot $\to$ shelf}\\$\times\,336/25$ ($+11.3$~dB); local shape $g$; propagation};
+\node[ex=26mm, right=of b] (c) {\textbf{kept-frame floor}\\measured on the era, or refused};
+\node[ex=26mm, right=of c] (d) {\textbf{day variation}\\intra/inter-day shares; $\tau_c$: measured, bound, refused};
+\node[md=26mm, right=of d] (e) {\textbf{visibility residual}\\proxy $\to$ $(r_{\rm var}, r_{\rm sys})$ transfer};
+\node[cd=26mm, right=of e] (f) {\textbf{$P(k)$ bias}\\Fisher forecast against $r_{\rm tol}$};
+\foreach \p/\q in {a/b,b/c,c/d,d/e,e/f} \draw[arr] (\p) -- (\q);
+\node[ctx=44mm, below=8mm of c, xshift=12mm] (rv) {$r_{\rm var}$ adds to the covariance: averages with the declared coherence model};
+\node[ctx=44mm, right=8mm of rv] (rs) {$r_{\rm sys}$ enters a signed residual template: parameter-bias calculation};
+\draw[thick, ppPending!85!black] (e.south) -- ++(0,-3.5mm) coordinate (j);
+\draw[thick, ppPending!85!black] (j -| rv.north) -- (j -| rs.north);
+\draw[arr] (j -| rv.north) -- (rv.north); \draw[arr] (j -| rs.north) -- (rs.north);
+\node[font=\scriptsize, text=ppModel!95!black, align=center, above=5mm of c, text width=110mm] {blue: measured on the archive per channel and era \quad gold: model gates the archive cannot close alone \quad green: forecast};
+\node[draw=ppModel!90!black, dashed, rounded corners=2pt, fill=ppModel!5, align=center, font=\scriptsize, text width=140mm, inner sep=3pt, below=6mm of rv, xshift=25mm]
+  {closing tests that turn the gold gates into measurements: simultaneous full-allocation spectra (pilot $\to$ shelf); contaminated complex visibilities before and after the sidereal filter (proxy $\to$ visibility); an empirical residual template through the combined-bin estimator};
+\end{tikzpicture}

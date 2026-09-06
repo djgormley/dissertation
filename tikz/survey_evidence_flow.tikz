@@ -1,0 +1,29 @@
+% Editable source for Figure \ref{fig:survey:evidenceflow}.
+\begin{tikzpicture}[font=\small, node distance=5mm and 6mm,
+  st/.style={draw, rounded corners=2pt, align=center, inner sep=4pt, minimum height=14mm, text width=#1, line width=0.75pt},
+  ex/.style={st=#1, fill=ppMeasured!8, draw=ppMeasured!90!black},
+  md/.style={st=#1, fill=ppModel!10, draw=ppModel!90!black},
+  cd/.style={st=#1, fill=ppConditional!10, draw=ppConditional!90!black},
+  ctx/.style={st=#1, fill=black!2, draw=ppPending!90!black},
+  arr/.style={-{Stealth[length=1.8mm]}, thick, ppMeasured!90!black},
+  arrm/.style={-{Stealth[length=1.8mm]}, thick, ppModel!90!black},
+  arrc/.style={-{Stealth[length=1.8mm]}, thick, ppConditional!90!black}]
+\node[db, minimum width=28mm, text width=26mm, minimum height=14mm] (arch) {\textbf{Archive}\\triggered baseband captures; not uniform in time};
+\node[ex=28mm, right=of arch] (surv) {\textbf{survey}\\\texttt{datatrail}: discovery, inventory, integrity-checked transfer; \texttt{pilot-proxy}: state, quarantine, restart};
+\node[ex=28mm, right=of surv] (prod) {\textbf{Per-frame products}\\exact integer terms, fine spectra, per-frame PSD, validity, provenance};
+\node[md=28mm, right=of prod] (cal) {\textbf{Calibration}\\eras, anchors, nulls, floors, $\tau_c$};
+\node[cd=26mm, right=of cal] (fc) {\textbf{Forecast}\\masking cost and residual tolerance; conditional verdict};
+\node[md=32mm, below=9mm of surv] (sel) {\textbf{Selection function}\\time, season, sidereal hour, trigger class, operations state};
+\node[ctx=32mm] (led) at ([yshift=-19mm]prod.south) {\textbf{Closing ledger}\\frames, coverage, failures, join completeness};
+\node[cd=32mm] (hold) at (led -| cal) {\textbf{Blocked holdout}\\fit on calibration blocks; evaluate untouched blocks once};
+\draw[arr] (arch) -- (surv); \draw[arr] (surv) -- (prod); \draw[arrm] (prod) -- (cal);
+\draw[arrm] (arch.south) |- (sel.west);
+\draw[arr] (prod.south) -- (led.north);
+\draw[arrc] (cal.south) -- (hold.north);
+\draw[arrc] (hold.west) -- (hold.west -| led.east);
+\draw[arrc] (hold.east) -| (fc.south);
+% the claim boundary
+\coordinate (yb) at ([yshift=-6mm]sel.south);
+\draw[dashed, thick, ppFailure!80!black] ([xshift=-3mm]sel.west |- yb) -- ([xshift=3mm]hold.east |- yb)
+  node[pos=0.5, below=2pt, font=\scriptsize, text=ppFailure!90!black, align=center, text width=150mm]{claim boundary: an archive fraction becomes a statement about observing time only after the selection comparison and the blocked holdout};
+\end{tikzpicture}

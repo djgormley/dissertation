@@ -1,0 +1,188 @@
+\chapter{Conclusions \& Future Work}
+\label{sec:conclusions}
+
+\section{What This Work Establishes}
+\label{sec:conclusions:contributions}
+
+This dissertation develops an instrument and a decision framework for a problem
+that is simultaneously statistical, computational, and cosmological.  The
+engineering contribution is a narrow-line detector that uses the ATSC pilot as
+a continuously present, spectrally concentrated proxy; combines a fixed tone
+projection with local references and robust fine-axis normalization; and carries
+the complete decision through exact fixed-point arithmetic.  Its digital
+contract is unusually strong: for exercised cases, independent implementations
+can be compared by integer equality rather than by a floating tolerance.
+
+The scientific contribution is the refusal to stop at detectability.  The
+archive products preserve the statistics needed to sweep masking policies, and
+the forecast translates each policy into lost exposure, surviving contamination residual, BAO
+parameter bias, and integration-time cost.  Equally important, the
+analysis marks where that chain is measured and where it is conditional: the
+standard fixes the pilot properties, the archive measures a scalar proxy in one
+coarse channel, and additional transfer measurements are required before that
+proxy becomes a validated visibility-domain contaminant across an entire 6-MHz
+allocation.  Exact implementation evidence cannot substitute for those
+measurements.
+
+\stubfig{v5 archive rerun}{One cell per channel 14--36 with its current-era screening class from Table~\ref{tab:tolerance:channels} (recovery candidate, measurement-bound on floor, measurement-bound on $\tau_c$, occupancy-wall excision candidate, off-era) and the closing measurement that controls it; the superseded archive-average map was removed rather than shown under a current-evidence heading.}{Evidence map for the 23 ATSC allocations on their current eras.\label{fig:conclusions:status}}
+
+The principal contributions can therefore be stated without claiming more than
+the evidence supports:
+
+\begin{enumerate}[leftmargin=2em]
+  \item a standards-grounded pilot-frequency model and a nominal
+  pilot-to-payload screening relation, separated from the received propagation
+  transfer that remains to be measured;
+  \item a constraint-derived, exact-integer detector with explicit overflow,
+  rounding, initialization, and verification contracts;
+  \item a restartable, bounded-storage archive survey --- the
+  \texttt{pilot-proxy} archive runtime driving a \texttt{datatrail} extended
+  with discovery, inventory, and integrity-checked transfer ---
+  that stores exact integer statistics and provenance rather than only
+  historical mask bits, so that any coarse or fine policy can be replayed
+  exactly on every frame;
+  \item empirical era, anchor, null, floor, and correlation-time estimators
+  with refusal semantics when a required population is absent;
+  \item a synthetic validation path on a bench radio that reaches the full
+  $2048$-input geometry by stacking independent captures and measures, rather
+  than assumes, the spatial scaling law; and
+  \item a two-tier contamination-residual tolerance framework (RFIsher),
+  demonstrated for BAO, that selects a per-channel operating point against the
+  science tolerance and can return recovery, excision, or measurement-limited
+  outcomes while exposing the assumptions responsible for each.
+\end{enumerate}
+
+Running through all of it is one arithmetic contract, two receiver profiles, and three evidence platforms.  The
+mathematics, weights, and fixed-point contract are stated once, for the
+upgraded CHIME correlator; the synthetic evidence comes from GNU~Radio and a
+LimeSDR, the archive evidence from CHIME's triggered baseband captures, and
+the live evidence from a \texttt{kotekan} stage on the CHORD Pathfinder ---
+because no one instrument could supply all three, and because the arithmetic
+transfers between them while the calibration does not.
+
+\section{Current Channel-Level Synthesis}
+\label{sec:conclusions:matrix}
+
+Under the transmitter proxy, scalar residual chain, thermal-noise-shaped
+contamination template, and per-redshift-bin Fisher estimator of
+Chapter~\ref{sec:tolerance}, every one of the 23 product-covered channels
+receives a current-era screening status and a binding closing condition.  The
+status is an analysis status, not an operations command; ``recovery
+candidate'' means that the tolerance-selected operating point enters the
+dilation-tolerance region on the channel's current era, and it does not waive
+the transfer and estimator validations that the closing condition names.
+
+\stubtab{v5 archive rerun}{Counts only, not another per-channel ledger:
+channels by screening class (recovery candidate, measurement-bound on floor,
+measurement-bound on $\tau_c$, occupancy-wall excision candidate, off-era),
+by handover policy (kept-and-masked, excised interior, monitoring tap), and
+the band-level masked fraction and integration-time cost at the selected
+operating points; the per-channel rows live in Table~\ref{tab:tolerance:eta}
+and Appendix~\ref{app:archive-diagnostics}.}{Synthesis of channels 14--36 by
+disposition.\label{tab:conclusions:matrix}}
+
+\stub{v5 archive rerun}{One paragraph stating the band-level result: the number
+of recovery candidates, measurement-bound channels, excision candidates, and
+off-era channels; the integration-time cost of the selected masks on the kept
+allocations; and the one or two channels whose verdicts are most sensitive to
+a pending measurement.}
+
+The growth-rate result is more conditional than the dilation result.  In the
+present model, booking a BAO-preserving delay cut on both sides of the calculation
+can move a threshold-feasible channel inside the $f\sigma_8$ tolerance (Table~\ref{tab:tolerance:worlds}).  The
+collaboration-style combined-bin estimator is now implemented over all seven
+DTV redshift bins.  In the noise-shaped family its one-year growth-rate
+tolerance is $8$--$23\%$ looser than the independent per-bin value, depending
+on bin (about $10\%$ at $z=1.4$--$1.5$).  The low-$k_\parallel$, wedge-like,
+and localized-$|k|$ banks have also been executed for the exact triplet
+per-bin noise-normalized, combined noise-normalized, and combined
+fixed-physical; together they span joint-estimator tolerances
+of $1.455\times10^{-3}$--$3.795\times10^{-3}$.  This completes the
+code-supported estimator and analytic-shape sensitivity envelope, but it does
+not select which curve describes the telescope residual.  That selection and
+any channel-policy revision require templates fitted to measured visibility
+structure.  The
+appropriate conclusion is not that the growth rate has already been recovered,
+but that a self-consistent filter configuration exists in the screening model
+and merits the closing analysis.
+
+\section{What Remains to Close the Verdict}
+\label{sec:conclusions:future}
+
+The near program is fixed by the evidence matrix in Appendix~\ref{app:evidence}.
+The threshold-free estimator transfer is closed by the fully digital and
+controlled radio-path sweeps of Section~\ref{sec:estimator:validation}, the
+survey products retain the exact integer terms that make every threshold
+replayable, and the Pathfinder stage is implemented and verified against the
+offline reference.  The remaining program is:
+
+\begin{enumerate}[leftmargin=2em]
+  \item complete the LimeSDR detection campaign of
+  Section~\ref{sec:detection:synthetic}: the $M$-sweep to $2048$ from stacked
+  independent captures, the paired packed-versus-full-precision crossing shifts
+  with a stationary-span waveform audit, the fine-versus-coarse gain against
+  the coherent-integration bound, and the synthetic mask-versus-residual
+  frontier;
+  \item complete the archive rerun on all 23 channels and fill every table it
+  feeds: stable eras (Table~\ref{tab:calibration:eras}), anchors
+  (Table~\ref{tab:calibration:anchors}), current-era nulls
+  (Table~\ref{tab:calibration:nulls}), tolerance-selected operating points
+  (Table~\ref{tab:tolerance:eta}), the residual chain
+  (Table~\ref{tab:tolerance:channels}), the per-channel plates of
+  Appendix~\ref{app:archive-diagnostics}, and the cross-build reproduction
+  record with its joined denominator;
+  \item run the specified cadence campaigns to measure or bound $\tau_c$ on
+  the refused channels (half-day sessions at ${\sim}10$-s cadence, the
+  large-null, coherence-limited channels first); if they are not executed, the
+  sidereal-day caps stand as permanent conservative bounds, and certification
+  shifts to the blocked holdout and per-channel jackknife of the final
+  analysis;
+  \item measure simultaneous power across each 6-MHz allocation to infer the
+  distribution of received pilot-to-shelf transfer by channel, era, and
+  propagation state;
+  \item measure contaminated complex visibilities before and after the
+  per-sidereal-day operation, preserving baseline and phase information, and
+  separate coherent systematic residual from stochastic added variance;
+  \item retain the completed per-bin/joint and four-family analytic forecast
+  envelope as the model-sensitivity bound.  Once the visibility products exist,
+  fit and propagate frequency-, baseline-, sidereal-, and empirically structured
+  residual templates through every channel policy and selected threshold; do
+  not choose the most permissive analytic family as a substitute for that
+  measurement;
+  \item complete the blocked, per-era holdout of
+  Section~\ref{sec:survey:holdout} on blocks reserved before the operating
+  points were selected, and attach its exact event/frame split and reproduction
+  denominator;
+  \item run the Pathfinder shadow run of Section~\ref{sec:deployment:results}
+  and pass its framing, exact-replay, headroom, monitoring, and
+  failure-injection gates; then, for CHIME, pin the upgraded engine's frame
+  contract and repeat the alignment demonstration with the CHIME bundles; and
+  \item schedule periodic spot-collection on channels excluded from baseband
+  collection: transmitter sign-offs and station departures were recorded on
+  collected channels during the survey span, and a channel the instrument does
+  not sample can never report its own sign-off, leaving recoverable spectrum
+  written off indefinitely.
+\end{enumerate}
+
+Several forward engineering extensions remain valuable after those gates.  A
+third, censored reference could protect the denominator from a discrete line;
+alternative reference weights could trade curvature rejection against variance;
+and the same exact-arithmetic and calibration architecture could target the
+bootstrap or pilot structures of OFDM broadcast standards.  These are extensions
+of the detector family, not prerequisites for making the present evidence
+honest.
+
+\section{Closing Perspective}
+\label{sec:conclusions:closing}
+
+The strongest result of this work is not a promise that every television channel
+can be saved.  It is a procedure that makes the answer auditable.  The procedure
+starts from a feature the transmitter is required to emit, follows it through a
+bit-reproducible digital instrument, records enough information to change the
+policy without changing the past, and prices the remaining contamination in the
+same units as the cosmological measurement.  Where a digital equality can be
+proved, the dissertation requires equality.  Where the telescope can supply a
+measurement, it reports the measurement and its population.  Where a transfer
+or cadence is missing, it carries a bound or a refusal rather than converting an
+assumption into a fact.  That separation is what allows positive and negative
+channel verdicts to be scientifically useful rather than merely operational.

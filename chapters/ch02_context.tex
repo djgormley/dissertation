@@ -1,0 +1,134 @@
+
+\chapter{Scientific Context, Instrument, \& Method Overview}
+\label{sec:system}
+
+\section{Scientific Context \& the Interference Problem}
+\label{sec:system:science}
+The Canadian Hydrogen Intensity Mapping Experiment (CHIME) is designed to measure the expansion history of the universe by mapping redshifted 21~cm emission from neutral hydrogen over $0.8 \le z \le 2.5$, tracing the baryon acoustic oscillation scale through the epoch in which cosmic expansion transitioned from decelerating to accelerating \cite{amiri2022chime}. The measurement is strongly foreground-limited: Galactic synchrotron emission exceeds the cosmological signal by several orders of magnitude, and foreground separation relies on the spectral smoothness of that emission. Radio-frequency interference directly undermines this separation when its spectral or temporal structure survives into averaged visibilities and overlaps modes used by the cosmological estimator. Interference excision therefore constitutes a science requirement for the experiment. False alarms carry the complementary cost: each incorrectly flagged frame discards integration time from a measurement whose statistical uncertainty falls only through accumulated exposure.
+
+Within CHIME's measured interference environment, digital television broadcasting is of particular concern. The telescope's own RFI characterization identifies television station bands across 480--580~MHz among the strongest persistent features in its spectrum, together with intermittent few-second bursts of distant broadcast channels scattered into the beam by meteor ionization trails and aircraft \cite{amiri2022chime}. DTV interference thus arrives in two modes --- persistent carriers from line-of-sight and diffracted paths, and transient scattered events --- and both must be caught. Chapter~\ref{sec:dtv} develops the structural feature that makes this tractable: every DTV emission carries a standardized, spectrally concentrated pilot carrier whose frequency is known in advance to within transmitter tolerance. This dissertation develops the \emph{pilot-proxy method}: a matched-filter projection operating on the channelized baseband, followed by local references and a robust calibrated decision. It produces one binary rejection decision per processed correlator frame per monitored channel and is implemented in exact integer arithmetic so that the candidate production path is bit-reproducible against an independent reference. Its calibration is derived from a survey of the DTV environment conducted on CHIME's archived baseband, and the same arithmetic is implemented as a \texttt{kotekan} stage and run live on the CHORD Pathfinder (Section~\ref{sec:system:platforms}, Chapter~\ref{sec:deployment}).
+
+\subsection*{Why the pilot is a targeted complement, not a universal replacement}
+
+Generic flaggers answer a different question. Spectral-kurtosis estimators are powerful when interference changes the distribution of power away from the Gaussian null \cite{nita2010sk}; a randomized, filtered 8-VSB payload can approach that null in a narrow analysis cell even while a coherent pilot remains present. Cyclostationary methods instead search for known periodic correlations and are natural candidates for digitally modulated signals \cite{gardner1991}. Neither class is dismissed by theorem here. Their relative performance depends on observation length, bandwidth, nuisance uncertainty, and compute budget. The pilot method is justified by a narrower engineering claim: for a continuously present line with known nominal frequency in locally Gaussian noise, the matched projection is the likelihood-ratio statistic, and the line concentrates enough energy to be evaluated cheaply on every frame. The incumbent and alternative methods are therefore compared empirically on common data products in Chapter~\ref{sec:tolerance}, rather than declared impossible in advance.
+
+\section{The Instrument \& Signal Path}
+\label{sec:system:instrument}
+CHIME is a drift-scan transit telescope at the Dominion Radio Astrophysical Observatory near Penticton, British Columbia: four fixed cylindrical parabolic reflectors, each $20 \times 100$~m, oriented north--south, with no moving parts \cite{amiri2022chime}. Each cylinder's focal line carries 256 dual-polarization feeds; four cylinders give 1024 antennas and $M = 2048$ independent analog chains. The observing band is 400--800~MHz: scientifically, this is the 21~cm redshift range $0.8 \le z \le 2.5$; from an engineering standpoint it is exactly one octave, so an 800~MSPS converter captures the band directly as its own alias (second-Nyquist-zone sampling), halving the conversion rate otherwise required \cite{amiri2022chime}.
+
+Table~\ref{tab:telescope} summarizes the telescope parameters used throughout this work, together with their governing constraints. The digital signal chain defines the environment in which the detector operates. Each analog input is digitized at 800~MSPS with 8-bit resolution --- with dynamic range verified sufficient that site RFI does not drive the receiver into nonlinearity \cite{amiri2022chime}. A polyphase filter bank (PFB) processes the samples in frames of 2048, applying a sinc-Hamming window across four consecutive frames and emitting one complex spectral value per $f_s = 400\text{ MHz}/1024 = 390.625$~kHz channel every
+\begin{equation}
+\tau_{\text{PFB}} = \frac{2048}{800\text{ MSPS}} = 2.56~\mu\text{s};
+\end{equation}
+the PFB is preferred over a direct FFT because its more compact spectral response localizes any disturbance --- including RFI --- to fewer channels \cite{amiri2022chime}. Throughout this work, $f_s$ denotes this per-channel complex sample rate, and one ``sample'' of Chapters~\ref{sec:param}--\ref{sec:pipeline} is one channelized PFB output. The 18{+}18-bit channelizer outputs are rounded to packed $4{+}4$-bit complex values after per-channel complex gains chosen to load the 15-level quantizer optimally \cite{amiri2022chime,menaparra2018}: this native $4{+}4$-bit format defines the detector's input interface and motivates the \texttt{int4} arithmetic of Section~\ref{sec:param:tradeoffs}.
+
+The channelized data feed an FX correlator: a corner-turn network rearranges the F-engine outputs so that each of 256 GPU nodes of the X-engine receives all 2048 inputs for four frequency channels, where the kotekan real-time framework \cite{kotekan} forms the $N_{\text{feed}}^2$ visibility matrix, presently integrated over 12{,}288 channelized samples (${\approx}31$~ms) \cite{amiri2022chime}. For the primary cosmological data product, a downstream receiver applies calibration and flagging, stacks redundant baselines, and integrates to 10~s cadence \cite{amiri2022chime} ; this 10~s cadence is the granularity at which flagging decisions act on the science data, and it is adopted later in this work as the natural unit for quantifying flagging impact. The X-engine already hosts a general-purpose RFI stage (spectral-kurtosis excision at sub-millisecond cadence \cite{amiri2022chime}); the detector of this dissertation complements it with a matched, narrowband, per-channel decision aligned one-to-one with correlator frames, targeting a specific known interferer at interference-to-noise ratios below the reach of broadband kurtosis statistics.
+
+Three cadences appear in this dissertation and they must not be confused. The \emph{present} CHIME X-engine integrates $12{,}288$ channelized samples ($\approx 31$~ms) per visibility frame. The \emph{detector frame} of this work is $N = 16384$ samples ($41.94$~ms), the integration length of the upgraded engine the detector is designed for, and the mask contract of Chapter~\ref{sec:deployment} requires the detector frame to cover exactly one visibility integration or a declared integer number of them --- a requirement the CHORD Pathfinder already meets at its $8192$-sample frame and that the upgraded CHIME engine must be pinned to before a CHIME live stage passes. The \emph{science product} is the downstream $10$~s accumulation, at which flagging decisions act on the cosmological data; masked fractions are quoted per detector frame and priced per $10$~s product.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption[Telescope and signal-path parameters]{Telescope and signal-path parameters used throughout this work, with governing constraints. These are CHIME's values, and every numerical quantity quoted in this chapter follows from them; the constraint equations are receiver-independent, and Section~\ref{sec:dtv:scope} states which parameters a different receiver must re-derive. Instrument values from \cite{amiri2022chime}; quantization from \cite{amiri2022chime,menaparra2018}.}
+\label{tab:telescope}
+\begin{tabular}{lll}
+\toprule
+Parameter & Value & Governing constraint \\
+\midrule
+Observing band & 400--800 MHz & 21 cm at $0.8 \le z \le 2.5$; one octave (2nd Nyquist zone) \\
+Analog inputs & $M = 2048$ & 4 cylinders $\times$ 256 dual-polarization feeds \\
+ADC & 800 MSPS, 8 bit & octave band; RFI headroom below nonlinearity \\
+Channelizer & 1024-channel PFB & sinc-Hamming, 4-tap; RFI localization \\
+Channel rate & $f_s = 390.625$ kHz & $400\text{ MHz}/1024$ \\
+PFB cadence & $\tau_{\text{PFB}} = 2.56~\mu$s & $2048/800$ MSPS \\
+Channelized format & packed $4{+}4$-bit complex & 15-level mid-tread; gain-optimized loading \\
+Visibility cadence & ${\approx}31$ ms (12{,}288 samples) & present X-engine integration \\
+Cosmology product & 10 s integrations & calibrated, stacked, flagged \\
+Detector frame & $N = 16384$ samples $= 41.94$ ms & upgraded-engine design value (Sec.~\ref{sec:param:tradeoffs}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{One Arithmetic Contract, Two Receiver Profiles, Three Evidence Platforms}
+\label{sec:system:platforms}
+
+Every quantity in this dissertation is stated for one detector geometry: the upgraded CHIME correlator, with $M = 2048$ inputs, an $N = 16384$-sample ($41.94$~ms) integration frame, and the GPU generation that engine is built around. Chapter~\ref{sec:param} derives the remaining parameters from that geometry. No single instrument can supply all of the evidence needed to validate a detector for it --- a telescope cannot be driven with a known-SNR input, a bench radio has one receive chain rather than two thousand, and CHIME's production pipeline is not a place to try an unproven kernel --- so the evidence ladder of Table~\ref{tab:system:evidence-ladder} is climbed on three platforms, each contributing what only it can.
+
+\begin{description}[leftmargin=1.6em]
+\item[Synthetic: GNU~Radio and a LimeSDR.] The fully digital path generates the standards-chain 8-VSB waveform in GNU~Radio and adds noise at a commanded data-shelf SNR, so the estimator's transfer can be measured against known truth (Section~\ref{sec:estimator:validation}). The over-the-air path transmits and receives that waveform through the two antenna ports of one LimeSDR, adding a real radio front end, a real quantizer, and calibration controls. A LimeSDR has one receive chain; the detector's spatial axis is non-coherent (Section~\ref{sec:pipeline:noncoherent}), so the $M = 2048$ frame is assembled from independent captures and the $\sqrt{M}$ scaling is measured rather than assumed (Section~\ref{sec:detection:synthetic}).
+\item[Offline: the CHIME baseband archive.] CHIME's archive of triggered full-array baseband captures is the only data with the real feed count, the real receiver, and the real transmitter population. Processed on CANFAR through the restartable survey of the \texttt{pilot-proxy} archive runtime over \texttt{datatrail} \cite{pilot-proxy-sw,datatrail-cli} (Chapter~\ref{sec:survey}), it supplies every calibration object --- stable eras, anchors, null distributions, operating thresholds --- and every channel verdict (Chapters~\ref{sec:calibration} and~\ref{sec:tolerance}).
+\item[Online: the CHORD Pathfinder.] CHORD \cite{chord2019} runs the same \texttt{kotekan} real-time framework as CHIME with small pipeline differences, and its Pathfinder is in commissioning, so an experimental stage can run there without contending for science time or risking a production data product. The stage is the same arithmetic contract instantiated at the Pathfinder's raster ($K = 64$, $N = 8192$ at $f_s = 195.3125$~kHz, the same $41.94$~ms frame), which is exactly the receiver port that Section~\ref{sec:dtv:scope} defines. It is where live framing, stability, exact replay, compute headroom, and hours-long before-and-after spectra are established (Chapter~\ref{sec:deployment}).
+\end{description}
+
+Table~\ref{tab:system:profiles} fixes the two geometries once, so that no later number has to be reconciled against a stale one. What transfers between platforms is the arithmetic: the weight-synthesis rule, the fixed-point contract, and the verification gates are geometry-parameterized and bit-checked on all three.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption[The two detector profiles]{The two detector profiles used in this dissertation. Every quantity in the mathematics, the synthetic campaign, and the archive is stated for the CHIME profile; the Pathfinder profile is the same contract regenerated for a raster half as wide, and it is the only geometry the live stage runs at. Column entries in the last row are the quantities that must be regenerated, not copied, when a profile changes.}
+\label{tab:system:profiles}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+ & CHIME (mathematics, synthetic, archive) & CHORD Pathfinder (live stage) \\
+\midrule
+Coarse-channel rate $f_s$ & $390.625$~kHz & $195.3125$~kHz \\
+Inputs $M$ & $2048$ & as configured on the Pathfinder \\
+Frame $N$ (samples / duration) & $16384$ / $41.94$~ms & $8192$ / $41.94$~ms \\
+Taps $K$, windows $L$, transform $L_F$ & $128$, $128$, $256$ & $64$, $128$, $256$ \\
+Coarse bin $f_s/K$; references & $3.052$~kHz; $\pm2$ bins $= \pm6.1$~kHz & $3.052$~kHz; $\pm2$ bins $= \pm6.1$~kHz \\
+Fine span; fine grid spacing & $\pm1.526$~kHz; $11.9$~Hz & $\pm1.526$~kHz; $11.9$~Hz \\
+Regenerated per profile & \multicolumn{2}{>{\raggedright\arraybackslash}p{0.66\linewidth}}{weight bank, twiddles and bit bounds, golden vectors, performance acceptance} \\
+\bottomrule
+\end{tabularx}
+\end{table} What does not transfer is calibration data. Anchors, nulls, eras, and thresholds are properties of a receiver and its transmitter environment; the archive calibration is CHIME's, and the Pathfinder run establishes live behavior, not CHIME's operating points. Figure~\ref{fig:system:placement} shows where the stage sits in the shared signal path.
+
+\begin{figure}[t]
+\centering
+\resizebox{\linewidth}{!}{\input{tikz/placement.tikz}}
+\caption[Placement of the detector in the shared signal path]{Where the stage sits. The pilot-proxy detector taps the packed $4{+}4$-bit channelized stream after the corner turn --- all $M$ inputs of one coarse channel --- and emits one mask bit and one validity bit per $N$-sample frame, aligned one-to-one with the visibility integration formed from the same samples. The path is CHIME's; CHORD's differs in raster and frame length but not in the placement, which is why the Pathfinder can host the stage.}
+\label{fig:system:placement}
+\end{figure}
+
+\section{From Pilot to Mask}
+\label{sec:system:detector}
+
+The method uses the television pilot as a proxy for the otherwise noise-like 6-MHz data shelf. A target projection measures power at the expected pilot while two nearby reference projections measure the local background. Their ratio is the $F$ statistic developed in Chapter~\ref{sec:estimator}. After removing the null level, the pilot excess is converted through a declared pilot-to-shelf transfer into an estimated shelf SNR. No threshold is used in this stage. Estimation answers the question ``how much contamination does this frame imply?''
+
+Detection is a separate step. The fine statistic searches the pilot's narrow frequency neighborhood, a ranked local background supplies a robust reference, and the pair $(\rho,\eta)$ turns the comparison into a proposed mask. The rank $\rho$ chooses the background order statistic; the multiplier $\eta$ sets how far above it the pilot neighborhood must rise. Detection answers the question ``keep this frame or mask it?'' The implementation carries the same estimator quantities into both archive analysis and the proposed live path, so the decision policy can change without redefining the measurement.
+
+The science tolerance does not come from one frame's estimated SNR. It comes from propagating the contamination left in the kept frames through the residual and science model of Chapter~\ref{sec:tolerance}. That propagation is completed before threshold selection. For the latest accepted stable era of a channel, preparation rejects invalid frames, establishes the anchor and usable bulk, applies the declared floor, correlation, and proxy-to-residual transfers, and verifies that the result is stable enough to use. It then emits one residual-score histogram for each candidate $\rho$. Every bin carries its frame count and its calibrated coherent-residual total, plus a variance-residual total when that cost term is available.
+
+Threshold selection has only two scientific inputs: that mapping of $\rho$ to complete histograms and the science tolerance. For each fixed $\rho$, cumulative bin sums derive the sample count, masked fraction, and residual at every candidate $\eta$; no exposure count or already-thresholded contamination measurement is supplied separately. The selector finds the minimum feasible cost, forms the fixed 2\% cost plateau, and returns its member with the most systematic margin, then less masking, lower $\rho$, and lower $\eta$. A conventional false-alarm/detection curve remains a diagnostic, but it is not the final science objective. Era dates and labels remain provenance beside the histogram rather than arguments to the selector.
+
+Calibration and evaluation must remain separate. Within each channel and stable era, formed by intersecting the station-state and instrument-state intervals, contiguous acquisition or time blocks form the calibration set and disjoint blocks form the evaluation set. The calibration blocks prepare and authorize the complete histogram mapping; the selector then determines the tolerance-selected operating point from that fixed object. The mapping and selected pair are frozen before the evaluation blocks are opened, and the evaluation is not used for retuning. Random frame splitting would mix strongly related frames from the same acquisition across both sides and would overstate transfer.
+
+The final step is an hours-long \texttt{kotekan} shadow run on the CHORD Pathfinder. The frozen estimator and decision execute at live cadence while their outputs are recorded but are not allowed to alter science data. That run tests framing, drop behavior, stability, exact replay, and resource headroom under real operations, and records the before-and-after spectra of each monitored channel. Only after those gates pass can a mask be considered for active use on a production telescope. Archive work executed through CANFAR remains offline evidence; it is not the online stage.
+
+The detector taps the channelized, quantized signal path. Its input is the packed $4{+}4$-bit stream of one coarse channel across all $M=2048$ inputs, and its eventual output is one rejection decision per $N=16384$-sample frame, or $41.94$~ms at the CHIME channel rate. The frame length is frozen in samples, so the wall-clock duration and fine-axis span must be re-derived for another receiver. The production arithmetic and its independent reference are required to agree bit-for-bit. The archive surface processes CHIME's triggered full-array baseband captures \cite{amiri2018frb}; the live surface is the Pathfinder stage of Chapter~\ref{sec:deployment}.
+
+\clearpage
+\subsection*{Evidence ladder}
+
+Chapters~\ref{sec:estimator} and~\ref{sec:detection} use the same four levels so that a mathematical result is not mistaken for a deployment result:
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption[Evidence ladder with platforms]{Evidence ladder for estimation and detection, with the platform that supplies each level. ``\pending'' marks a protocol whose result is not yet in this document.}
+\label{tab:system:evidence-ladder}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.11\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.15\linewidth}}
+\toprule
+Level & Platform & Estimation question & Detection question & Status \\
+\midrule
+Mathematics & upgraded-CHIME geometry ($M{=}2048$, $N{=}16384$, $K{=}128$) & How does $F$ measure pilot excess and translate to shelf SNR? & How do $(\rho,\eta)$ and the residual tolerance define a mask? & defined (Chapters~\ref{sec:param}--\ref{sec:detection}) \\
+Synthetic & GNU~Radio (digital); LimeSDR (over the air) & Does known input SNR produce the expected output, on every arithmetic path? & Does fixed point lose sensitivity against floating point, and what masking cost does each residual tolerance require? & estimation \measured; detection campaign \pending \\
+Offline & CHIME triggered baseband archive, all 23 allocations & Do frozen channel--era quantities transfer from calibration blocks to untouched archive blocks? & Does the frozen operating point retain its residual and masking performance? & products and method defined; rerun results \pending \\
+Online & CHORD Pathfinder, \texttt{kotekan} stage & Does the estimator remain stable for hours at live cadence? & Does the frozen decision remain stable in shadow operation, and what does it remove from the spectrum? & stage implemented; shadow run \pending \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Chapter~\ref{sec:dtv} derives the beacon, and Chapter~\ref{sec:param} constructs the weights and geometry. Chapter~\ref{sec:estimator} then develops estimation through the four levels above; Chapter~\ref{sec:detection} does the same for thresholded decisions. Chapters~\ref{sec:survey} and~\ref{sec:calibration} define the archive and its channel--epoch objects, Chapter~\ref{sec:tolerance} supplies the science residual budget, and Chapter~\ref{sec:deployment} defines the live interface and operations contract.
+
+\medskip
+\noindent\emph{Notation.} $\mathbf{X} \in \mathbb{C}^{M \times N}$ denotes one frame of channelized data for one coarse channel ($M = 2048$ inputs, $N = 16384$ samples); $K = 128$ the matched-filter tap length; $L = N/K = 128$ the sub-frames per frame; $L_F = 2L = 256$ the padded fine-spectrum length; $R = 3$ the weight profiles (target $r = 0$, references $r \in \{1,2\}$); $f_s$ the per-channel complex sample rate; $\nu_c$ the normalized pilot tone frequency of channel $c$; $S_r[f]$ and $P_r$ the fine and coarse power statistics; $T[f]$ the per-bin detection ratio; $\mathcal{D}$ and $\mathcal{B}$ the designated window and usable null bulk; $f_a$, $\rho$, $\eta$ the per-channel anchor bin, CFAR rank, and threshold multiplier; $\mu_0$ the exact rational weight-norm correction; and $\beta$ the sample dimension factor ($\beta = 2$ for complex data).

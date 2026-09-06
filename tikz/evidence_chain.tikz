@@ -1,0 +1,21 @@
+% Editable source for Figure \ref{fig:intro:claimchain}: evidence chain and claim boundary.
+\begin{tikzpicture}[font=\small, node distance=4mm and 5mm,
+  st/.style={draw, rounded corners=2pt, align=center, inner sep=3.5pt, minimum height=22mm, text width=#1, line width=0.75pt, font=\footnotesize},
+  ex/.style={st=#1, fill=ppMeasured!8, draw=ppMeasured!90!black},
+  md/.style={st=#1, fill=ppModel!10, draw=ppModel!90!black},
+  cd/.style={st=#1, fill=ppConditional!10, draw=ppConditional!90!black},
+  arr/.style={-{Stealth[length=1.8mm]}, thick, ppPending!85!black}]
+\node[ex=27mm] (a) {\textbf{broadcast standard}\\specified pilot frequency and waveform facts};
+\node[ex=27mm, right=of a] (b) {\textbf{exact detector}\\integer projection, transform, decision; bit-reproducible};
+\node[ex=27mm, right=of b] (c) {\textbf{triggered archive}\\recorded integer terms and provenance, per frame};
+\node[md=27mm, right=of c] (d) {\textbf{calibration transfer}\\pilot to shelf, shelf to visibility residual};
+\node[md=27mm, right=of d] (e) {\textbf{Fisher forecast}\\bias tolerance, time cost, mode cuts};
+\node[cd=27mm, right=of e] (f) {\textbf{channel verdict}\\conditional: recovery, excision, or measurement-bound};
+\foreach \p/\q in {a/b,b/c,c/d,d/e,e/f} \draw[arr] (\p) -- (\q);
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, ppModel!95!black, thick] ([yshift=-2mm]d.south west) -- ([yshift=-2mm]e.south east)
+  node[midway, below=3pt, font=\scriptsize, text=ppModel!95!black, align=center]{load-bearing model gates: each arrow states what must be supplied before the next claim is defensible};
+\node[below=12mm of c, font=\scriptsize, align=left, text width=150mm, xshift=25mm] {
+  \tikz\draw[fill=ppMeasured!8, draw=ppMeasured!90!black] (0,0) rectangle (0.35,0.22); measured\qquad
+  \tikz\draw[fill=ppModel!10, draw=ppModel!90!black] (0,0) rectangle (0.35,0.22); model / transfer\qquad
+  \tikz\draw[fill=ppConditional!10, draw=ppConditional!90!black] (0,0) rectangle (0.35,0.22); conditional / feasible};
+\end{tikzpicture}

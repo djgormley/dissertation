@@ -1,0 +1,54 @@
+% Editable source for Figure \ref{fig:pipeline}: the processing chain as a DSP block diagram.
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm,
+  b/.style={blk, text width=26mm, minimum height=10mm}, bm/.style={blkm, text width=26mm, minimum height=10mm},
+  bc/.style={blkc, text width=26mm, minimum height=10mm}, bx/.style={blkx, text width=26mm, minimum height=10mm}]
+% ---------------- row 1: projection
+\node[b] (x) at (-0.4,0) {$x_m[n]$: $M$ inputs, \texttt{int4}};
+\node[b] (seg) at (3.5,0) {segment into $L$ windows of $K$};
+\node[op] (mul) at (6.1,0) {$\times$};
+\node[bm, text width=30mm] (w) at (6.6,1.45) {profiles $w_r[k]$: target and two references};
+\pic at (4.45,1.45) {impulse};
+\node[op] (sumk) at (7.4,0) {$\sum_k$};
+\node[b] (z) at (10.0,0) {$Z_m[\ell,r]$: exact row sums, one per window and profile};
+\draw[bus] (x) -- (seg) node[width, pos=0.5, above, yshift=1pt]{$4{+}4$ b};
+\draw[sig] (seg) -- (mul); \draw[sigm] (w.south -| mul) -- (mul);
+\draw[sig] (mul) -- (sumk); \draw[sig] (sumk) -- (z) node[width, midway, above]{int32};
+% ---------------- row 2: fine spectra
+\node[b] (pad) at (3.5,-2.5) {zero-pad $L \to L_F = 256$};
+\node[b, text width=20mm] (fft) at (6.4,-2.5) {DFT across the windows};
+\pic at (6.15,-3.32) {butterfly};
+\node[op] (sq) at (9.0,-2.5) {$|\cdot|^2$};
+\node[op] (summ) at (10.2,-2.5) {$\sum_m$};
+\node[b] (s) at (12.7,-2.5) {$S_r[f]$: \texttt{uint64} fine powers, $3\times256$};
+\draw[sig] (z.south) -- ++(0,-0.8) -| (pad.north);
+\draw[sig] (pad) -- (fft); \draw[sig] (fft) -- (sq) node[width, pos=0.4, above]{Q15}; \draw[sig] (sq) -- (summ);
+\draw[sig] (summ) -- (s) node[width, midway, above]{64 b};
+% ---------------- row 3: fine decision
+\node[op] (rat) at (12.7,-4.6) {$\div$};
+\node[b, text width=22mm] (mx) at (9.4,-4.2) {$\max_{\mathcal D} T[f]$ (designated window)};
+\node[bm, text width=22mm] (rank) at (9.4,-5.7) {rank select $T_{(\rho)}$ over the bulk $\mathcal B$};
+\node[opm] (eta) at (7.4,-5.7) {$\times\eta$};
+\node[cmp, shape border rotate=180, minimum height=10mm] (c1) at (5.8,-4.95) {$>$};
+\node[bc] (mask) at (3.2,-4.95) {mask bit $+$ validity, one per frame};
+\draw[sig] (s) -- (rat);
+\node[width, anchor=west] at (12.3,-5.4) {$T[f]=\frac{2S_0[f]}{S_1[f]+S_2[f]}$};
+\draw[sig] (rat.west) -- ++(-0.6,0) |- (mx.east);
+\draw[sig] (rat.west) -- ++(-0.6,0) |- (rank.east);
+\draw[sig] (mx.west) -- ++(-0.35,0) |- ([yshift=1.7mm]c1.east);
+\draw[sigm] (rank) -- (eta); \draw[sigm] (eta.west) -- ++(-0.35,0) |- ([yshift=-1.7mm]c1.east);
+\draw[sigc] (c1) -- (mask);
+\node[lab, text width=46mm] at (9.4,-6.75) {bundle data per channel and era: $(f_a,\mathcal D,\mathcal B,\rho,\eta_{q16})$};
+% ---------------- row 4: coarse marginal
+\node[op] (sq2) at (1.5,-8.3) {$|\cdot|^2$};
+\node[op] (sum2) at (2.8,-8.3) {$\sum_{m,\ell}$};
+\node[b, text width=20mm] (p) at (4.9,-8.3) {$P_r$: \texttt{uint64} coarse marginals};
+\node[op] (rat2) at (7.0,-8.3) {$\div$};
+\node[cmp, minimum height=9mm] (c2) at (9.0,-8.3) {$F>\mu_0$};
+\node[bx] (flag) at (11.9,-8.3) {survey flag $F>\mu_0$: a per-frame mechanism check, recorded, never a decision};
+\draw[sig] (z.south west) -- ++(0,-0.6) -- ++(-11.4,0) |- (sq2.west);
+\draw[sig] (sq2) -- (sum2); \draw[sig] (sum2) -- (p);
+\draw[sig] (p) -- (rat2);
+\node[width] at (7.0,-9.25) {$F=\frac{2P_0}{P_1+P_2}$}; \draw[sigm] (rat2) -- (c2); \draw[sigm] (c2) -- (flag);
+\draw[ctl] (p.north) -- ++(0,0.35) -- ++(11.2,0) |- (z.east);
+\node[lab, rotate=90, anchor=south, text width=84mm, align=center] at (16.3,-4.6) {exact tripwire: register $P_r$ $=$ row-sum $P_r$; Parseval holds only to the rounding bound};
+\end{tikzpicture}

@@ -1,0 +1,34 @@
+% Editable source for Figure \ref{fig:fused}: launch structure of the fused kernel, drawn as the GPU sees it.
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm]
+% ---- the grid of blocks
+\node[draw=ppPending!90!black, rounded corners=3pt, fill=black!2, minimum width=55mm, minimum height=32mm, anchor=north west] (grid) at (0,0) {};
+\node[lab, anchor=north west, text width=50mm, align=left] at (0.15,-0.1) {grid: one block per input stream, $2048$ blocks per frame};
+\pic at (0.4,-2.7) {blocks};
+\node[lab, anchor=west] at (2.5,-2.4) {$\cdots\ \times\,2048$};
+% ---- one block expanded
+\node[draw=ppMeasured!90!black, rounded corners=3pt, fill=ppMeasured!5, line width=0.75pt, minimum width=70mm, minimum height=66mm, anchor=north west] (blk) at (6.6,0.4) {};
+\node[lab, anchor=north west, text=ppMeasured!90!black] at (6.75,0.3) {one block: $64$ threads, one input stream};
+\pic at (6.9,-1.2) {threads};
+\node[blk, text width=40mm, minimum height=8mm] (p1) at (10.9,-1.0) {\textbf{phase 1} DP4A projections, whole windows per thread};
+\node[smem, minimum width=46mm, text width=40mm] (sm) at (10.6,-2.7) {shared memory: $3\times L$ row sums (marginals stay in registers)};
+\node[blk, text width=40mm, minimum height=8mm] (p2) at (10.4,-4.1) {\textbf{phase 2} block-reduce the marginals};
+\node[blk, text width=40mm, minimum height=8mm] (p3) at (10.4,-5.4) {\textbf{phase 3} cooperative \texttt{fxfft256}, then $|X|^2$};
+\pic at (7.3,-5.4) {butterfly};
+\draw[sig] (p1.south) -- (sm.north -| p1.south);
+\draw[sig] (sm) -- (p2); \draw[sig] (p2) -- (p3);
+\draw[ctl] (grid.east) -- (blk.west |- grid.east) node[lab, midway, above]{each block};
+% ---- global memory
+\node[lab] at (16.4,-4.55) {global memory};
+\node[gmem, aspect=0.15, minimum width=24mm, text width=22mm, minimum height=7mm] (fine) at (16.4,-5.4) {\texttt{FinePowers}\\$3\times256$ u64};
+\draw[sig] (p3.east) -- (fine.west) node[width, midway, above]{atomic add};
+% ---- last block: counter and epilogue in one column under the fine powers
+\node[reg, minimum width=32mm] (ctr) at (16.4,-7.2) {completion counter};
+\node[blk, text width=40mm, minimum height=9mm] (p4) at (16.4,-9.1) {\textbf{phase 4} the last-arriving block only: re-read the finalized sums; exact rank and threshold arithmetic};
+\node[gmem, aspect=0.15, minimum width=24mm, text width=22mm, minimum height=7mm, draw=ppConditional!90!black, fill=ppConditional!10] (mask) at (11.2,-9.1) {\texttt{MaskOut}\\word};
+\draw[sig] (fine.south) -- (ctr.north) node[width, midway, right, xshift=1mm]{$+1$ per block};
+\draw[sigm] (ctr.south) -- (p4.north) node[width, midway, right, xshift=1mm]{the last block sees $2048$};
+\draw[sig] (fine.west) -- ++(-1.1,0) |- ([xshift=-14mm]p4.north);
+\node[lab, anchor=east, text width=22mm, align=right] at (13.9,-7.0) {re-read the finalized sums};
+\draw[sigc] (p4.west) -- (mask.east) node[width, midway, above]{mask bit};
+\node[lab, text width=52mm, anchor=north west, align=left] at (0.15,-3.6) {row sums never leave the block: the three $\times 256$ fine powers are the only intermediate global-memory traffic before the mask word is written};
+\end{tikzpicture}

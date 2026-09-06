@@ -1,0 +1,20 @@
+% Editable source for Figure \ref{fig:deployment:pipeline}: the stage in the kotekan pipeline.
+\begin{tikzpicture}[font=\small, x=1cm, y=1cm]
+\node[blk, text width=22mm, minimum height=10mm] (fe) at (0,0) {F-engine /\\network receive};
+\pic at (3.0,0) {ring};
+\node[lab, text width=26mm] at (3.0,-0.95) {packed voltage ring $[T,F,P,D]$, \texttt{int4}};
+\node[blk, draw=ppMeasured!90!black, fill=ppMeasured!12, line width=1pt, text width=48mm, minimum height=12mm] (det) at (7.4,0) {\textbf{pilot-proxy stage} (\texttt{cudaPilotProxyDetector})\\one GPU block per input; runtime bundle: channel ids, weights, $(f_a,\mathcal D,\mathcal B,\rho,\eta_{q16})$};
+\pic at (6.0,-1.9) {threads};
+\node[blk, text width=38mm, minimum height=10mm] (out) at (12.2,0) {output buffer, per frame and channel: mask $+$ validity (\texttt{int8}), $3\times$\texttt{uint64} marginals};
+\node[blk, text width=22mm, minimum height=10mm] (xe) at (16.4,0) {visibility accumulation};
+\node[blk, text width=22mm, minimum height=9mm] (down) at (16.4,-2.6) {downstream consumers};
+\node[blkx, text width=44mm, minimum height=11mm] (mon) at (7.4,-3.7) {monitoring and shadow record: tripwire and validity reasons, runtime quantiles, drift, sampled frames for exact replay};
+\draw[bus] (fe) -- (2.55,0);
+\draw[bus] (3.45,0) -- (det) node[width, pos=0.72, above]{$M\times N$ int4};
+\draw[sig] (det) -- (out); \draw[sig] (out) -- (xe);
+\draw[bus] (3.0,0.45) -- ++(0,1.4) -| (xe.north) node[lab, pos=0.25, above]{same samples, same frame};
+\draw[sigc] ([yshift=-3mm]out.east) -- ++(0.55,0) |- (down.west);
+\draw[ctl] (det.south) -- (mon.north);
+\node[lab, anchor=west, text width=26mm] at (10.0,-3.7) {$\leftarrow$ replayed through the offline reference: exact agreement required};
+\node[lab, text width=36mm] at (12.2,-1.65) {shadow mode: the visibility stage ignores the mask; applied mode: consumes it for the same frame};
+\end{tikzpicture}
