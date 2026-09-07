@@ -107,9 +107,10 @@ bridges rather than being silently synthesized.
   audit, including validity, saturation/fill, and fine-designation findings
 - `MANIFEST.sha256` — hashes for the complete tracked release boundary
 - `scripts/release_manifest.py` — release-manifest generator and verifier
-- `scripts/verify_vendored_evidence.py` — standard-library CI check for the
+- `scripts/verify_vendored_evidence.py` — standard-library check of the
   immutable forecast and CANFAR evidence releases and their reconciliation
-  invariants
+  invariants; runs locally (`make evidence-audit`) against the `evidence/`
+  tree, which is kept outside the repository, and is skipped in CI
 - `evidence/bao_forecast_completion_20260824_reconciliation/` — dated RFIsher
   forecast release for the BAO application, with four analytic families on one
   clean evaluation commit

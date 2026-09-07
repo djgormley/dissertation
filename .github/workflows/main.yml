@@ -4,9 +4,10 @@
 # repository. On every push/PR it checks out RFIsher (for the
 # gate script and out/*.csv) and the pilot-proxy provenance snapshot, then
 # runs the number gate against dissertation.tex + chapters/,
-# scanning the frozen figure data for figure-borne numbers. It also verifies
-# the immutable vendored evidence releases. Both checkers are stdlib-only, so
-# no pip install step is needed.
+# scanning the frozen figure data for figure-borne numbers. The vendored
+# evidence releases are verified only where the gitignored evidence/ tree has
+# been restored, so in a plain checkout that step is skipped. Both checkers
+# are stdlib-only, so no pip install step is needed.
 #
 # If WVURAIL/RFIsher or WVURAIL/pilot-proxy are private, add
 #   token: ${{ secrets.GH_PAT }}
@@ -64,6 +65,10 @@ jobs:
         # With .number-gate-baseline committed (a file holding the current
         # FAIL count), CI is a ratchet: green unless a push adds failures.
         # Without the file, the strict gate applies (red until 0 failures).
+        # The baseline is 30 while the v5 rerun is pending: every failing
+        # check names a number the stubs replaced or the rewrite removed, an
+        # evidence anchor the rerun produces, or a sentence that moved
+        # (STUBS.md, HANDOFF.md); it goes back to 0 as they are filled.
         run: |
           python rfisher/scripts/check_dissertation_numbers.py \
             --tex dissertation.tex chapters \
@@ -82,5 +87,11 @@ jobs:
       - name: Verify dissertation.pdf is not stale
         run: python scripts/check_pdf_freshness.py
 
+      # The evidence tree lives outside the repository (.gitignore: evidence/;
+      # the copy of record is on the WVU OneDrive), so this gate can only run
+      # where it has been restored. It stays fail-closed there (make
+      # evidence-audit); here it is skipped rather than failing on a directory
+      # the checkout can never contain.
       - name: Verify vendored evidence releases
+        if: hashFiles('evidence/**') != ''
         run: python -B scripts/verify_vendored_evidence.py

@@ -48,8 +48,8 @@ repositories; generated products live only outside them.
    (`rfisher_results census-psd`). The chapter still includes two half-band
    figures; replacing them is a text edit only you should make.
 6. **`dissertation.pdf` is neither tracked nor ignored**, while `.gitignore`'s
-   comment, `MANIFEST.sha256` and the CI freshness gate all assume it is
-   committed. Decide: commit the built PDF, or ignore it and drop those
+   comment and the CI freshness gate still assume it is committed (the
+   manifest no longer lists it: it covers tracked files only). Decide: commit the built PDF, or ignore it and drop those
    assumptions.
 7. **Two drawings of figures 5.2 and 6.2** exist: the tracked `tikz/` sources
    the chapters build from, and an untracked `figure_src/tikz/` left over from
@@ -98,11 +98,11 @@ says the CANFAR home holds nothing unique and where the kit lives; RFIsher's
 `studies_2026-08` resolve again (re-pointed at `datasets/baseband/`), the
 `datasets` and `studies_2026-08` READMEs carry the real counts and paths, the
 2026-08-31 rehearsal handoff is marked historical, and the 39 empty
-scaffolding directories under `inventory_rebuild` are gone. Not done:
-`MANIFEST.sha256` and `.pdf-inputs-digest`, which need `make manifest`, which
-cannot complete until decisions 6 (PDF tracked or not), 7 (canonical TikZ
-tree, which the freshness digest globs) and 8 (vendored-evidence gate) are
-taken; `release_manifest.py` currently reports 405 mismatches on `main`.
+scaffolding directories under `inventory_rebuild` are gone. The
+`MANIFEST.sha256` and `.pdf-inputs-digest` refresh is under CI below;
+`make manifest` itself still cannot complete here until decisions 7 (canonical
+TikZ tree, which the freshness digest globs) and 8 (vendored-evidence gate)
+are taken, because `figure-audit` and `evidence-audit` fail before it writes.
 
 **Done, next-session item 1 (export schema v2).** pilot-proxy reads both
 product vocabularies through one path: `archived_product_keys.measurement()`
@@ -169,6 +169,32 @@ the campaign's `analysis/exports_v5/tables/`.
 18. **`studies_2026-08` (2.8 GB) is backed up nowhere.** It holds the August
     characterization runs and the fine-gain streams the LimeSDR figures need.
     Decide whether it goes to the OneDrive.
+
+**CI, 2026-09-06 (late).** Both repositories had been red since the results
+layer landed, before any of the above. RFIsher: two tests located `docs/releases`
+and `scripts/dissertation/style.py` relative to the installed package, which
+CI installs non-editably, so they raised FileNotFoundError in every matrix leg
+and in the figure job; they now resolve the repository from the test file.
+Dissertation: the number gate's ratchet file still said 0 while the gate at
+the pinned RFIsher commit finds 30 failures, none of them a live number that
+disagrees with the tables: 26 are numbers the stubs replaced, the rewrite
+removed, or `\rerun{}` now wraps (Tables 8.1, 9.1, 9.4, the worlds table,
+the ch 31-35 endpoints), three are the evidence anchors the gate keeps red
+until the v5 rerun produces them (bootstrap P_fa, fine-gain Monte Carlo,
+Youden-J), and one is the fs/2 provenance sentence that moved to appendix B,
+where the gate's pattern no longer finds it. The file now says 30 and the
+FAIL lines still print on every run, so the count only ratchets down. `MANIFEST.sha256` and `.pdf-inputs-digest`
+were rebuilt from a clean checkout (no untracked `figure_src/tikz/`, so the
+digest is what CI computes) after a three-pass pdflatex build of the tracked
+sources; the manifest is now every tracked file, which excludes
+`dissertation.pdf` because the PDF is untracked (decision 6 stands). The
+vendored-evidence step is skipped in CI when `evidence/` is absent, which in
+a checkout is always, since the tree is gitignored; locally `make
+evidence-audit` still runs it fail-closed and still reports the six transfer-
+figure mismatches of decision 8. Nothing in this changes the figure-audit
+errors on `main` or decisions 6, 7 and 8. One gap to close with decision 7:
+the freshness digest globs `figure_src/tikz/*.tikz`, not the tracked `tikz/`
+the chapters include, so a TikZ edit does not trip it today.
 
 ## Next session: the work itself
 
@@ -239,5 +265,7 @@ Small, safe, and none of them blocking. Found in a repository-wide audit on
   as a live instruction to resume a scan that has since finished.
 - **27 empty directories** left from scaffolding, mostly under
   `~/rail/inventory_rebuild/evidence/`.
-- **`MANIFEST.sha256` and `.pdf-inputs-digest`** in this repository are from
-  the superseded 1 September line and do not describe `main`.
+- **`MANIFEST.sha256` and `.pdf-inputs-digest`** were refreshed from a clean
+  checkout on 2026-09-06 (see CI above). Refreshing them from the live
+  checkout would bake the untracked `figure_src/tikz/` into the digest until
+  decision 7 removes it.
