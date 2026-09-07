@@ -193,6 +193,14 @@ In the order `RESULTS_PLAN.md` sets out.
    each export and flip `\reruncolor` chapter by chapter. The counts disagree
    across sources (the CSV has 177 rows, this plan and `STUBS.md` say 175);
    reconcile them when the matcher is written.
+
+   Finishing this releases the previous-identity product set. Until the markers
+   are re-verified against the September campaign products and the hash pins in
+   RFIsher are re-cut, `per_pilot_2026-08-20_complete23` and its only backup on
+   the OneDrive have to stay: `ERA_PRODUCT_PINS` in
+   `check_dissertation_numbers.py` and the `product_sha256` column of
+   `bao_era_points.csv` both name those exact bytes. Once the pins point at the
+   v5 products, both copies of the old set can go, 698 MB on each side.
 8. **Retire** pilot-proxy's older `analysis/_style.py` plate scripts.
 
 ## Mechanical follow-ups
