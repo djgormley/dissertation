@@ -24,15 +24,18 @@ repositories; generated products live only outside them.
 
 ## Yours: decisions or hands-on work
 
-1. **Run the deletions.** `~/rail/delete_me/` and
-   `Datasets/delete_me/` on the OneDrive hold everything discarded during the
-   reorganisation. Two things in there are cited by code before you empty them:
-   `dev_rehearsals_uncited/local_archive_rehearsal_844_f9ab7d7cfb13/_per_pilot/844.npz`
-   is the fixture `RFIsher/tests/test_residual_scores.py` pins by hash, and
-   `campaign_superseded/duplicates_shard3_b59b5c0/` is the independent
-   reproduction the campaign ledger cites (its products are byte-identical to
-   the canonical ones, so the hashes in the ledger already record the result).
-   Rescue or accept the loss, then delete.
+1. **Run the deletions.** `~/rail/delete_me/` and `Datasets/delete_me/` on the
+   OneDrive hold everything discarded during the reorganisation, and both are
+   now clear to destroy. Everything in them was checked for a copy elsewhere:
+   the seven retired clones hold no commit that is not on GitHub (checked
+   against the live remotes), the shard-3 duplicates are byte-identical to the
+   canonical campaign products (all six verified), and the trees sent to the
+   OneDrive were hash-compared file by file before their originals were
+   retired. The one item with no copy anywhere, the
+   `local_archive_rehearsal_844_f9ab7d7cfb13` product that
+   `RFIsher/tests/test_residual_scores.py` pins by hash, was moved out to
+   `products/dev_rehearsals_2026-08/` and the test repointed at it, so it now
+   runs instead of skipping.
 2. **Wipe the CANFAR home.** Nothing there is unique any more. The qualified
    sm90 kernel, the `pp_switch` kit and the runtime freeze tar are preserved
    under the campaign's `kit/` on both copies.
@@ -142,13 +145,15 @@ estimator-transfer `analysis.json`/`plot_points.csv` reader already existed
 transfer trial format (`sdr_transfer_trials.csv`, pass-clustered) behind the
 OTA release.
 
-**Observed, not done by anyone in this session:** at about 22:29 local,
-`~/rail/results` (the RFIsher results authority, per the table at the top)
-was moved to `~/rail/delete_me/results`. Nothing here did that. RFIsher's
-`data/products.local.json` still names the old path, so its results-gated
-tests skip and `check_paper_numbers.py` reports the tables missing. If the
-move was deliberate, update that file and the `results/README.md` claim of
-authority; if not, move it back before running the deletions of item 1.
+**Resolved 2026-09-06:** `~/rail/results` had been moved into
+`~/rail/delete_me/results`, which left RFIsher's `data/products.local.json`
+naming a path that no longer existed, so `check_paper_numbers.py` reported the
+tables missing and its results-gated tests skipped. Dylan is moving the tree
+back to `~/rail/results`, which restores the pointer with no other change. The
+content was never at risk: 145 of its 149 files are byte-identical to the
+OneDrive copy, two of the rest are the transfer figures already vendored in
+`figs/`, and `fig_census_psd_all23.pdf` regenerates from the census export in
+the campaign's `analysis/exports_v5/tables/`.
 
 16. **`spectrum-sensor` has work that exists only on this machine.** Its
     branch has no commits at all, 157 files are staged, and the GitHub remote
