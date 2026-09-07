@@ -1,0 +1,178 @@
+file,line,section,value,context
+chapters/appA_evidence_matrix.tex,109,"Evidence, Assumptions, and Closing Tests",7.6-year,"A \rerun{7.6-year} calendar span of captures with per-event provenance, but a"
+chapters/appB_legacy_evidence.tex,150,Sensitivity Geometry and Policy Lessons,178,post-completion audit of those products found \rerun{178} nominally valid
+chapters/appB_legacy_evidence.tex,151,Sensitivity Geometry and Policy Lessons,eight,frames in \rerun{eight} events whose mean decoded complex-\texttt{int4} power
+chapters/appD_software.tex,21,Software and Data Availability,to pin,"\texttt{pilot-proxy} & The detector: weight synthesis, floating and fixed-point references, the CUDA kernels of Chapter~"
+chapters/appD_software.tex,22,Software and Data Availability,to pin,\texttt{datatrail-cli} (fork of CHIMEFRB) & CHIME/FRB's Datatrail archive-service client; the fork carries the recursive
+chapters/appD_software.tex,23,Software and Data Availability,to pin,"\texttt{dtv-census} & The transmitter census: source compilations, curated workbook, deterministic reduction, ISED overl"
+chapters/appD_software.tex,24,Software and Data Availability,to pin,\texttt{RFIsher} & The masking-cost and contamination-residual tolerance workflow of Chapter~\ref{sec:tolerance}: residu
+chapters/appD_software.tex,25,Software and Data Availability,to pin,"\texttt{RadioFisher} (fork of philbull) & The Fisher-forecast backend of Bull et al.\ \cite{bull2015}, configured to the"
+chapters/appD_software.tex,26,Software and Data Availability,to pin,"\texttt{kotekan} (fork of kotekan) & The real-time framework; the fork carries \texttt{cudaPilotProxyDetector}, \texttt{"
+chapters/bibliography.tex,9,,"[Update the pinned commit and, if merged upstream, the release tag before submission.]","\bibitem{kotekan} A.~Renard et al., \emph{Kotekan: A framework for high-performance radiometric data pipelines}, softwar"
+chapters/ch01_introduction.tex,64,Watching Hydrogen Instead of Galaxies,3--24~dB,"The instrument itself matters to this dissertation's story, so one paragraph on it. CHIME is four fixed cylindrical refl"
+chapters/ch01_introduction.tex,82,"Where the Measurement Lives, and What Else Lives There",44~dB,"Here is the fact that makes this a dissertation rather than a nuisance: \emph{in any single data frame, the television s"
+chapters/ch01_introduction.tex,82,"Where the Measurement Lives, and What Else Lives There",twenty-five thousand,"Here is the fact that makes this a dissertation rather than a nuisance: \emph{in any single data frame, the television s"
+chapters/ch01_introduction.tex,119,Why Time Does Not Fix This One,$44$~dB,Figure~\ref{fig:intro:averaging} shows the arithmetic. Noise averages down as $1/\sqrt{N}$ without limit. A coherent sig
+chapters/ch01_introduction.tex,119,Why Time Does Not Fix This One,a few hundred,Figure~\ref{fig:intro:averaging} shows the arithmetic. Noise averages down as $1/\sqrt{N}$ without limit. A coherent sig
+chapters/ch01_introduction.tex,119,Why Time Does Not Fix This One,about a billion,Figure~\ref{fig:intro:averaging} shows the arithmetic. Noise averages down as $1/\sqrt{N}$ without limit. A coherent sig
+chapters/ch01_introduction.tex,123,Why Time Does Not Fix This One,0.2\%--53\%,"Reality is gentler than the cartoon in one important way, but the mitigation must be defined at the level where it is ap"
+chapters/ch01_introduction.tex,123,Why Time Does Not Fix This One,3--24~dB,"Reality is gentler than the cartoon in one important way, but the mitigation must be defined at the level where it is ap"
+chapters/ch01_introduction.tex,174,What the Detector Must Be,44~dB,\item[R1 --- See below the noise.] On all but the loudest channel the contamination sits below thermal noise per frame -
+chapters/ch01_introduction.tex,177,What the Detector Must Be,7.6 years,\item[R4 --- Reproduce to the bit.] Products spanning \rerun{7.6 years} of archive captures are calibrated against this 
+chapters/ch01_introduction.tex,255,What This Dissertation Does,7.6 years,"The argument of the work, compressed to a paragraph: CHIME's BAO measurement carries a computable tolerance for survivin"
+chapters/ch03_broadcast.tex,172,The Transmitter Population \& the Propagation Environment,499,That expectation was first explored because the detector's window geometry depends on it. The transmitter census is buil
+chapters/ch03_broadcast.tex,172,The Transmitter Population \& the Propagation Environment,162,That expectation was first explored because the detector's window geometry depends on it. The transmitter census is buil
+chapters/ch03_broadcast.tex,172,The Transmitter Population \& the Propagation Environment,"channels 27, 28, 29, 34, 36",That expectation was first explored because the detector's window geometry depends on it. The transmitter census is buil
+chapters/ch03_broadcast.tex,172,The Transmitter Population \& the Propagation Environment,"channels 30, 31, 32",That expectation was first explored because the detector's window geometry depends on it. The transmitter census is buil
+chapters/ch03_broadcast.tex,174,The Transmitter Population \& the Propagation Environment,15,The current census envelope and spectra show why a simple proximity ranking is not a defensible propagation model. Chann
+chapters/ch03_broadcast.tex,197,The Transmitter Population \& the Propagation Environment,$0.6$~kHz,\caption[The transmitter population's spectral face: current-era time-averaged spectrum around each pilot]{The transmitt
+chapters/ch03_broadcast.tex,197,The Transmitter Population \& the Propagation Environment,"30, 31, 32",\caption[The transmitter population's spectral face: current-era time-averaged spectrum around each pilot]{The transmitt
+chapters/ch03_broadcast.tex,197,The Transmitter Population \& the Propagation Environment,$-3.6$~kHz,\caption[The transmitter population's spectral face: current-era time-averaged spectrum around each pilot]{The transmitt
+chapters/ch03_broadcast.tex,197,The Transmitter Population \& the Propagation Environment,$-2.6$~kHz,\caption[The transmitter population's spectral face: current-era time-averaged spectrum around each pilot]{The transmitt
+chapters/ch04_parameterization.tex,18,Architectural Trade-Offs \& Parameter Justifications,$-1.37$~kHz on channel 32,\item \emph{Fine-span coverage of the selected target population.} The sub-frame rate $f_s / K \approx 3.052$~kHz sets t
+chapters/ch04_parameterization.tex,18,Architectural Trade-Offs \& Parameter Justifications,$90\%$,\item \emph{Fine-span coverage of the selected target population.} The sub-frame rate $f_s / K \approx 3.052$~kHz sets t
+chapters/ch05_pipeline.tex,192,Pilot-to-Shelf Translation,$0.12$~dB below,where $A$ is the ratio of pilot power to the average shelf power falling in one analysis bin ($A = 10^{21.6/10} \approx 
+chapters/ch05_pipeline.tex,232,Offline Archive Estimation,$0.13$~dB,The observed null is the first test of the transfer. Under the idealized model of Section~\ref{sec:estimator:statistics}
+chapters/ch05_pipeline.tex,232,Offline Archive Estimation,$0.002$~dB,The observed null is the first test of the transfer. Under the idealized model of Section~\ref{sec:estimator:statistics}
+chapters/ch05_pipeline.tex,232,Offline Archive Estimation,$0.2$--$0.95$~dB,The observed null is the first test of the transfer. Under the idealized model of Section~\ref{sec:estimator:statistics}
+chapters/ch05_pipeline.tex,232,Offline Archive Estimation,$1.4$--$2.3\times$,The observed null is the first test of the transfer. Under the idealized model of Section~\ref{sec:estimator:statistics}
+chapters/ch06_implementation.tex,16,Measured departure from the i.i.d.\ model,${\sim}19\times$,Empirical system measurements reveal that the idealized model's tails cannot be trusted for threshold setting. On the on
+chapters/ch06_implementation.tex,16,Measured departure from the i.i.d.\ model,${\sim}0.3\%$,Empirical system measurements reveal that the idealized model's tails cannot be trusted for threshold setting. On the on
+chapters/ch06_implementation.tex,16,Measured departure from the i.i.d.\ model,${\sim}13.8\times$,Empirical system measurements reveal that the idealized model's tails cannot be trusted for threshold setting. On the on
+chapters/ch06_implementation.tex,43,"Which axis decides, and which one checks",half,"Used as a policy, that flag would be ruinous --- it fires on any positive excess, and therefore on about \rerun{half} of"
+chapters/ch06_implementation.tex,43,"Which axis decides, and which one checks",$44$--$49\%$,"Used as a policy, that flag would be ruinous --- it fires on any positive excess, and therefore on about \rerun{half} of"
+chapters/ch06_implementation.tex,43,"Which axis decides, and which one checks",$P_d \geq 0.997$,"Used as a policy, that flag would be ruinous --- it fires on any positive excess, and therefore on about \rerun{half} of"
+chapters/ch06_implementation.tex,43,"Which axis decides, and which one checks",$0.06$ and $0.70$,"Used as a policy, that flag would be ruinous --- it fires on any positive excess, and therefore on about \rerun{half} of"
+chapters/ch06_implementation.tex,55,The fine decision and its calibration,hundreds of hertz to $1.4$~kHz,The archive's per-bin statistic supports this calibration directly. Measured pilot anchors lie \rerun{hundreds of hertz 
+chapters/ch06_implementation.tex,317,A worked frame,2025 July 31 at 15:52:22~\textsc{ut},"One frame makes the fine decision concrete. The example is drawn from channel 36 (\texttt{freq\_id} 506), captured \reru"
+chapters/ch06_implementation.tex,317,A worked frame,$7010$,"One frame makes the fine decision concrete. The example is drawn from channel 36 (\texttt{freq\_id} 506), captured \reru"
+chapters/ch06_implementation.tex,317,A worked frame,$f_a=62$,"One frame makes the fine decision concrete. The example is drawn from channel 36 (\texttt{freq\_id} 506), captured \reru"
+chapters/ch06_implementation.tex,319,A worked frame,"(1.066,\;8.730,\;18.615,\;7.598,\;1.083)","T[60..64] = \rerun{(1.066,\;8.730,\;18.615,\;7.598,\;1.083)},"
+chapters/ch06_implementation.tex,321,A worked frame,$1.009$,"showing a peak at the anchor, correlated shoulders on adjacent padded bins, and near-unity values by the alternate bins."
+chapters/ch06_implementation.tex,321,A worked frame,$1.165$,"showing a peak at the anchor, correlated shoulders on adjacent padded bins, and near-unity values by the alternate bins."
+chapters/ch06_implementation.tex,321,A worked frame,$18.6$,"showing a peak at the anchor, correlated shoulders on adjacent padded bins, and near-unity values by the alternate bins."
+chapters/ch06_implementation.tex,321,A worked frame,$18.4$,"showing a peak at the anchor, correlated shoulders on adjacent padded bins, and near-unity values by the alternate bins."
+chapters/ch06_implementation.tex,321,A worked frame,$F/\mu_0=1.258>1$,"showing a peak at the anchor, correlated shoulders on adjacent padded bins, and near-unity values by the alternate bins."
+chapters/ch06_implementation.tex,326,A worked frame,$18.4$,\caption[Fine spectra of two archive frames with the designated window and bulk]{Fine spectra $T[f]$ for two channel-36 
+chapters/ch06_implementation.tex,326,A worked frame,$3.1$,\caption[Fine spectra of two archive frames with the designated window and bulk]{Fine spectra $T[f]$ for two channel-36 
+chapters/ch06_implementation.tex,331,A worked frame,2025 May 16,"The companion frame, captured \rerun{2025 May 16}, is the cohort's weakest valid frame. Its coarse statistic is \rerun{$"
+chapters/ch06_implementation.tex,331,A worked frame,$F/\mu_0=0.897$,"The companion frame, captured \rerun{2025 May 16}, is the cohort's weakest valid frame. Its coarse statistic is \rerun{$"
+chapters/ch06_implementation.tex,331,A worked frame,$2.59$,"The companion frame, captured \rerun{2025 May 16}, is the cohort's weakest valid frame. Its coarse statistic is \rerun{$"
+chapters/ch06_implementation.tex,331,A worked frame,$0.833$,"The companion frame, captured \rerun{2025 May 16}, is the cohort's weakest valid frame. Its coarse statistic is \rerun{$"
+chapters/ch06_implementation.tex,331,A worked frame,$3.1$,"The companion frame, captured \rerun{2025 May 16}, is the cohort's weakest valid frame. Its coarse statistic is \rerun{$"
+chapters/ch06_implementation.tex,331,A worked frame,three,"The companion frame, captured \rerun{2025 May 16}, is the cohort's weakest valid frame. Its coarse statistic is \rerun{$"
+chapters/ch06_implementation.tex,341,Kotekan Stage and Live Detection on the CHORD Pathfinder,$0.90$-ms,The measured \rerun{$0.90$-ms} kernel time establishes computational readiness against the $41.94$-ms frame cadence; it 
+chapters/ch07_survey.tex,45,Triggered Baseband Captures and Their Selection Function,December 2018,"acquisition, and its calendar coverage runs from \rerun{December 2018} to the"
+chapters/ch07_survey.tex,73,Triggered Baseband Captures and Their Selection Function,September 2023,after \rerun{September 2023} --- an operations exclusion driven by the DTV
+chapters/ch07_survey.tex,109,Triggered Baseband Captures and Their Selection Function,$1.38$~s,"(\rerun{$1.38$~s}).  Second, the sparse spacing leaves a correlation-time blind"
+chapters/ch07_survey.tex,245,Reproduction and the Required Denominator,Dec 2018,Calendar coverage & \rerun{Dec 2018}--snapshot & per-channel first/last stored and valid UTC released; calendar-month ga
+chapters/ch07_survey.tex,248,Reproduction and the Required Denominator,$1.38$~s,Longest contiguous statistic & \rerun{$1.38$~s} & the snapshot duration cap of Section~\ref{sec:survey:data} \\
+chapters/ch08_calibration.tex,57,Stable-Era Identification,September 2023,"30, whose collection ended in \rerun{September 2023} --- is marked"
+chapters/ch08_calibration.tex,120,Stable-Era Identification,"19, 20, 26, 27, and 32","on channels \rerun{19, 20, 26, 27, and 32}, a switch-on on channel \rerun{35},"
+chapters/ch08_calibration.tex,120,Stable-Era Identification,35,"on channels \rerun{19, 20, 26, 27, and 32}, a switch-on on channel \rerun{35},"
+chapters/ch08_calibration.tex,121,Stable-Era Identification,17,"a two-epoch persistent carrier on channel \rerun{17}, and a collection-curtailed"
+chapters/ch08_calibration.tex,122,Stable-Era Identification,30,archive on channel \rerun{30}.
+chapters/ch08_calibration.tex,174,Anchor Localization,11,anchor moved by \rerun{11} fine bins and channel 35's by \rerun{29} between
+chapters/ch08_calibration.tex,174,Anchor Localization,29,anchor moved by \rerun{11} fine bins and channel 35's by \rerun{29} between
+chapters/ch08_calibration.tex,231,A Floor Is Not the Smallest Observed Value,$-76$~dB,evaluated to \rerun{$-76$~dB} on one always-on channel against measured floors
+chapters/ch08_calibration.tex,232,A Floor Is Not the Smallest Observed Value,$-45$ to $-49$~dB,of \rerun{$-45$ to $-49$~dB} on the channels that have them --- thirty
+chapters/ch08_calibration.tex,312,Correlation Time and Refusal Semantics,"34, 45, 62, and 165 minutes","(\rerun{34, 45, 62, and 165 minutes}), two carried an upper bound of"
+chapters/ch08_calibration.tex,313,Correlation Time and Refusal Semantics,five minutes,"\rerun{five minutes} set by the shortest resolved lag, and the rest refused."
+chapters/ch09_tolerance.tex,217,The sidereal filter: a scalar-proxy decomposition,99\%,survivors.  On one measured channel this assigns approximately \rerun{99\%} of the proxy's second
+chapters/ch09_tolerance.tex,218,The sidereal filter: a scalar-proxy decomposition,20-dB,"moment to the removed side, corresponding to a \rerun{20-dB} scalar-chain"
+chapters/ch09_tolerance.tex,238,"The Decision: Four Policies, One Ordering",$r_{\rm proxy} = 4\times10^{-4}$ to $0.085$,"At the \emph{frame} stage --- kept-frame mean shelf power, no downstream chain --- keeping everything wins on most chann"
+chapters/ch09_tolerance.tex,259,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.991$,duty cycle & \rerun{$0.991$} & \rerun{$0.837$} & \rerun{$0.999$} & & & \\
+chapters/ch09_tolerance.tex,259,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.837$,duty cycle & \rerun{$0.991$} & \rerun{$0.837$} & \rerun{$0.999$} & & & \\
+chapters/ch09_tolerance.tex,259,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.999$,duty cycle & \rerun{$0.991$} & \rerun{$0.837$} & \rerun{$0.999$} & & & \\
+chapters/ch09_tolerance.tex,260,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.09$,MAD $1.8\times$ (per acquisition) & \rerun{$0.09$} & \rerun{$0.01$} & \rerun{$0.02$} & \rerun{$0.067$} & \rerun{$0.056$}
+chapters/ch09_tolerance.tex,260,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.01$,MAD $1.8\times$ (per acquisition) & \rerun{$0.09$} & \rerun{$0.01$} & \rerun{$0.02$} & \rerun{$0.067$} & \rerun{$0.056$}
+chapters/ch09_tolerance.tex,260,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.02$,MAD $1.8\times$ (per acquisition) & \rerun{$0.09$} & \rerun{$0.01$} & \rerun{$0.02$} & \rerun{$0.067$} & \rerun{$0.056$}
+chapters/ch09_tolerance.tex,260,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.067$,MAD $1.8\times$ (per acquisition) & \rerun{$0.09$} & \rerun{$0.01$} & \rerun{$0.02$} & \rerun{$0.067$} & \rerun{$0.056$}
+chapters/ch09_tolerance.tex,260,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.056$,MAD $1.8\times$ (per acquisition) & \rerun{$0.09$} & \rerun{$0.01$} & \rerun{$0.02$} & \rerun{$0.067$} & \rerun{$0.056$}
+chapters/ch09_tolerance.tex,260,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.063$,MAD $1.8\times$ (per acquisition) & \rerun{$0.09$} & \rerun{$0.01$} & \rerun{$0.02$} & \rerun{$0.067$} & \rerun{$0.056$}
+chapters/ch09_tolerance.tex,261,The Incumbent Comparison: Why a Reference Beats a Baseline,$6.40$,"spectral kurtosis, $3\sigma$ & \rerun{$6.40$} & \rerun{$0.22$} & \rerun{$8.73$} & \rerun{$0.331$} & \rerun{$0.203$} & \r"
+chapters/ch09_tolerance.tex,261,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.22$,"spectral kurtosis, $3\sigma$ & \rerun{$6.40$} & \rerun{$0.22$} & \rerun{$8.73$} & \rerun{$0.331$} & \rerun{$0.203$} & \r"
+chapters/ch09_tolerance.tex,261,The Incumbent Comparison: Why a Reference Beats a Baseline,$8.73$,"spectral kurtosis, $3\sigma$ & \rerun{$6.40$} & \rerun{$0.22$} & \rerun{$8.73$} & \rerun{$0.331$} & \rerun{$0.203$} & \r"
+chapters/ch09_tolerance.tex,261,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.331$,"spectral kurtosis, $3\sigma$ & \rerun{$6.40$} & \rerun{$0.22$} & \rerun{$8.73$} & \rerun{$0.331$} & \rerun{$0.203$} & \r"
+chapters/ch09_tolerance.tex,261,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.203$,"spectral kurtosis, $3\sigma$ & \rerun{$6.40$} & \rerun{$0.22$} & \rerun{$8.73$} & \rerun{$0.331$} & \rerun{$0.203$} & \r"
+chapters/ch09_tolerance.tex,261,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.395$,"spectral kurtosis, $3\sigma$ & \rerun{$6.40$} & \rerun{$0.22$} & \rerun{$8.73$} & \rerun{$0.331$} & \rerun{$0.203$} & \r"
+chapters/ch09_tolerance.tex,262,The Incumbent Comparison: Why a Reference Beats a Baseline,$18.98$,"pilot proxy, survey flag as stand-in & \rerun{$18.98$} & \rerun{$63.54$} & \rerun{$35.96$} & \rerun{$0.984$} & \rerun{$0"
+chapters/ch09_tolerance.tex,262,The Incumbent Comparison: Why a Reference Beats a Baseline,$63.54$,"pilot proxy, survey flag as stand-in & \rerun{$18.98$} & \rerun{$63.54$} & \rerun{$35.96$} & \rerun{$0.984$} & \rerun{$0"
+chapters/ch09_tolerance.tex,262,The Incumbent Comparison: Why a Reference Beats a Baseline,$35.96$,"pilot proxy, survey flag as stand-in & \rerun{$18.98$} & \rerun{$63.54$} & \rerun{$35.96$} & \rerun{$0.984$} & \rerun{$0"
+chapters/ch09_tolerance.tex,262,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.984$,"pilot proxy, survey flag as stand-in & \rerun{$18.98$} & \rerun{$63.54$} & \rerun{$35.96$} & \rerun{$0.984$} & \rerun{$0"
+chapters/ch09_tolerance.tex,262,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.826$,"pilot proxy, survey flag as stand-in & \rerun{$18.98$} & \rerun{$63.54$} & \rerun{$35.96$} & \rerun{$0.984$} & \rerun{$0"
+chapters/ch09_tolerance.tex,262,The Incumbent Comparison: Why a Reference Beats a Baseline,$0.999$,"pilot proxy, survey flag as stand-in & \rerun{$18.98$} & \rerun{$63.54$} & \rerun{$35.96$} & \rerun{$0.984$} & \rerun{$0"
+chapters/ch09_tolerance.tex,268,The Incumbent Comparison: Why a Reference Beats a Baseline,7.6 years,"Three caveats keep this table honest. First, the incumbents' blocks are confined within single acquisitions --- the surv"
+chapters/ch09_tolerance.tex,268,The Incumbent Comparison: Why a Reference Beats a Baseline,$1.38$~s,"Three caveats keep this table honest. First, the incumbents' blocks are confined within single acquisitions --- the surv"
+chapters/ch09_tolerance.tex,268,The Incumbent Comparison: Why a Reference Beats a Baseline,channels 34 and 36,"Three caveats keep this table honest. First, the incumbents' blocks are confined within single acquisitions --- the surv"
+chapters/ch09_tolerance.tex,268,The Incumbent Comparison: Why a Reference Beats a Baseline,$6.4$ and $8.7$~dB,"Three caveats keep this table honest. First, the incumbents' blocks are confined within single acquisitions --- the surv"
+chapters/ch09_tolerance.tex,490,Closing the code-side estimator and analytic-template gates,$r_{\rm proxy}=2.35$,"\emph{Within the scalar screening model, no evaluated policy clears the binding growth-rate tolerance on a channel with "
+chapters/ch09_tolerance.tex,490,Closing the code-side estimator and analytic-template gates,$2.38$,"\emph{Within the scalar screening model, no evaluated policy clears the binding growth-rate tolerance on a channel with "
+chapters/ch09_tolerance.tex,490,Closing the code-side estimator and analytic-template gates,$0.573$,"\emph{Within the scalar screening model, no evaluated policy clears the binding growth-rate tolerance on a channel with "
+chapters/ch09_tolerance.tex,490,Closing the code-side estimator and analytic-template gates,$0.0359$,"\emph{Within the scalar screening model, no evaluated policy clears the binding growth-rate tolerance on a channel with "
+chapters/ch09_tolerance.tex,490,Closing the code-side estimator and analytic-template gates,"$1{,}566\times$, $1{,}587\times$, $382\times$, and $24\times$","\emph{Within the scalar screening model, no evaluated policy clears the binding growth-rate tolerance on a channel with "
+chapters/ch09_tolerance.tex,490,Closing the code-side estimator and analytic-template gates,16 to 66,"\emph{Within the scalar screening model, no evaluated policy clears the binding growth-rate tolerance on a channel with "
+chapters/ch09_tolerance.tex,490,Closing the code-side estimator and analytic-template gates,44 to 65,"\emph{Within the scalar screening model, no evaluated policy clears the binding growth-rate tolerance on a channel with "
+chapters/ch09_tolerance.tex,496,Closing the code-side estimator and analytic-template gates,sixteen,"\caption[Every policy on the residual axis, one channel]{Every policy on the axis that decides between them, for one cha"
+chapters/ch09_tolerance.tex,496,Closing the code-side estimator and analytic-template gates,$24\times$,"\caption[Every policy on the residual axis, one channel]{Every policy on the axis that decides between them, for one cha"
+chapters/ch09_tolerance.tex,517,Spending the tolerance,$0.805$,masked fraction $f$ & \rerun{$0.805$} & \rerun{$0.158$} & \rerun{$0.092$} & \rerun{$0.048$} & \rerun{$0.007$} \\
+chapters/ch09_tolerance.tex,517,Spending the tolerance,$0.158$,masked fraction $f$ & \rerun{$0.805$} & \rerun{$0.158$} & \rerun{$0.092$} & \rerun{$0.048$} & \rerun{$0.007$} \\
+chapters/ch09_tolerance.tex,517,Spending the tolerance,$0.092$,masked fraction $f$ & \rerun{$0.805$} & \rerun{$0.158$} & \rerun{$0.092$} & \rerun{$0.048$} & \rerun{$0.007$} \\
+chapters/ch09_tolerance.tex,517,Spending the tolerance,$0.048$,masked fraction $f$ & \rerun{$0.805$} & \rerun{$0.158$} & \rerun{$0.092$} & \rerun{$0.048$} & \rerun{$0.007$} \\
+chapters/ch09_tolerance.tex,517,Spending the tolerance,$0.007$,masked fraction $f$ & \rerun{$0.805$} & \rerun{$0.158$} & \rerun{$0.092$} & \rerun{$0.048$} & \rerun{$0.007$} \\
+chapters/ch09_tolerance.tex,518,Spending the tolerance,$-45.3$,kept-frame shelf (dB) & \rerun{$-45.3$} & \rerun{$-34.8$} & \rerun{$-33.3$} & \rerun{$-31.6$} & \rerun{$-29.6$} \\
+chapters/ch09_tolerance.tex,518,Spending the tolerance,$-34.8$,kept-frame shelf (dB) & \rerun{$-45.3$} & \rerun{$-34.8$} & \rerun{$-33.3$} & \rerun{$-31.6$} & \rerun{$-29.6$} \\
+chapters/ch09_tolerance.tex,518,Spending the tolerance,$-33.3$,kept-frame shelf (dB) & \rerun{$-45.3$} & \rerun{$-34.8$} & \rerun{$-33.3$} & \rerun{$-31.6$} & \rerun{$-29.6$} \\
+chapters/ch09_tolerance.tex,518,Spending the tolerance,$-31.6$,kept-frame shelf (dB) & \rerun{$-45.3$} & \rerun{$-34.8$} & \rerun{$-33.3$} & \rerun{$-31.6$} & \rerun{$-29.6$} \\
+chapters/ch09_tolerance.tex,518,Spending the tolerance,$-29.6$,kept-frame shelf (dB) & \rerun{$-45.3$} & \rerun{$-34.8$} & \rerun{$-33.3$} & \rerun{$-31.6$} & \rerun{$-29.6$} \\
+chapters/ch09_tolerance.tex,519,Spending the tolerance,$0.0334$,residual $r_{\rm proxy}$ & \rerun{$0.0334$} & \rerun{$0.369$} & \rerun{$0.524$} & \rerun{$0.772$} & \rerun{$1.24$} \\
+chapters/ch09_tolerance.tex,519,Spending the tolerance,$0.369$,residual $r_{\rm proxy}$ & \rerun{$0.0334$} & \rerun{$0.369$} & \rerun{$0.524$} & \rerun{$0.772$} & \rerun{$1.24$} \\
+chapters/ch09_tolerance.tex,519,Spending the tolerance,$0.524$,residual $r_{\rm proxy}$ & \rerun{$0.0334$} & \rerun{$0.369$} & \rerun{$0.524$} & \rerun{$0.772$} & \rerun{$1.24$} \\
+chapters/ch09_tolerance.tex,519,Spending the tolerance,$0.772$,residual $r_{\rm proxy}$ & \rerun{$0.0334$} & \rerun{$0.369$} & \rerun{$0.524$} & \rerun{$0.772$} & \rerun{$1.24$} \\
+chapters/ch09_tolerance.tex,519,Spending the tolerance,$1.24$,residual $r_{\rm proxy}$ & \rerun{$0.0334$} & \rerun{$0.369$} & \rerun{$0.524$} & \rerun{$0.772$} & \rerun{$1.24$} \\
+chapters/ch09_tolerance.tex,520,Spending the tolerance,$22$,$r_{\rm proxy}/r_{\text{tol}}$ & \rerun{$22$} & \rerun{$246$} & \rerun{$349$} & \rerun{$514$} & \rerun{$828$} \\
+chapters/ch09_tolerance.tex,520,Spending the tolerance,$246$,$r_{\rm proxy}/r_{\text{tol}}$ & \rerun{$22$} & \rerun{$246$} & \rerun{$349$} & \rerun{$514$} & \rerun{$828$} \\
+chapters/ch09_tolerance.tex,520,Spending the tolerance,$349$,$r_{\rm proxy}/r_{\text{tol}}$ & \rerun{$22$} & \rerun{$246$} & \rerun{$349$} & \rerun{$514$} & \rerun{$828$} \\
+chapters/ch09_tolerance.tex,520,Spending the tolerance,$514$,$r_{\rm proxy}/r_{\text{tol}}$ & \rerun{$22$} & \rerun{$246$} & \rerun{$349$} & \rerun{$514$} & \rerun{$828$} \\
+chapters/ch09_tolerance.tex,520,Spending the tolerance,$828$,$r_{\rm proxy}/r_{\text{tol}}$ & \rerun{$22$} & \rerun{$246$} & \rerun{$349$} & \rerun{$514$} & \rerun{$828$} \\
+chapters/ch09_tolerance.tex,525,Spending the tolerance,$65\%$,"The detection-floor setting is the best available coarse setting by a wide margin, and nothing above it competes: relaxi"
+chapters/ch09_tolerance.tex,525,Spending the tolerance,eleven,"The detection-floor setting is the best available coarse setting by a wide margin, and nothing above it competes: relaxi"
+chapters/ch09_tolerance.tex,525,Spending the tolerance,$+30.5$~dB,"The detection-floor setting is the best available coarse setting by a wide margin, and nothing above it competes: relaxi"
+chapters/ch09_tolerance.tex,538,"What $\zeta$ means, and why the verdict does not depend on i",$0.0359$,"The policy ordering is not load-bearing on this choice. $r_{\text{tol}}$ scales linearly in $\zeta$, while on the exampl"
+chapters/ch09_tolerance.tex,538,"What $\zeta$ means, and why the verdict does not depend on i",$0.573$,"The policy ordering is not load-bearing on this choice. $r_{\text{tol}}$ scales linearly in $\zeta$, while on the exampl"
+chapters/ch09_tolerance.tex,538,"What $\zeta$ means, and why the verdict does not depend on i",$16$,"The policy ordering is not load-bearing on this choice. $r_{\text{tol}}$ scales linearly in $\zeta$, while on the exampl"
+chapters/ch09_tolerance.tex,538,"What $\zeta$ means, and why the verdict does not depend on i",$\zeta \ge 24$,"The policy ordering is not load-bearing on this choice. $r_{\text{tol}}$ scales linearly in $\zeta$, while on the exampl"
+chapters/ch09_tolerance.tex,538,"What $\zeta$ means, and why the verdict does not depend on i",$\zeta \ge 382$,"The policy ordering is not load-bearing on this choice. $r_{\text{tol}}$ scales linearly in $\zeta$, while on the exampl"
+chapters/ch09_tolerance.tex,601,The Delay Filter Booked on Both Sides,$2.2$,"ch\,33 & \rerun{$2.2$} & \rerun{$\mathbf{0.83}$} & \rerun{$\mathbf{0.24}$} & \rerun{$\mathbf{0.067}$} \\"
+chapters/ch09_tolerance.tex,601,The Delay Filter Booked on Both Sides,$\mathbf{0.83}$,"ch\,33 & \rerun{$2.2$} & \rerun{$\mathbf{0.83}$} & \rerun{$\mathbf{0.24}$} & \rerun{$\mathbf{0.067}$} \\"
+chapters/ch09_tolerance.tex,601,The Delay Filter Booked on Both Sides,$\mathbf{0.24}$,"ch\,33 & \rerun{$2.2$} & \rerun{$\mathbf{0.83}$} & \rerun{$\mathbf{0.24}$} & \rerun{$\mathbf{0.067}$} \\"
+chapters/ch09_tolerance.tex,601,The Delay Filter Booked on Both Sides,$\mathbf{0.067}$,"ch\,33 & \rerun{$2.2$} & \rerun{$\mathbf{0.83}$} & \rerun{$\mathbf{0.24}$} & \rerun{$\mathbf{0.067}$} \\"
+chapters/ch09_tolerance.tex,602,The Delay Filter Booked on Both Sides,$135$,"ch\,35 & \rerun{$135$} & \rerun{$53$} & \rerun{$14$} & \rerun{$3.2$} \\"
+chapters/ch09_tolerance.tex,602,The Delay Filter Booked on Both Sides,$53$,"ch\,35 & \rerun{$135$} & \rerun{$53$} & \rerun{$14$} & \rerun{$3.2$} \\"
+chapters/ch09_tolerance.tex,602,The Delay Filter Booked on Both Sides,$14$,"ch\,35 & \rerun{$135$} & \rerun{$53$} & \rerun{$14$} & \rerun{$3.2$} \\"
+chapters/ch09_tolerance.tex,602,The Delay Filter Booked on Both Sides,$3.2$,"ch\,35 & \rerun{$135$} & \rerun{$53$} & \rerun{$14$} & \rerun{$3.2$} \\"
+chapters/ch09_tolerance.tex,610,The Delay Filter Booked on Both Sides,$R = 0.24$,"Table~\ref{tab:tolerance:worlds} is where the screening model's positive results live, and it shows what booking the fil"
+chapters/ch09_tolerance.tex,615,An Archive Is Not One Era,$99.8\%$,"Every fraction quoted so far is evaluated on the channel's current era, and Section~\ref{sec:calibration:eras} is where "
+chapters/ch09_tolerance.tex,615,An Archive Is Not One Era,$59\%$,"Every fraction quoted so far is evaluated on the channel's current era, and Section~\ref{sec:calibration:eras} is where "
+chapters/ch09_tolerance.tex,615,An Archive Is Not One Era,$46\%$,"Every fraction quoted so far is evaluated on the channel's current era, and Section~\ref{sec:calibration:eras} is where "
+chapters/ch09_tolerance.tex,615,An Archive Is Not One Era,$94\%$,"Every fraction quoted so far is evaluated on the channel's current era, and Section~\ref{sec:calibration:eras} is where "
+chapters/ch09_tolerance.tex,615,An Archive Is Not One Era,11,"Every fraction quoted so far is evaluated on the channel's current era, and Section~\ref{sec:calibration:eras} is where "
+chapters/ch09_tolerance.tex,615,An Archive Is Not One Era,29,"Every fraction quoted so far is evaluated on the channel's current era, and Section~\ref{sec:calibration:eras} is where "
+chapters/ch09_tolerance.tex,631,What would close the gap,$2$--$5\%$,"A negative verdict earns its keep by saying which measurement to go and get, so it is worth walking the remaining distan"
+chapters/ch09_tolerance.tex,631,What would close the gap,$-91$~dB,"A negative verdict earns its keep by saying which measurement to go and get, so it is worth walking the remaining distan"
+chapters/ch09_tolerance.tex,635,What the archive cannot settle,$1.38$~s,"Four limits of the triggered archive are structural, and stating them fixes the requirements of the closing campaign. Fi"
+chapters/ch10_deployment.tex,35,Real-Time Integration Contract \& Operations,pending,Merged into the shared \texttt{kotekan} tree & \rerun{pending} & WVURAIL fork; upstream merge not required for the Pathf
+chapters/ch10_deployment.tex,220,Performance Acceptance,2.14~ms,"\rerun{2.14~ms}, the fused path at \rerun{0.77~ms}, and the fused path with"
+chapters/ch10_deployment.tex,220,Performance Acceptance,0.77~ms,"\rerun{2.14~ms}, the fused path at \rerun{0.77~ms}, and the fused path with"
+chapters/ch10_deployment.tex,221,Performance Acceptance,0.90~ms,decision epilogue at \rerun{0.90~ms} for the $N=16384$ geometry
+chapters/ch10_deployment.tex,277,The Pathfinder Shadow Run,24,Duration and frames & $\ge$ \rerun{24}~h continuous ($\ge$ \rerun{$2.06\times10^6$} frames per monitored channel at $41.
+chapters/ch10_deployment.tex,277,The Pathfinder Shadow Run,$2.06\times10^6$,Duration and frames & $\ge$ \rerun{24}~h continuous ($\ge$ \rerun{$2.06\times10^6$} frames per monitored channel at $41.
+chapters/ch10_deployment.tex,277,The Pathfinder Shadow Run,8,Duration and frames & $\ge$ \rerun{24}~h continuous ($\ge$ \rerun{$2.06\times10^6$} frames per monitored channel at $41.
+chapters/ch10_deployment.tex,278,The Pathfinder Shadow Run,$10^4$,"Exact replay & \rerun{$10^4$} sampled frames per channel, uniformly over the run, zero mismatches in coarse marginals, f"
+chapters/ch10_deployment.tex,279,The Pathfinder Shadow Run,$10^{-5}$,"Frame loss & dropped $+$ late $\le$ \rerun{$10^{-5}$} of frames, with no run of more than \rerun{2} consecutive losses &"
+chapters/ch10_deployment.tex,279,The Pathfinder Shadow Run,2,"Frame loss & dropped $+$ late $\le$ \rerun{$10^{-5}$} of frames, with no run of more than \rerun{2} consecutive losses &"
+chapters/ch10_deployment.tex,280,The Pathfinder Shadow Run,$0.5$,Latency and memory & stage $p_{99.9}$ $\le$ \rerun{$0.5$} of the frame period and the maximum never exceeds one period; 
+chapters/ch10_deployment.tex,280,The Pathfinder Shadow Run,20\%,Latency and memory & stage $p_{99.9}$ $\le$ \rerun{$0.5$} of the frame period and the maximum never exceeds one period; 
+chapters/ch10_deployment.tex,281,The Pathfinder Shadow Run,$10^{-4}$,"Invalid frames & system failures (CUDA, tripwire, buffer) and scientifically invalid inputs (all-zero, railed, degenerat"
+chapters/ch10_deployment.tex,281,The Pathfinder Shadow Run,$10^{-3}$,"Invalid frames & system failures (CUDA, tripwire, buffer) and scientifically invalid inputs (all-zero, railed, degenerat"
+dissertation.tex,71,,...,% move (slightly) when the rerun lands are wrapped in \rerun{...}; they render
