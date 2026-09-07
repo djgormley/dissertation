@@ -150,6 +150,21 @@ tests skip and `check_paper_numbers.py` reports the tables missing. If the
 move was deliberate, update that file and the `results/README.md` claim of
 authority; if not, move it back before running the deletions of item 1.
 
+16. **`spectrum-sensor` has work that exists only on this machine.** Its
+    branch has no commits at all, 157 files are staged, and the GitHub remote
+    holds five files last pushed in 2022. Around 79 MB of FPGA sources sit in
+    the working tree and nowhere else. Commit and push before anything else on
+    that project.
+17. **Three directories disappeared during the evening of 2026-09-06:**
+    `.review-ccaaw-2021`, `.inventory-spectrum-sensor-20260903` and
+    `msee-thesis-2021-matlab-comparisons`. They were present at the start of
+    the session and absent an hour later, and are not in `delete_me`, on the
+    OneDrive, or in the trash. The ccaaw audit work is safe on GitHub under the
+    `fact-check-compliance` branch; the matlab comparisons had no backup.
+18. **`studies_2026-08` (2.8 GB) is backed up nowhere.** It holds the August
+    characterization runs and the fine-gain streams the LimeSDR figures need.
+    Decide whether it goes to the OneDrive.
+
 ## Next session: the work itself
 
 In the order `RESULTS_PLAN.md` sets out.
