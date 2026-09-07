@@ -77,6 +77,79 @@ repositories; generated products live only outside them.
 15. **`results-layer`** is fully merged into RFIsher `main`; the branch and its
     remote can go.
 
+## Progress, 2026-09-06 (late)
+
+Worked through after the list above was written; the numbering below refers
+to the sections above.
+
+**Done, mechanical follow-ups (all of them except the last).** RFIsher's
+`check_paper_numbers.py` exits 0 with the documented "tables missing" message
+when no results tree is configured. pilot-proxy's `LOCAL_PROCESSING.md` is
+rewritten for the stage-root layout (`~/rail/products/<run>/{products,staging,logs}`,
+rehearsals under a dated `dev_rehearsals_<YYYY-MM>/`, the smoke input at its
+`studies_2026-08/data_checks` path); `analysis/_products.py` defaults
+`PP_PER_PILOT` to the campaign's 23 canonical products; `scripts/canfar/README.md`
+says the CANFAR home holds nothing unique and where the kit lives; RFIsher's
+`reproducibility.md` points at `per_pilot_2026-08-20_complete23`; the paper's
+`main.tex` notes that `../out` is empty in a fresh clone. The 647 symlinks in
+`studies_2026-08` resolve again (re-pointed at `datasets/baseband/`), the
+`datasets` and `studies_2026-08` READMEs carry the real counts and paths, the
+2026-08-31 rehearsal handoff is marked historical, and the 39 empty
+scaffolding directories under `inventory_rebuild` are gone. Not done:
+`MANIFEST.sha256` and `.pdf-inputs-digest`, which need `make manifest`, which
+cannot complete until decisions 6 (PDF tracked or not), 7 (canonical TikZ
+tree, which the freshness digest globs) and 8 (vendored-evidence gate) are
+taken; `release_manifest.py` currently reports 405 mismatches on `main`.
+
+**Done, next-session item 1 (export schema v2).** pilot-proxy reads both
+product vocabularies through one path: `archived_product_keys.measurement()`
+(current name, archived fallback), `product_contract.null_power_ratio_of()`
+and the new `product_contract.fine_power_ratio_of()` (the fine ratio formed
+from the exact `fine_power_u64` terms of a v5 product, the stored float ratio
+of an archived one). Every script under `analysis/` and `tools/` that read
+`fstat_raw`/`mu0`/`fstat_fine` goes through it. Run on the v5 products, the
+exports are at `products/chime_pilots_rebuild_20260829/analysis/exports_v5/`
+(outside the campaign's `SHA256SUMS`): `tables/` (census PSD and centre,
+byte-identical to the earlier export, plus `worked_example_spectra.csv`);
+`calibration/` (calibration.json and seven tables from `make_calibration_data`);
+`report/` (`report_data.json`, `threshold_sweeps.json`). The worked example
+verifies on v5: exactly one frame per panel answers to its day and F/mu0
+(frames 2641 and 1226); the exact-term fine digits are 1.066, 8.729, 18.615,
+7.598, 1.083 against the published 1.066, 8.730, 18.615, 7.598, 1.083, so
+only the float digit moved.
+
+Two findings on the way, both RFIsher-interface drift rather than v5 problems:
+(a) the residual health view pilot-proxy hands to RFIsher never carried the
+shelf column RFIsher's legacy reader requires, so every view (old and v5) was
+refused and the report's threshold sweeps had been failing silently; the view
+now carries it. (b) `make_policy_data` and the report's sweep block still call
+RFIsher's v2 residual API (`best_operating_point`, sweep rows with `eta`/`r`),
+which v3 removed, and RFIsher's legacy view checks the shelf against
+`10log10(F-1)`, which holds for the archived products but not for v5, whose
+stored shelf is defined from the normalized excess. So `policy/` is not
+produced, and the report's sweep block is empty. The fix is item 2 below:
+port the calibration-report and policy family into `rfisher_results` reading
+v5 products directly through RFIsher's current-product view, not through the
+legacy health view.
+
+**Done, next-session item 3 (readers), digital half.** `rfisher_results.evaluations`
+reads a `dtv_snr_eval.{json,csv}` + `dtv_snr_summary.csv` directory and pools a
+sweep of them the way the release was built; the frozen digital release's
+`plot_points.csv` is re-derived from the forty raw shards to 4e-15 dB (test
+gated by `RFISHER_TRANSFER_SWEEP` and `RFISHER_TRANSFER_RELEASE`). The
+estimator-transfer `analysis.json`/`plot_points.csv` reader already existed
+(`estimator_transfer.load_release`). Still missing: a reader for the SDR
+transfer trial format (`sdr_transfer_trials.csv`, pass-clustered) behind the
+OTA release.
+
+**Observed, not done by anyone in this session:** at about 22:29 local,
+`~/rail/results` (the RFIsher results authority, per the table at the top)
+was moved to `~/rail/delete_me/results`. Nothing here did that. RFIsher's
+`data/products.local.json` still names the old path, so its results-gated
+tests skip and `check_paper_numbers.py` reports the tables missing. If the
+move was deliberate, update that file and the `results/README.md` claim of
+authority; if not, move it back before running the deletions of item 1.
+
 ## Next session: the work itself
 
 In the order `RESULTS_PLAN.md` sets out.
