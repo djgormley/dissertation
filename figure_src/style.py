@@ -1,5 +1,9 @@
 """Dissertation-wide plotting style.
 
+The single style source. The dissertation bundle (figure_src/style.py) is the
+audited original; pilot-proxy and RFIsher carry byte-identical copies, checked
+by a test in each repository.
+
 The body text is Latin Modern (LaTeX ``lmodern``).  Submission figures render
 all text through the same LaTeX stack, at a fixed physical size, so labels are
 not silently substituted with DejaVu or shrunk differently from chapter to
@@ -7,7 +11,10 @@ chapter.  This file also fixes the semantic palette and common line/axis rules.
 """
 from __future__ import annotations
 
+import contextlib
+import hashlib
 import shutil
+import string
 import textwrap
 from datetime import datetime, timezone
 from pathlib import Path
@@ -136,6 +143,35 @@ def save(fig, path: Path, *, title: str) -> Path:
     })
     plt.close(fig)
     return path
+
+
+
+def stable_subset_prefix(charset) -> str:
+    """Return a repeatable PDF font-subset tag from glyph content."""
+    glyphs = "\0".join(sorted(str(name) for name in charset))
+    value = int.from_bytes(
+        hashlib.sha256(glyphs.encode("utf-8")).digest()[:8], "big")
+    letters = []
+    for _ in range(6):
+        value, index = divmod(value, 26)
+        letters.append(string.ascii_uppercase[index])
+    return "".join(letters) + "+"
+
+
+@contextlib.contextmanager
+def stable_pdf_subset_tags():
+    """Use content-based tags when Matplotlib exposes its PDF hook."""
+    from matplotlib.backends.backend_pdf import PdfFile
+
+    original = vars(PdfFile).get("_get_subset_prefix")
+    if original is None:
+        yield
+        return
+    PdfFile._get_subset_prefix = staticmethod(stable_subset_prefix)
+    try:
+        yield
+    finally:
+        PdfFile._get_subset_prefix = original
 
 
 def _fit_fontsize(ax, text: str, size: float, box_w: float,
